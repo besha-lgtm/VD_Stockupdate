@@ -1,0 +1,47 @@
+<div class="login-container">
+  <div class="login-card">
+
+    <div class="login-header">
+      <h2>Welcome Back</h2>
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
+
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input 
+          id="username"
+          type="text" 
+          formControlName="username" 
+          placeholder="admin@gmail.com" 
+          autocomplete="username"
+        />
+        <small *ngIf="loginForm.get('username')?.invalid && loginForm.get('username')?.touched">
+          Username is required
+        </small>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input 
+          id="password"
+          type="password" 
+          formControlName="password" 
+          placeholder="•••••" 
+          autocomplete="current-password"
+        />
+        <small *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+          Password is required
+        </small>
+      </div>
+
+      <button type="submit" class="login-btn" [disabled]="loading">
+        {{ loading ? 'Logging in...' : 'Login' }}
+      </button>
+
+      <p class="error" *ngIf="errorMsg">{{ errorMsg }}</p>
+
+    </form>
+
+  </div>
+</div>

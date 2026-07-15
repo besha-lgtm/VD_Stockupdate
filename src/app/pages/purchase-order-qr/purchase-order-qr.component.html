@@ -1,0 +1,87 @@
+<div class="qr-page-container">
+  <div class="qr-card">
+    
+    <div class="qr-header">
+      <span class="emoji-check">✅</span>
+      <h1>Purchase Order QR Generator</h1>
+    </div>
+
+    <div class="form-container">
+      <label for="poInput">Enter PO Number:</label>
+      <input 
+        id="poInput"
+        type="text" 
+        [(ngModel)]="poNumber" 
+        placeholder="e.g., PO1001"
+        (keyup.enter)="onSearch()"
+      />
+      <button class="search-btn" (click)="onSearch()">Search</button>
+    </div>
+
+    <!-- PO Details Card (shown after clicking Search) -->
+    <div class="details-card" *ngIf="showDetails">
+      <h3>PO Details:</h3>
+      <p><strong>PO Number:</strong> {{ details.poNumber }}</p>
+      <p><strong>Item:</strong> {{ details.item }}</p>
+      <p><strong>Quantity:</strong> {{ details.quantity }}</p>
+      
+      <button class="generate-btn" (click)="onGenerateQr()">Generate QR Code</button>
+    </div>
+
+    <!-- Generated QR Code Section (shown after clicking Generate) -->
+    <div class="qr-result-section" *ngIf="showQr">
+      <h3>Generated QR Code:</h3>
+      <div class="qr-image-wrapper">
+        <svg class="qr-code-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <!-- Corners (Position Detection Patterns) -->
+          <!-- Top Left -->
+          <rect x="10" y="10" width="30" height="30" fill="none" stroke="#000000" stroke-width="4"/>
+          <rect x="18" y="18" width="14" height="14" fill="#000000"/>
+          
+          <!-- Top Right -->
+          <rect x="60" y="10" width="30" height="30" fill="none" stroke="#000000" stroke-width="4"/>
+          <rect x="68" y="18" width="14" height="14" fill="#000000"/>
+          
+          <!-- Bottom Left -->
+          <rect x="10" y="60" width="30" height="30" fill="none" stroke="#000000" stroke-width="4"/>
+          <rect x="18" y="68" width="14" height="14" fill="#000000"/>
+          
+          <!-- Mock QR Data Blocks (Grid) -->
+          <rect x="45" y="10" width="5" height="5" fill="#000000"/>
+          <rect x="50" y="15" width="5" height="5" fill="#000000"/>
+          <rect x="45" y="25" width="5" height="5" fill="#000000"/>
+          <rect x="50" y="30" width="5" height="5" fill="#000000"/>
+          
+          <rect x="10" y="45" width="5" height="5" fill="#000000"/>
+          <rect x="20" y="45" width="5" height="5" fill="#000000"/>
+          <rect x="30" y="50" width="5" height="5" fill="#000000"/>
+          
+          <rect x="45" y="45" width="5" height="5" fill="#000000"/>
+          <rect x="50" y="50" width="5" height="5" fill="#000000"/>
+          <rect x="55" y="45" width="5" height="5" fill="#000000"/>
+          <rect x="45" y="55" width="5" height="5" fill="#000000"/>
+          
+          <rect x="65" y="45" width="5" height="5" fill="#000000"/>
+          <rect x="70" y="50" width="5" height="5" fill="#000000"/>
+          <rect x="80" y="45" width="5" height="5" fill="#000000"/>
+          
+          <rect x="45" y="65" width="5" height="5" fill="#000000"/>
+          <rect x="50" y="70" width="5" height="5" fill="#000000"/>
+          <rect x="55" y="60" width="5" height="5" fill="#000000"/>
+          <rect x="45" y="80" width="5" height="5" fill="#000000"/>
+          
+          <rect x="60" y="60" width="5" height="5" fill="#000000"/>
+          <rect x="75" y="65" width="5" height="5" fill="#000000"/>
+          <rect x="85" y="60" width="5" height="5" fill="#000000"/>
+          
+          <rect x="65" y="75" width="5" height="5" fill="#000000"/>
+          <rect x="70" y="80" width="5" height="5" fill="#000000"/>
+          <rect x="80" y="75" width="5" height="5" fill="#000000"/>
+          <rect x="85" y="85" width="5" height="5" fill="#000000"/>
+          <rect x="75" y="80" width="5" height="5" fill="#000000"/>
+        </svg>
+      </div>
+    </div>
+
+  </div>
+</div>

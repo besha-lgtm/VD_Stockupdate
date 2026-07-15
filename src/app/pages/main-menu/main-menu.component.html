@@ -1,0 +1,74 @@
+<div class="menu-page-container">
+  <div class="menu-card-wrapper">
+    
+    <div class="menu-header">
+      <h1>Main Menu</h1>
+    </div>
+
+    <div class="menu-grid">
+      <!-- PO Card -->
+      <div class="menu-card" (click)="onSelect('PO')">
+        <div class="icon-wrapper">
+          <svg class="card-icon" viewBox="0 0 64 64" fill="none" stroke="#1e293b" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+            <!-- Document Outline -->
+            <path d="M16 8h24l10 10v38a4 4 0 0 1-4 4H16a4 4 0 0 1-4-4V12a4 4 0 0 1 4-4z" />
+            <path d="M40 8v10h10" />
+            <!-- Document Lines -->
+            <line x1="20" y1="26" x2="36" y2="26" />
+            <line x1="20" y1="36" x2="44" y2="36" />
+            <line x1="20" y1="46" x2="30" y2="46" />
+            <!-- Circle with Checkmark at bottom right -->
+            <circle cx="44" cy="46" r="9" fill="#bae6fd" stroke="#1e293b" stroke-width="3.5" />
+            <path d="M40 46l2.5 2.5 4-4" />
+          </svg>
+        </div>
+        <span class="card-title">PO</span>
+      </div>
+
+      <!-- RECEIVE Card -->
+      <div class="menu-card" (click)="onSelect('RECEIVE')">
+        <div class="icon-wrapper">
+          <svg class="card-icon" viewBox="0 0 64 64" fill="none" stroke="#1e293b" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+            <!-- Cap and Head -->
+            <path d="M34 18c0-3.3 2.7-6 6-6s6 2.7 6 6" />
+            <circle cx="40" cy="20" r="5" />
+            <path d="M45 17h6" stroke-width="3.5" />
+            
+            <!-- Body/Torso -->
+            <path d="M32 46v-5a5 5 0 0 1 5-5h6a5 5 0 0 1 5 5v5" />
+            
+            <!-- Box on the left -->
+            <rect x="14" y="30" width="12" height="12" rx="1.5" />
+            <line x1="20" y1="30" x2="20" y2="42" />
+            
+            <!-- Arms holding box -->
+            <path d="M26 36h6" />
+            <path d="M38 36h-4" />
+          </svg>
+        </div>
+        <span class="card-title">RECEIVE</span>
+      </div>
+
+      <!-- ISSUE Card -->
+      <div class="menu-card" (click)="onSelect('ISSUE')">
+        <div class="icon-wrapper">
+          <svg class="card-icon" viewBox="0 0 64 64" fill="none" stroke="#1e293b" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+            <!-- Document Outline -->
+            <path d="M16 8h24l10 10v38a4 4 0 0 1-4 4H16a4 4 0 0 1-4-4V12a4 4 0 0 1 4-4z" />
+            <path d="M40 8v10h10" />
+            
+            <!-- Left arrow inside document -->
+            <path d="M28 42H20M20 42l3.5-3.5M20 42l3.5 3.5" />
+            
+            <!-- Small blocks on bottom right -->
+            <rect x="36" y="40" width="6" height="6" rx="1" />
+            <rect x="42" y="40" width="6" height="6" rx="1" />
+            <rect x="39" y="34" width="6" height="6" rx="1" />
+          </svg>
+        </div>
+        <span class="card-title">ISSUE</span>
+      </div>
+    </div>
+
+  </div>
+</div>
