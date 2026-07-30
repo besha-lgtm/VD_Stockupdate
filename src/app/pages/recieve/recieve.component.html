@@ -1,0 +1,137 @@
+<div class="dashboard-layout">
+
+    <!-- Header -->
+    <app-header></app-header>
+
+    <!-- Body -->
+    <div class="dashboard-body">
+
+        <!-- Sidebar -->
+        <app-sidebar></app-sidebar>
+
+        <!-- Main Content -->
+        <main class="dashboard-content">
+
+            <div class="table-container">
+
+                <div class="table-header">
+                    <h2>Receiving Verification</h2>
+                </div>
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>S.No</th>
+                            <th>PO Number</th>
+                            <th>Item Description</th>
+                            <th>Ordered Qty</th>
+                            <th>Received Qty</th>
+                            <th>Documents</th>
+                            <th>Action</th>
+                            
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr *ngFor="let item of receivingData; let i = index">
+
+                            <td>{{ i + 1 }}</td>
+                            <td>{{ item.poNumber }}</td>
+                            <td>{{ item.description }}</td>
+                            <td>{{ item.orderedQty }}</td>
+                            <td>{{ item.receivedQty }}</td>
+                            <td><button class="upload-btn" (click)="openUploadPopup()">
+    Upload
+</button></td>
+                            <td><button class="action-btn">
+                Accept
+            </button></td>
+
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+                <!-- Upload Documents Popup -->
+
+<div class="modal-overlay" *ngIf="showUploadPopup">
+
+    <div class="upload-modal">
+
+        <div class="modal-header">
+
+            <h3>Attachments</h3>
+
+        </div>
+
+        <div class="modal-body">
+
+            <div class="form-group">
+
+                <label>DELIVERY NOTE</label>
+
+                <input type="file">
+
+            </div>
+
+            <div class="form-group">
+
+                <label>PURCHASE ORDER</label>
+
+                <input type="file">
+
+            </div>
+
+            <div class="form-group">
+
+                <label>PURCHASE REQUISITION</label>
+
+                <input type="file">
+
+            </div>
+
+            <div class="form-group">
+
+                <label>MATERIAL REJECTED REPORT</label>
+
+                <input type="file">
+
+            </div>
+
+        </div>
+
+        <div class="modal-footer">
+
+            <button class="cancel-btn"
+                (click)="closeUploadPopup()">
+
+                Cancel
+
+            </button>
+
+            <button class="save-btn"
+                (click)="saveDocuments()">
+
+                Save
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</div>

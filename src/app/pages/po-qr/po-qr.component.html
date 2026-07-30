@@ -1,0 +1,86 @@
+<div class="dashboard-layout">
+
+    <!-- Header -->
+    <app-header></app-header>
+
+    <!-- Body -->
+    <div class="dashboard-body">
+
+        <!-- Sidebar -->
+        <app-sidebar></app-sidebar>
+
+        <!-- Main Content -->
+        <main class="dashboard-content">
+
+            <div class="table-container">
+
+                <div class="table-header">
+
+                    <h2>PO QR Generator</h2>
+
+                    <div class="search-section">
+
+                        <label for="poNumber">Purchase Order Number</label>
+
+                        <div class="search-group">
+
+                            <input
+                                id="poNumber"
+                                type="text"
+                                placeholder="Enter PO Number"
+                                [(ngModel)]="poNumber">
+
+                            <button
+                                class="search-btn"
+                                (click)="searchPO()">
+                                Search
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>PO Number</th>
+                            <th>Item Description</th>
+                            <th>Serial Number</th>
+                            <th>Quantity</th>
+                            <th>Action</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr *ngFor="let item of qrData">
+
+                            <td>{{ item.poNumber }}</td>
+                            <td>{{ item.description }}</td>
+                            <td>{{ item.serialNumber }}</td>
+                            <td>{{ item.quantity }}</td>
+
+                            <td>
+                                <button class="action-btn">
+                                    Generate QR
+                                </button>
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</div>

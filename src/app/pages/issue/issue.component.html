@@ -1,0 +1,68 @@
+<div class="dashboard-layout">
+
+    <!-- Header -->
+    <app-header></app-header>
+
+    <!-- Body -->
+    <div class="dashboard-body">
+
+        <!-- Sidebar -->
+        <app-sidebar></app-sidebar>
+
+        <!-- Main Content -->
+        <main class="dashboard-content">
+
+            <div class="table-container">
+
+                <div class="table-header">
+                    <h2>Issue Verification</h2>
+                </div>
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>S.No</th>
+                            <th>PO Number</th>
+                            <th>Item Description</th>
+                            <th>Ordered Qty</th>
+                            <th>Issued Qty</th>
+                            <th>Unit</th>
+                            <th>Receipt No</th>
+                            <th>Status</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr *ngFor="let item of issuingData; let i = index">
+
+                            <td>{{ i + 1 }}</td>
+                            <td>{{ item.poNumber }}</td>
+                            <td>{{ item.description }}</td>
+                            <td>{{ item.orderedQty }}</td>
+                            <td>{{ item.issuedQty }}</td>
+                            <td>{{ item.unit }}</td>
+                            <td>{{ item.receipt }}</td>
+
+                            <td>
+                                <span class="status">
+                                    {{ item.status }}
+                                </span>
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</div>

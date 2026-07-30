@@ -1,0 +1,153 @@
+/* ===========================
+   Dashboard Layout
+=========================== */
+
+.dashboard-layout {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background: #f5f7fa;
+}
+
+.dashboard-body {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+.dashboard-content {
+    flex: 1;
+    padding: 25px;
+    background: #f5f7fa;
+    overflow-y: auto;
+}
+
+/* ===========================
+   Card
+=========================== */
+
+.table-container {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 24px;
+}
+
+/* ===========================
+   Heading
+=========================== */
+
+.table-header {
+    margin-bottom: 24px;
+}
+
+.table-header h2 {
+    margin: 0 0 20px;
+    font-size: 22px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+/* ===========================
+   Search Section
+=========================== */
+
+.search-section {
+    max-width: 420px;
+}
+
+.search-section label {
+    display: block;
+    margin-bottom: 8px;
+    color: #374151;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.search-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.search-group input {
+    flex: 1;
+    padding: 10px 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+}
+
+.search-group input:focus {
+    border-color: #0f766e;
+}
+
+/* ===========================
+   Buttons
+=========================== */
+
+.search-btn,
+.action-btn {
+
+    background: #0f766e;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 9px 18px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: .3s;
+
+}
+
+.search-btn:hover,
+.action-btn:hover {
+
+    background: #0b5f58;
+
+}
+
+/* ===========================
+   Table
+=========================== */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+thead {
+    background: #f3f4f6;
+}
+
+thead th {
+    padding: 12px;
+    text-align: left;
+    font-weight: 600;
+    color: #374151;
+    border-bottom: 1px solid #d1d5db;
+}
+
+tbody td {
+    padding: 12px;
+    color: #4b5563;
+    border-bottom: 1px solid #ececec;
+}
+
+tbody tr:hover {
+    background: #f9fafb;
+}
+
+/* ===========================
+   Responsive
+=========================== */
+
+.table-container {
+    overflow-x: auto;
+}
+
+table {
+    min-width: 900px;
+}

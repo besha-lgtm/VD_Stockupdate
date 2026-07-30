@@ -46,7 +46,7 @@ export class LoginComponent {
         console.log('Static login success');
         sessionStorage.setItem('token', 'mock-session-token');
         this.loading = false;
-        this.router.navigate(['/main-menu']);
+        this.router.navigate(['/dashboard']);
       } else {
         this.loading = false;
         this.errorMsg = 'Invalid username or password';

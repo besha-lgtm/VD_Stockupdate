@@ -1,0 +1,109 @@
+/* ===========================
+   Dashboard Layout
+=========================== */
+
+.dashboard-layout {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background: #f5f7fa;
+}
+
+.dashboard-body {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+.dashboard-content {
+    flex: 1;
+    padding: 25px;
+    background: #f5f7fa;
+    overflow-y: auto;
+}
+
+/* ===========================
+   Card
+=========================== */
+
+.table-container {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 24px;
+}
+
+/* ===========================
+   Heading
+=========================== */
+
+.table-header {
+    margin-bottom: 20px;
+}
+
+.table-header h2 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+/* ===========================
+   Table
+=========================== */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+thead {
+    background: #f3f4f6;
+}
+
+thead th {
+    padding: 12px;
+    text-align: left;
+    font-weight: 600;
+    color: #374151;
+    border-bottom: 1px solid #d1d5db;
+}
+
+tbody td {
+    padding: 12px;
+    color: #4b5563;
+    border-bottom: 1px solid #ececec;
+}
+
+tbody tr:hover {
+    background: #f9fafb;
+}
+
+/* ===========================
+   Status
+=========================== */
+
+.status {
+    display: inline-block;
+    padding: 4px 10px;
+    min-width: 60px;
+    text-align: center;
+    border-radius: 4px;
+    background: #e8f5e9;
+    color: #2e7d32;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* ===========================
+   Responsive
+=========================== */
+
+.table-container {
+    overflow-x: auto;
+}
+
+table {
+    min-width: 900px;
+}

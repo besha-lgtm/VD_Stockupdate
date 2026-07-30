@@ -32,6 +32,13 @@ import { LoginComponent } from './login/login.component';
 import { FileUploadModule } from 'primeng/fileupload';
 import { MainMenuComponent } from './pages/main-menu/main-menu.component';
 import { PurchaseOrderQrComponent } from './pages/purchase-order-qr/purchase-order-qr.component';
+import { DashboardComponent } from './pages/dashboard/dashboard.component';
+import { SidebarComponent } from './layout/sidebar/sidebar.component';
+import { HeaderComponent } from './layout/header/header.component';
+import { POQRComponent } from './pages/po-qr/po-qr.component';
+import { RecieveComponent } from './pages/recieve/recieve.component';
+import { PORecieveComponent } from './pages/po-recieve/po-recieve.component';
+import { IssueComponent } from './pages/issue/issue.component';
 
 @NgModule({
   declarations: [
@@ -39,6 +46,13 @@ import { PurchaseOrderQrComponent } from './pages/purchase-order-qr/purchase-ord
     LoginComponent,
     MainMenuComponent,
     PurchaseOrderQrComponent,
+    DashboardComponent,
+    SidebarComponent,
+    HeaderComponent,
+    POQRComponent,
+    RecieveComponent,
+    PORecieveComponent,
+    IssueComponent,
   ],
   imports: [
     BrowserModule,
