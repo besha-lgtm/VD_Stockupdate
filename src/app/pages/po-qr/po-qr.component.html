@@ -20,66 +20,140 @@
 
                     <div class="search-section">
 
-                        <label for="poNumber">Purchase Order Number</label>
-
-                        <div class="search-group">
-
-                            <input
-                                id="poNumber"
-                                type="text"
-                                placeholder="Enter PO Number"
-                                [(ngModel)]="poNumber">
-
-                            <button
-                                class="search-btn"
-                                (click)="searchPO()">
-                                Search
-                            </button>
-
-                        </div>
+                        <input
+                            id="searchTerm"
+                            type="text"
+                            class="search-input"
+                            placeholder="Search by PO No or Item Details"
+                            [(ngModel)]="searchTerm"
+                            name="searchTerm"
+                            autocomplete="off">
 
                     </div>
 
                 </div>
 
-                <table>
+                <div class="table-scroll">
 
-                    <thead>
+                    <table>
 
-                        <tr>
-                            <th>PO Number</th>
-                            <th>Item Description</th>
-                            <th>Serial Number</th>
-                            <th>Quantity</th>
-                            <th>Action</th>
-                        </tr>
+                        <thead>
 
-                    </thead>
+                            <tr>
+                                <th>PO Number</th>
+                                <th>Item Description</th>
+                                <th>Serial Number</th>
+                                <th>Quantity</th>
+                                <th>Action</th>
+                            </tr>
 
-                    <tbody>
+                        </thead>
 
-                        <tr *ngFor="let item of qrData">
+                        <tbody>
 
-                            <td>{{ item.poNumber }}</td>
-                            <td>{{ item.description }}</td>
-                            <td>{{ item.serialNumber }}</td>
-                            <td>{{ item.quantity }}</td>
+                            <tr *ngFor="let item of filteredData">
 
-                            <td>
-                                <button class="action-btn">
-                                    Generate QR
-                                </button>
-                            </td>
+                                <td>{{ item.poNumber }}</td>
+                                <td>{{ item.description }}</td>
+                                <td>{{ item.serialNumber }}</td>
+                                <td>{{ item.quantity }}</td>
 
-                        </tr>
+                                <td>
+                                    <button class="action-btn" (click)="openQrModal(item)">
+                                        Generate QR
+                                    </button>
+                                </td>
 
-                    </tbody>
+                            </tr>
 
-                </table>
+                            <tr *ngIf="filteredData.length === 0">
+                                <td colspan="5" class="no-data">
+                                    No matching records found.
+                                </td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
 
             </div>
 
         </main>
+
+    </div>
+
+    <!-- QR Generation Modal -->
+    <div class="modal-overlay" *ngIf="showQrModal" (click)="closeQrModal()">
+
+        <div class="modal-box" (click)="$event.stopPropagation()">
+
+            <div class="modal-header">
+
+                <h3>Generate QR - PO {{ selectedItem?.poNumber }}</h3>
+
+                <button class="modal-close" (click)="closeQrModal()">&times;</button>
+
+            </div>
+
+            <div class="modal-subheader">
+                <span>{{ selectedItem?.description }}</span>
+                <span class="modal-qty-badge">Qty: {{ selectedItem?.quantity }}</span>
+            </div>
+
+            <div class="modal-body">
+
+                <div class="qr-unit-row" *ngFor="let unit of qrUnits">
+
+                    <div class="qr-unit-info">
+
+                        <div class="qr-unit-title">
+                            Unit {{ unit.unitIndex }} of {{ unit.quantity }}
+                        </div>
+
+                        <div class="qr-unit-details">
+                            <div><strong>PO Number:</strong> {{ unit.poNumber }}</div>
+                            <div><strong>Description:</strong> {{ unit.description }}</div>
+                            <div><strong>Serial Number:</strong> {{ unit.serialNumber }}</div>
+                        </div>
+
+                        <div class="qr-unit-actions" *ngIf="!unit.qrDataUrl">
+                            <button
+                                class="action-btn"
+                                [disabled]="unit.generating"
+                                (click)="generateSingleQr(unit)">
+                                {{ unit.generating ? 'Generating...' : 'Generate QR' }}
+                            </button>
+                        </div>
+
+                        <div class="qr-unit-actions" *ngIf="unit.qrDataUrl">
+                            <button class="download-btn" (click)="downloadQr(unit)">
+                                Download
+                            </button>
+                        </div>
+
+                    </div>
+
+                    <div class="qr-unit-image">
+                        <img *ngIf="unit.qrDataUrl" [src]="unit.qrDataUrl" alt="QR code" />
+                        <div *ngIf="!unit.qrDataUrl" class="qr-placeholder">QR</div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button class="generate-all-btn" (click)="generateAllQr()">
+                    Generate All
+                </button>
+                <button class="close-btn" (click)="closeQrModal()">
+                    Close
+                </button>
+            </div>
+
+        </div>
 
     </div>
 

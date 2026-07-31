@@ -18,6 +18,8 @@
                     <h2>PO Receiving</h2>
                 </div>
 
+                <div class="table-scroll">
+
                 <table>
 
                     <thead>
@@ -48,7 +50,9 @@
                             <td>{{ item.receipt }}</td>
 
                             <td>
-                                <span class="status">
+                                <span
+                                    class="status"
+                                    [class.status-received]="item.status === 'RECEIVED'">
                                     {{ item.status }}
                                 </span>
                             </td>
@@ -58,6 +62,8 @@
                     </tbody>
 
                 </table>
+
+                </div>
 
             </div>
 

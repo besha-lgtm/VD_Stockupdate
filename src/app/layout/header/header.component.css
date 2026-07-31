@@ -1,177 +1,137 @@
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:'Inter',sans-serif;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
 }
 
-body{
-    background:#eef2f7;
+body {
+    background: #eef2f7;
 }
 
-.header{
-
-    width:100%;
-    height:78px;
-
-    background:white;
-
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-
-    padding:0 35px;
-
-    box-shadow:0 5px 18px rgba(0,0,0,.08);
-
+.header {
+    width: 100%;
+    height: 78px;
+    background: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 35px;
+    box-shadow: 0 5px 18px rgba(0, 0, 0, .08);
 }
 
-.logo-section{
-
-    display:flex;
-    align-items:center;
-    gap:18px;
-
+.logo-section {
+    display: flex;
+    align-items: center;
+    gap: 18px;
 }
 
-.logo{
-
-    width:52px;
-    height:52px;
-
-    border-radius:15px;
-
-    background:linear-gradient(135deg,#0f766e,#14b8a6);
-
-    display:flex;
-    justify-content:center;
-    align-items:center;
-
-    color:white;
-    font-size:23px;
-
+.logo {
+    width: 52px;
+    height: 52px;
+    border-radius: 15px;
+    background: linear-gradient(135deg, #0f766e, #14b8a6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    /* This ensures the image stays within the rounded corners */
 }
 
-.company h2{
-
-    color:#14375d;
-    font-size:23px;
-
+.logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* This makes the image cover the area properly */
 }
 
-.company span{
-
-    color:#7b8794;
-    font-size:13px;
-
+.logo-fallback {
+    color: white;
+    font-weight: 700;
+    font-size: 20px;
+    letter-spacing: 0.5px;
 }
 
-.header-right{
-
-    display:flex;
-    align-items:center;
-    gap:25px;
-
+.company h2 {
+    color: #14375d;
+    font-size: 23px;
 }
 
-.notification{
-
-    position:relative;
-    cursor:pointer;
-
+.company span {
+    color: #7b8794;
+    font-size: 13px;
 }
 
-.notification i{
-
-    font-size:22px;
-    color:#475569;
-
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 25px;
 }
 
-.badge{
-
-    position:absolute;
-    top:-7px;
-    right:-8px;
-
-    background:#ef4444;
-    color:white;
-
-    width:18px;
-    height:18px;
-
-    border-radius:50%;
-
-    font-size:11px;
-
-    display:flex;
-    justify-content:center;
-    align-items:center;
-
+.notification {
+    position: relative;
+    cursor: pointer;
 }
 
-.user{
-
-    display:flex;
-    align-items:center;
-    gap:12px;
-
+.notification i {
+    font-size: 22px;
+    color: #475569;
 }
 
-.avatar{
-
-    width:45px;
-    height:45px;
-
-    border-radius:50%;
-
-    background:#14b8a6;
-    color:white;
-
-    display:flex;
-    justify-content:center;
-    align-items:center;
-
-    font-weight:600;
-
+.badge {
+    position: absolute;
+    top: -7px;
+    right: -8px;
+    background: #ef4444;
+    color: white;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    font-size: 11px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.user-info h4{
-
-    color:#1e293b;
-    font-size:15px;
-
+.user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
-.user-info span{
-
-    color:#64748b;
-    font-size:12px;
-
+.avatar {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: #14b8a6;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 600;
 }
 
-.logout-btn{
-
-    border:none;
-
-    background:#0f766e;
-
-    color:white;
-
-    padding:11px 22px;
-
-    border-radius:10px;
-
-    cursor:pointer;
-
-    transition:.3s;
-
-    font-size:14px;
-
+.user-info h4 {
+    color: #1e293b;
+    font-size: 15px;
 }
 
-.logout-btn:hover{
+.user-info span {
+    color: #64748b;
+    font-size: 12px;
+}
 
-    background:#115e59;
+.logout-btn {
+    border: none;
+    background: #0f766e;
+    color: white;
+    padding: 11px 22px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: .3s;
+    font-size: 14px;
+}
 
+.logout-btn:hover {
+    background: #115e59;
 }

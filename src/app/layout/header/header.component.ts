@@ -9,7 +9,15 @@ import { Router } from '@angular/router';
 })
 export class HeaderComponent {
 
+  // If the logo image fails to load (missing file, wrong path/case, etc.)
+  // fall back to showing initials instead of a broken image icon.
+  logoLoadFailed = false;
+
   constructor(private router: Router) {}
+
+  onLogoError(): void {
+    this.logoLoadFailed = true;
+  }
 
   logout(): void {
     // Optional: Clear session/local storage

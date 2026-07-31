@@ -18,6 +18,8 @@
                     <h2>Receiving Verification</h2>
                 </div>
 
+                <div class="table-scroll">
+
                 <table>
 
                     <thead>
@@ -30,7 +32,7 @@
                             <th>Received Qty</th>
                             <th>Documents</th>
                             <th>Action</th>
-                            
+
                         </tr>
 
                     </thead>
@@ -44,13 +46,24 @@
                             <td>{{ item.description }}</td>
                             <td>{{ item.orderedQty }}</td>
                             <td>{{ item.receivedQty }}</td>
-                            <td><button class="upload-btn" (click)="openUploadPopup()">
-    Upload
-</button></td>
-                            <td><button class="action-btn">
-                Accept
-            </button></td>
 
+                            <td>
+                                <button class="upload-btn" (click)="openUploadPopup(item)">
+                                    {{ item.documentsUploaded ? 'Re-upload' : 'Upload' }}
+                                </button>
+                                <span class="uploaded-tag" *ngIf="item.documentsUploaded">Uploaded</span>
+                            </td>
+
+                            <td>
+                                <button
+                                    class="action-btn"
+                                    [class.accepted-btn]="item.accepted"
+                                    [disabled]="!item.documentsUploaded || item.accepted"
+                                    [title]="!item.documentsUploaded ? 'Upload documents before accepting' : ''"
+                                    (click)="acceptItem(item)">
+                                    {{ item.accepted ? 'Accepted' : 'Accept' }}
+                                </button>
+                            </td>
 
                         </tr>
 
@@ -58,75 +71,102 @@
 
                 </table>
 
+                </div>
+
                 <!-- Upload Documents Popup -->
 
-<div class="modal-overlay" *ngIf="showUploadPopup">
+                <div class="modal-overlay" *ngIf="showUploadPopup">
 
-    <div class="upload-modal">
+                    <div class="upload-modal">
 
-        <div class="modal-header">
+                        <div class="modal-header">
 
-            <h3>Attachments</h3>
+                            <h3>Attachments {{ selectedItem ? '- PO ' + selectedItem.poNumber : '' }}</h3>
 
-        </div>
+                        </div>
 
-        <div class="modal-body">
+                        <div class="modal-body">
 
-            <div class="form-group">
+                            <p class="required-note">
+                                <span class="required-mark">*</span> All documents are mandatory to save.
+                            </p>
 
-                <label>DELIVERY NOTE</label>
+                            <div class="form-group">
 
-                <input type="file">
+                                <label>DELIVERY NOTE <span class="required-mark">*</span></label>
 
-            </div>
+                                <input type="file" (change)="onFileSelected($event, 'deliveryNote')">
 
-            <div class="form-group">
+                                <div class="file-name" *ngIf="tempDocuments.deliveryNote">
+                                    Selected: {{ tempDocuments.deliveryNote.name }}
+                                </div>
 
-                <label>PURCHASE ORDER</label>
+                            </div>
 
-                <input type="file">
+                            <div class="form-group">
 
-            </div>
+                                <label>PURCHASE ORDER <span class="required-mark">*</span></label>
 
-            <div class="form-group">
+                                <input type="file" (change)="onFileSelected($event, 'purchaseOrder')">
 
-                <label>PURCHASE REQUISITION</label>
+                                <div class="file-name" *ngIf="tempDocuments.purchaseOrder">
+                                    Selected: {{ tempDocuments.purchaseOrder.name }}
+                                </div>
 
-                <input type="file">
+                            </div>
 
-            </div>
+                            <div class="form-group">
 
-            <div class="form-group">
+                                <label>PURCHASE REQUISITION <span class="required-mark">*</span></label>
 
-                <label>MATERIAL REJECTED REPORT</label>
+                                <input type="file" (change)="onFileSelected($event, 'purchaseRequisition')">
 
-                <input type="file">
+                                <div class="file-name" *ngIf="tempDocuments.purchaseRequisition">
+                                    Selected: {{ tempDocuments.purchaseRequisition.name }}
+                                </div>
 
-            </div>
+                            </div>
 
-        </div>
+                            <div class="form-group">
 
-        <div class="modal-footer">
+                                <label>MATERIAL REJECTED REPORT <span class="required-mark">*</span></label>
 
-            <button class="cancel-btn"
-                (click)="closeUploadPopup()">
+                                <input type="file" (change)="onFileSelected($event, 'materialRejectedReport')">
 
-                Cancel
+                                <div class="file-name" *ngIf="tempDocuments.materialRejectedReport">
+                                    Selected: {{ tempDocuments.materialRejectedReport.name }}
+                                </div>
 
-            </button>
+                            </div>
 
-            <button class="save-btn"
-                (click)="saveDocuments()">
+                            <div class="save-error" *ngIf="saveError">
+                                {{ saveError }}
+                            </div>
 
-                Save
+                        </div>
 
-            </button>
+                        <div class="modal-footer">
 
-        </div>
+                            <button class="cancel-btn"
+                                (click)="closeUploadPopup()">
 
-    </div>
+                                Cancel
 
-</div>
+                            </button>
+
+                            <button class="save-btn"
+                                [disabled]="!allFilesUploaded()"
+                                (click)="saveDocuments()">
+
+                                Save
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
 
             </div>
 

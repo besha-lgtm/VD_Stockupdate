@@ -1,12 +1,16 @@
-
-
 <header class="header">
 
     <div class="logo-section">
 
         <div class="logo">
 
-           
+            <img
+                *ngIf="!logoLoadFailed"
+                src="assets/logo.jpg"
+                alt="Logo"
+                (error)="onLogoError()">
+
+            <span class="logo-fallback" *ngIf="logoLoadFailed">SW</span>
 
         </div>
 
@@ -47,4 +51,3 @@
     </div>
 
 </header>
-

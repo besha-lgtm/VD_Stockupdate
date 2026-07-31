@@ -31,6 +31,8 @@
     border: 1px solid #e5e7eb;
     border-radius: 8px;
     padding: 24px;
+    display: flex;
+    flex-direction: column;
 }
 
 /* ===========================
@@ -68,6 +70,10 @@ thead th {
     font-weight: 600;
     color: #374151;
     border-bottom: 1px solid #d1d5db;
+    position: sticky;
+    top: 0;
+    background: #f3f4f6;
+    z-index: 1;
 }
 
 tbody td {
@@ -96,12 +102,21 @@ tbody tr:hover {
     font-weight: 600;
 }
 
+/* Status once accepted from the Receive page */
+.status.status-received {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
 /* ===========================
-   Responsive
+   Table Scroll
 =========================== */
 
-.table-container {
-    overflow-x: auto;
+.table-scroll {
+    overflow: auto;
+    max-height: 55vh;
+    border: 1px solid #ececec;
+    border-radius: 6px;
 }
 
 table {
