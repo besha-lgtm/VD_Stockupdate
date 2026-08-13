@@ -11,10 +11,12 @@ import { PORecieveComponent } from './pages/po-recieve/po-recieve.component';
 import { IssueComponent } from './pages/issue/issue.component';
 import { RecieveComponent } from './pages/recieve/recieve.component';
 import { PurchaseOrderQrComponent } from './pages/purchase-order-qr/purchase-order-qr.component';
+import { RscanComponent } from './pages/rscan/rscan.component';
+import { IscanComponent } from './pages/iscan/iscan.component';
 
 const routes: Routes = [
   // ✅ Redirect FIRST
-  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  { path: '', redirectTo: 'main-menu', pathMatch: 'full' },
 
   // ✅ Login (public)
   { path: 'login', component: LoginComponent },
@@ -30,7 +32,8 @@ const routes: Routes = [
    {path:'porecieve',component:PORecieveComponent},
     {path:'issue',component:IssueComponent},
      {path:'recieve',component:RecieveComponent},
-
+     {path:'rscan',component:RscanComponent},
+     {path:'iscan',component:IscanComponent},
 
 
    {path: 'sidebar', component: SidebarComponent},
