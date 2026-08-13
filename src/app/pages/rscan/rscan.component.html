@@ -1,0 +1,99 @@
+<div class="scanner-page-container">
+  <div class="scanner-wrapper">
+    
+    <!-- Header -->
+    <div class="scanner-header">
+      <button class="back-btn" (click)="goBack()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+        Back
+      </button>
+      <h1>Receive Scanner</h1>
+      <div class="header-spacer"></div>
+    </div>
+
+    <!-- Scanner Area -->
+    <div class="scanner-area" *ngIf="!showReceipt && !isLoading">
+      <div class="scanner-container">
+        <!-- Using video element directly as fallback -->
+        <video id="scanner-video" #videoElement autoplay playsinline></video>
+        <div class="scanner-overlay">
+          <div class="scan-frame"></div>
+          <p class="scan-instruction">Position QR code in the center</p>
+        </div>
+      </div>
+      <div class="scanner-instructions">
+        <p>📷 Position the QR code in the center of the camera view</p>
+        <p class="hint-text">Scan the PO QR code to receive items</p>
+      </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div class="loading-area" *ngIf="isLoading">
+      <div class="spinner"></div>
+      <p>Processing...</p>
+    </div>
+
+    <!-- Error Message -->
+    <div class="error-area" *ngIf="errorMessage">
+      <div class="error-message">
+        <span class="error-icon">⚠️</span>
+        <span>{{ errorMessage }}</span>
+      </div>
+      <button class="retry-btn" (click)="rescan()">Try Again</button>
+    </div>
+
+    <!-- Receipt Area -->
+    <div class="receipt-area" *ngIf="showReceipt && scannedPO">
+      <div class="receipt-card">
+        <div class="receipt-header">
+          <div class="receipt-title">
+            <span class="receipt-icon">📄</span>
+            <h2>Receipt</h2>
+          </div>
+          <span class="receipt-status status-pending">Pending</span>
+        </div>
+
+        <div class="receipt-body">
+          <div class="receipt-row">
+            <span class="receipt-label">PO Number</span>
+            <span class="receipt-value">{{ scannedPO.poNumber }}</span>
+          </div>
+          <div class="receipt-row">
+            <span class="receipt-label">Supplier</span>
+            <span class="receipt-value">{{ scannedPO.supplierName }}</span>
+          </div>
+          <div class="receipt-row">
+            <span class="receipt-label">Description</span>
+            <span class="receipt-value">{{ scannedPO.description }}</span>
+          </div>
+          <div class="receipt-row">
+            <span class="receipt-label">Box Number</span>
+            <span class="receipt-value">{{ scannedPO.boxNumber }}</span>
+          </div>
+          <div class="receipt-row">
+            <span class="receipt-label">Serial Number</span>
+            <span class="receipt-value">{{ scannedPO.serialNumber }}</span>
+          </div>
+          <div class="receipt-row">
+            <span class="receipt-label">Expected Quantity</span>
+            <span class="receipt-value quantity">{{ scannedPO.quantity }}</span>
+          </div>
+        </div>
+
+        <div class="receipt-actions">
+          <button class="action-btn accept-btn" (click)="acceptPO()" [disabled]="isLoading">
+            ✅ Accept
+          </button>
+          <button class="action-btn verify-btn" (click)="verifyPO()" [disabled]="isLoading">
+            🔍 Verify
+          </button>
+        </div>
+
+        <button class="rescan-btn" (click)="rescan()">🔄 Scan Another</button>
+      </div>
+    </div>
+
+  </div>
+</div>

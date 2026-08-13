@@ -16,19 +16,22 @@
 
                 <div class="table-header">
 
-                    <h2>PO QR Generator</h2>
+                    <div class="header-row">
+                        <h2>PO QR Generator</h2>
+                        <button class="create-po-btn" (click)="openCreatePOModal()">
+                            + Create PO
+                        </button>
+                    </div>
 
                     <div class="search-section">
-
                         <input
                             id="searchTerm"
                             type="text"
                             class="search-input"
-                            placeholder="Search by PO No or Item Details"
+                            placeholder="Search by PO No, Supplier, Box or Item Details"
                             [(ngModel)]="searchTerm"
                             name="searchTerm"
                             autocomplete="off">
-
                     </div>
 
                 </div>
@@ -38,40 +41,37 @@
                     <table>
 
                         <thead>
-
                             <tr>
+                                <th>Serial No</th>
                                 <th>PO Number</th>
+                                <th>Supplier Name</th>
                                 <th>Item Description</th>
-                                <th>Serial Number</th>
+                                <th>Box Number</th>
                                 <th>Quantity</th>
                                 <th>Action</th>
                             </tr>
-
                         </thead>
 
                         <tbody>
-
                             <tr *ngFor="let item of filteredData">
-
-                                <td>{{ item.poNumber }}</td>
-                                <td>{{ item.description }}</td>
                                 <td>{{ item.serialNumber }}</td>
+                                <td>{{ item.poNumber }}</td>
+                                <td>{{ item.supplierName }}</td>
+                                <td>{{ item.description }}</td>
+                                <td>{{ item.boxNumber }}</td>
                                 <td>{{ item.quantity }}</td>
-
                                 <td>
                                     <button class="action-btn" (click)="openQrModal(item)">
                                         Generate QR
                                     </button>
                                 </td>
-
                             </tr>
 
                             <tr *ngIf="filteredData.length === 0">
-                                <td colspan="5" class="no-data">
+                                <td colspan="7" class="no-data">
                                     No matching records found.
                                 </td>
                             </tr>
-
                         </tbody>
 
                     </table>
@@ -84,77 +84,154 @@
 
     </div>
 
-    <!-- QR Generation Modal -->
-    <div class="modal-overlay" *ngIf="showQrModal" (click)="closeQrModal()">
-
+    <!-- Create PO Modal -->
+    <div class="modal-overlay" *ngIf="showCreatePOModal" (click)="closeCreatePOModal()">
         <div class="modal-box" (click)="$event.stopPropagation()">
-
             <div class="modal-header">
-
-                <h3>Generate QR - PO {{ selectedItem?.poNumber }}</h3>
-
-                <button class="modal-close" (click)="closeQrModal()">&times;</button>
-
-            </div>
-
-            <div class="modal-subheader">
-                <span>{{ selectedItem?.description }}</span>
-                <span class="modal-qty-badge">Qty: {{ selectedItem?.quantity }}</span>
+                <h3>Create New PO</h3>
+                <button class="modal-close" (click)="closeCreatePOModal()">&times;</button>
             </div>
 
             <div class="modal-body">
-
-                <div class="qr-unit-row" *ngFor="let unit of qrUnits">
-
-                    <div class="qr-unit-info">
-
-                        <div class="qr-unit-title">
-                            Unit {{ unit.unitIndex }} of {{ unit.quantity }}
-                        </div>
-
-                        <div class="qr-unit-details">
-                            <div><strong>PO Number:</strong> {{ unit.poNumber }}</div>
-                            <div><strong>Description:</strong> {{ unit.description }}</div>
-                            <div><strong>Serial Number:</strong> {{ unit.serialNumber }}</div>
-                        </div>
-
-                        <div class="qr-unit-actions" *ngIf="!unit.qrDataUrl">
-                            <button
-                                class="action-btn"
-                                [disabled]="unit.generating"
-                                (click)="generateSingleQr(unit)">
-                                {{ unit.generating ? 'Generating...' : 'Generate QR' }}
-                            </button>
-                        </div>
-
-                        <div class="qr-unit-actions" *ngIf="unit.qrDataUrl">
-                            <button class="download-btn" (click)="downloadQr(unit)">
-                                Download
-                            </button>
-                        </div>
-
-                    </div>
-
-                    <div class="qr-unit-image">
-                        <img *ngIf="unit.qrDataUrl" [src]="unit.qrDataUrl" alt="QR code" />
-                        <div *ngIf="!unit.qrDataUrl" class="qr-placeholder">QR</div>
-                    </div>
-
+                <div class="form-group">
+                    <label for="poNumber">PO Number</label>
+                    <input
+                        id="poNumber"
+                        type="text"
+                        class="form-input"
+                        placeholder="Enter PO Number"
+                        [(ngModel)]="newPO.poNumber"
+                        name="poNumber">
                 </div>
 
+                <div class="form-group">
+                    <label for="supplierName">Supplier Name</label>
+                    <input
+                        id="supplierName"
+                        type="text"
+                        class="form-input"
+                        placeholder="Enter Supplier Name"
+                        [(ngModel)]="newPO.supplierName"
+                        name="supplierName">
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Item Description</label>
+                    <input
+                        id="description"
+                        type="text"
+                        class="form-input"
+                        placeholder="Enter Item Description"
+                        [(ngModel)]="newPO.description"
+                        name="description">
+                </div>
+
+                <div class="form-group">
+                    <label for="boxNumber">Box Number</label>
+                    <input
+                        id="boxNumber"
+                        type="text"
+                        class="form-input"
+                        placeholder="Enter Box Number"
+                        [(ngModel)]="newPO.boxNumber"
+                        name="boxNumber">
+                </div>
+
+                <div class="form-group">
+                    <label for="quantity">Expected Quantity</label>
+                    <input
+                        id="quantity"
+                        type="number"
+                        class="form-input"
+                        placeholder="Enter Quantity"
+                        [(ngModel)]="newPO.quantity"
+                        name="quantity"
+                        min="1">
+                </div>
+
+                <div class="form-actions">
+                    <button class="cancel-btn" (click)="closeCreatePOModal()">Cancel</button>
+                    <button class="save-btn" (click)="saveNewPO()">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- QR Generation Modal -->
+    <div class="modal-overlay" *ngIf="showQrModal" (click)="closeQrModal()">
+        <div class="modal-box qr-modal-box" (click)="$event.stopPropagation()">
+            <div class="modal-header">
+                <h3>Generate QR - PO {{ selectedItem?.poNumber }}</h3>
+                <button class="modal-close" (click)="closeQrModal()">&times;</button>
+            </div>
+
+            <div class="modal-body qr-modal-body">
+                <!-- PO Details -->
+                <div class="po-details-card">
+                    <div class="po-detail-row">
+                        <span class="po-detail-label">PO Number:</span>
+                        <span class="po-detail-value">{{ selectedItem?.poNumber }}</span>
+                    </div>
+                    <div class="po-detail-row">
+                        <span class="po-detail-label">Supplier:</span>
+                        <span class="po-detail-value">{{ selectedItem?.supplierName }}</span>
+                    </div>
+                    <div class="po-detail-row">
+                        <span class="po-detail-label">Description:</span>
+                        <span class="po-detail-value">{{ selectedItem?.description }}</span>
+                    </div>
+                    <div class="po-detail-row">
+                        <span class="po-detail-label">Box Number:</span>
+                        <span class="po-detail-value">{{ selectedItem?.boxNumber }}</span>
+                    </div>
+                    <div class="po-detail-row">
+                        <span class="po-detail-label">Expected Quantity:</span>
+                        <span class="po-detail-value">{{ selectedItem?.quantity }}</span>
+                    </div>
+                </div>
+
+                <!-- QR Code Display -->
+                <div class="qr-display-section">
+                    <div class="qr-image-container" *ngIf="qrDataUrl">
+                        <img [src]="qrDataUrl" alt="QR Code" class="qr-display-image" />
+                    </div>
+                    <div class="qr-placeholder-large" *ngIf="!qrDataUrl && !generating">
+                        <span>Click "Generate QR" to create QR code</span>
+                    </div>
+                    <div class="qr-placeholder-large" *ngIf="generating">
+                        <span>Generating QR Code...</span>
+                    </div>
+                </div>
+
+                <!-- QR Actions -->
+                <div class="qr-actions-section">
+                    <button 
+                        class="generate-qr-btn" 
+                        (click)="generateQr()" 
+                        [disabled]="generating">
+                        {{ generating ? 'Generating...' : 'Generate QR' }}
+                    </button>
+                    <button 
+                        class="download-btn" 
+                        (click)="downloadQr()" 
+                        [disabled]="!qrDataUrl">
+                        Download
+                    </button>
+                    <button 
+                        class="print-btn" 
+                        (click)="printQr()" 
+                        [disabled]="!qrDataUrl">
+                        Print
+                    </button>
+                </div>
             </div>
 
             <div class="modal-footer">
-                <button class="generate-all-btn" (click)="generateAllQr()">
-                    Generate All
-                </button>
                 <button class="close-btn" (click)="closeQrModal()">
                     Close
                 </button>
             </div>
-
         </div>
-
     </div>
 
 </div>

@@ -15,54 +15,63 @@
             <div class="table-container">
 
                 <div class="table-header">
-                    <h2>PO Receiving</h2>
+                    <div class="header-row">
+                        <h2>Stock Management</h2>
+                        <div class="stock-summary">
+                            <span class="total-items">Total Items: {{ receivingData.length }}</span>
+                        </div>
+                    </div>
+                    <div class="last-updated-info">
+                        <span>Last Updated: {{ getFormattedDate(currentDate) }}</span>
+                    </div>
                 </div>
 
                 <div class="table-scroll">
 
-                <table>
+                    <table>
 
-                    <thead>
+                        <thead>
+                            <tr>
+                                <th>S.No</th>
+                                <th>PO Number</th>
+                                <th>Item Description</th>
+                                <th>Stock Last Updated On</th>
+                                <th>Total Stock</th>
+                            </tr>
+                        </thead>
 
-                        <tr>
-                            <th>S.No</th>
-                            <th>PO Number</th>
-                            <th>Item Description</th>
-                            <th>Ordered Qty</th>
-                            <th>Received Qty</th>
-                            <th>Unit</th>
-                            <th>Receipt No</th>
-                            <th>Status</th>
-                        </tr>
+                        <tbody>
+                            <tr *ngFor="let item of receivingData">
+                                <td>{{ item.sno }}</td>
+                                <td>{{ item.poNumber }}</td>
+                                <td>{{ item.description }}</td>
+                                <td>{{ getFormattedDate(item.lastUpdated) }}</td>
+                                <td>
+                                    <span class="stock-badge">{{ item.totalStock }}</span>
+                                </td>
+                            </tr>
 
-                    </thead>
+                            <tr *ngIf="receivingData.length === 0">
+                                <td colspan="5" class="no-data">
+                                    No stock items found.
+                                </td>
+                            </tr>
+                        </tbody>
 
-                    <tbody>
+                    </table>
 
-                        <tr *ngFor="let item of receivingData; let i = index">
+                </div>
 
-                            <td>{{ i + 1 }}</td>
-                            <td>{{ item.poNumber }}</td>
-                            <td>{{ item.description }}</td>
-                            <td>{{ item.orderedQty }}</td>
-                            <td>{{ item.receivedQty }}</td>
-                            <td>{{ item.unit }}</td>
-                            <td>{{ item.receipt }}</td>
-
-                            <td>
-                                <span
-                                    class="status"
-                                    [class.status-received]="item.status === 'RECEIVED'">
-                                    {{ item.status }}
-                                </span>
-                            </td>
-
-                        </tr>
-
-                    </tbody>
-
-                </table>
-
+                <!-- Stock Summary Footer -->
+                <div class="table-footer" *ngIf="receivingData.length > 0">
+                    <div class="summary-item">
+                        <span class="summary-label">Total Stock Items:</span>
+                        <span class="summary-value">{{ receivingData.length }}</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Total Units in Stock:</span>
+                        <span class="summary-value">{{ getTotalStock() }}</span>
+                    </div>
                 </div>
 
             </div>

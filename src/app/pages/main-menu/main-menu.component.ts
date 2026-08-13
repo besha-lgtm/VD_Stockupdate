@@ -12,8 +12,12 @@ export class MainMenuComponent {
 
   onSelect(option: string): void {
     console.log(`Main Menu selection: ${option}`);
-    if (option === 'PO') {
-      this.router.navigate(['/po-qr']);
+    if (option === 'login') {
+      this.router.navigate(['/login']);
+    } else if (option === 'RECEIVE') {
+      this.router.navigate(['/rscan']);
+    } else if (option === 'ISSUE') {
+      this.router.navigate(['/iscan']);
     }
   }
 }

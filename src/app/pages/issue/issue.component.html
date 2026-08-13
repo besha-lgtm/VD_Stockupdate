@@ -15,54 +15,221 @@
             <div class="table-container">
 
                 <div class="table-header">
-                    <h2>Issue Verification</h2>
+                    <div class="header-row">
+                        <h2>Issue Verification</h2>
+                        <button class="issue-btn" (click)="openIssueForm()">
+                            + Issue
+                        </button>
+                    </div>
+                    <div class="issue-summary" *ngIf="issuingData.length > 0">
+                        <span>Total Issued Items: {{ issuingData.length }}</span>
+                        <span class="divider">|</span>
+                        <span>Total Quantity: {{ getTotalIssued() }}</span>
+                    </div>
                 </div>
 
-                <table>
+                <div class="table-scroll">
 
-                    <thead>
+                    <table>
 
-                        <tr>
-                            <th>S.No</th>
-                            <th>PO Number</th>
-                            <th>Item Description</th>
-                            <th>Ordered Qty</th>
-                            <th>Issued Qty</th>
-                            <th>Unit</th>
-                            <th>Receipt No</th>
-                            <th>Status</th>
-                        </tr>
+                        <thead>
+                            <tr>
+                                <th>S.No</th>
+                                <th>Request No</th>
+                                <th>Department</th>
+                                <th>Item Description</th>
+                                <th>Required</th>
+                                <th>Status</th>
+                                <th>Generate QR</th>
+                            </tr>
+                        </thead>
 
-                    </thead>
+                        <tbody>
+                            <tr *ngFor="let item of issuingData; let i = index">
+                                <td>{{ i + 1 }}</td>
+                                <td>{{ item.requestNumber }}</td>
+                                <td>{{ item.department }}</td>
+                                <td>{{ item.item }}</td>
+                                <td>{{ item.required }}</td>
+                                <td>
+                                    <span class="status status-issued">
+                                        {{ item.status }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <button class="qr-btn" (click)="openQrModal(item)">
+                                        Generate QR
+                                    </button>
+                                </td>
+                            </tr>
 
-                    <tbody>
+                            <tr *ngIf="issuingData.length === 0">
+                                <td colspan="7" class="no-data">
+                                    No issue records found.
+                                </td>
+                            </tr>
+                        </tbody>
 
-                        <tr *ngFor="let item of issuingData; let i = index">
+                    </table>
 
-                            <td>{{ i + 1 }}</td>
-                            <td>{{ item.poNumber }}</td>
-                            <td>{{ item.description }}</td>
-                            <td>{{ item.orderedQty }}</td>
-                            <td>{{ item.issuedQty }}</td>
-                            <td>{{ item.unit }}</td>
-                            <td>{{ item.receipt }}</td>
-
-                            <td>
-                                <span class="status">
-                                    {{ item.status }}
-                                </span>
-                            </td>
-
-                        </tr>
-
-                    </tbody>
-
-                </table>
+                </div>
 
             </div>
 
         </main>
 
+    </div>
+
+    <!-- Issue Form Modal -->
+    <div class="modal-overlay" *ngIf="showIssueForm" (click)="closeIssueForm()">
+        <div class="modal-box" (click)="$event.stopPropagation()">
+            <div class="modal-header">
+                <h3>Issue Items</h3>
+                <button class="modal-close" (click)="closeIssueForm()">&times;</button>
+            </div>
+
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="requestNumber">Request Number</label>
+                    <input
+                        id="requestNumber"
+                        type="text"
+                        class="form-input"
+                        placeholder="Enter Request Number"
+                        [(ngModel)]="newIssue.requestNumber"
+                        name="requestNumber">
+                </div>
+
+                <div class="form-group">
+                    <label for="department">Department</label>
+                    <input
+                        id="department"
+                        type="text"
+                        class="form-input"
+                        placeholder="Enter Department"
+                        [(ngModel)]="newIssue.department"
+                        name="department">
+                </div>
+
+                <div class="form-group">
+                    <label for="item">Item Description</label>
+                    <input
+                        id="item"
+                        type="text"
+                        class="form-input"
+                        placeholder="Enter Item Description"
+                        [(ngModel)]="newIssue.item"
+                        name="item">
+                </div>
+
+                <div class="form-group">
+                    <label for="required">Required Quantity</label>
+                    <input
+                        id="required"
+                        type="number"
+                        class="form-input"
+                        placeholder="Enter Quantity"
+                        [(ngModel)]="newIssue.required"
+                        name="required"
+                        min="1">
+                </div>
+
+                <!-- Check Stock Button -->
+                <div class="stock-check-section">
+                    <button class="check-stock-btn" (click)="checkStock()">
+                        Check Stock
+                    </button>
+                </div>
+
+                <!-- Stock Check Message -->
+                <div class="stock-message" *ngIf="stockMessage">
+                    <div class="message-content">
+                        <span class="message-icon">✅</span>
+                        <span class="message-text">{{ stockMessage }}</span>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button class="cancel-btn" (click)="closeIssueForm()">Cancel</button>
+                    <button class="save-btn" (click)="saveIssue()" [disabled]="!stockChecked">
+                        Issue Items
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- QR Modal -->
+    <div class="modal-overlay" *ngIf="showQrModal" (click)="closeQrModal()">
+        <div class="modal-box qr-modal-box" (click)="$event.stopPropagation()">
+            <div class="modal-header">
+                <h3>Issue QR Code</h3>
+                <button class="modal-close" (click)="closeQrModal()">&times;</button>
+            </div>
+
+            <div class="modal-body qr-modal-body">
+                <!-- Issue Details -->
+                <div class="issue-details-card" *ngIf="selectedItem">
+                    <div class="issue-detail-row">
+                        <span class="issue-detail-label">Request Number:</span>
+                        <span class="issue-detail-value">{{ selectedItem.requestNumber }}</span>
+                    </div>
+                    <div class="issue-detail-row">
+                        <span class="issue-detail-label">Department:</span>
+                        <span class="issue-detail-value">{{ selectedItem.department }}</span>
+                    </div>
+                    <div class="issue-detail-row">
+                        <span class="issue-detail-label">Item:</span>
+                        <span class="issue-detail-value">{{ selectedItem.item }}</span>
+                    </div>
+                    <div class="issue-detail-row">
+                        <span class="issue-detail-label">Required Quantity:</span>
+                        <span class="issue-detail-value">{{ selectedItem.required }}</span>
+                    </div>
+                    <div class="issue-detail-row">
+                        <span class="issue-detail-label">Status:</span>
+                        <span class="issue-detail-value">
+                            <span class="status status-issued">{{ selectedItem.status }}</span>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- QR Code Display -->
+                <div class="qr-display-section">
+                    <div class="qr-image-container" *ngIf="qrDataUrl">
+                        <img [src]="qrDataUrl" alt="QR Code" class="qr-display-image" />
+                    </div>
+                    <div class="qr-placeholder-large" *ngIf="!qrDataUrl && !generating">
+                        <span>Generating QR Code...</span>
+                    </div>
+                    <div class="qr-placeholder-large" *ngIf="generating">
+                        <span>Generating QR Code...</span>
+                    </div>
+                </div>
+
+                <!-- QR Actions -->
+                <div class="qr-actions-section">
+                    <button 
+                        class="download-btn" 
+                        (click)="downloadQr()" 
+                        [disabled]="!qrDataUrl">
+                        Download
+                    </button>
+                    <button 
+                        class="print-btn" 
+                        (click)="printQr()" 
+                        [disabled]="!qrDataUrl">
+                        Print
+                    </button>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="close-btn" (click)="closeQrModal()">
+                    Close
+                </button>
+            </div>
+        </div>
     </div>
 
 </div>
