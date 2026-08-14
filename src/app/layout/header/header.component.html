@@ -1,40 +1,40 @@
-<header class="header">
+<header class="app-header">
 
-    <div class="logo-section">
+    <div class="app-header-logo-section">
 
-        <div class="logo">
+        <div class="app-header-logo">
 
             <img
                 *ngIf="!logoLoadFailed"
-                src="assets/logo.jpg"
+                src="/assets/logo.jpg"
                 alt="Logo"
                 (error)="onLogoError()">
 
-            <span class="logo-fallback" *ngIf="logoLoadFailed">SW</span>
+            <span class="app-header-logo-fallback" *ngIf="logoLoadFailed">SW</span>
 
         </div>
 
-        <div class="company">
+        <div class="app-header-company">
 
             <h2>Smart WMS</h2>
-            <span>Warehouse Management System</span>
+            <span class="app-header-highlight">Warehouse Management System</span>
 
         </div>
 
     </div>
 
-    <div class="header-right">
+    <div class="app-header-right">
 
-        <div class="notification">
+        <div class="app-header-notification">
         </div>
 
-        <div class="user">
+        <div class="app-header-user">
 
-            <div class="avatar">
+            <div class="app-header-avatar">
                 J
             </div>
 
-            <div class="user-info">
+            <div class="app-header-user-info">
 
                 <h4>Joel</h4>
                 <span>Warehouse Admin</span>
@@ -43,11 +43,6 @@
 
         </div>
 
-       <button class="logout-btn" (click)="logout()">
-
-    Logout
-</button>
-
     </div>
 
-</header>
+</header>

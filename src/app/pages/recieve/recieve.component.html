@@ -1,167 +1,132 @@
-<div class="dashboard-layout">
+<div class="app-recieve-layout">
 
     <!-- Header -->
     <app-header></app-header>
 
     <!-- Body -->
-    <div class="dashboard-body">
+    <div class="app-recieve-body">
 
         <!-- Sidebar -->
         <app-sidebar></app-sidebar>
 
         <!-- Main Content -->
-        <main class="dashboard-content">
+        <main class="app-recieve-content">
 
-            <div class="table-container">
+            <div class="app-recieve-table-container">
 
-                <div class="table-header">
+                <div class="app-recieve-table-header">
                     <h2>Receiving Verification</h2>
+                    <div class="app-recieve-search-section">
+                        <input
+                            id="searchTerm"
+                            type="text"
+                            class="app-recieve-search-input"
+                            placeholder="Search by PO No or Item Details"
+                            [(ngModel)]="searchTerm"
+                            name="searchTerm"
+                            autocomplete="off">
+                    </div>
                 </div>
 
-                <div class="table-scroll">
+                <div class="app-recieve-table-scroll">
 
-                <table>
-
-                    <thead>
-
-                        <tr>
-                            <th>S.No</th>
-                            <th>PO Number</th>
-                            <th>Item Description</th>
-                            <th>Ordered Qty</th>
-                            <th>Received Qty</th>
-                            <th>Documents</th>
-                            <th>Action</th>
-
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                        <tr *ngFor="let item of receivingData; let i = index">
-
-                            <td>{{ i + 1 }}</td>
-                            <td>{{ item.poNumber }}</td>
-                            <td>{{ item.description }}</td>
-                            <td>{{ item.orderedQty }}</td>
-                            <td>{{ item.receivedQty }}</td>
-
-                            <td>
-                                <button class="upload-btn" (click)="openUploadPopup(item)">
-                                    {{ item.documentsUploaded ? 'Re-upload' : 'Upload' }}
-                                </button>
-                                <span class="uploaded-tag" *ngIf="item.documentsUploaded">Uploaded</span>
-                            </td>
-
-                            <td>
-                                <button
-                                    class="action-btn"
-                                    [class.accepted-btn]="item.accepted"
-                                    [disabled]="!item.documentsUploaded || item.accepted"
-                                    [title]="!item.documentsUploaded ? 'Upload documents before accepting' : ''"
-                                    (click)="acceptItem(item)">
-                                    {{ item.accepted ? 'Accepted' : 'Accept' }}
-                                </button>
-                            </td>
-
-                        </tr>
-
-                    </tbody>
-
-                </table>
+                    <p-table [value]="filteredData" class="app-recieve-p-table" responsiveLayout="scroll">
+                        <ng-template pTemplate="header">
+                            <tr>
+                                <th>S.No</th>
+                                <th>PO Number</th>
+                                <th>Item Description</th>
+                                <th>Ordered Qty</th>
+                                <th>Received Qty</th>
+                                <th>Documents</th>
+                                <th>Action</th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-item let-i="rowIndex">
+                            <tr>
+                                <td>{{ i + 1 }}</td>
+                                <td>{{ item.poNumber }}</td>
+                                <td>{{ item.description }}</td>
+                                <td>{{ item.orderedQty }}</td>
+                                <td>{{ item.receivedQty }}</td>
+                                <td>
+                                    <button class="app-recieve-upload-btn" (click)="openUploadPopup(item)">
+                                        {{ item.documentsUploaded ? 'Re-upload' : 'Upload' }}
+                                    </button>
+                                    <span class="app-recieve-uploaded-tag" *ngIf="item.documentsUploaded">Uploaded</span>
+                                </td>
+                                <td>
+                                    <button
+                                        class="app-recieve-action-btn"
+                                        [class.app-recieve-accepted-btn]="item.accepted"
+                                        [disabled]="!item.documentsUploaded || item.accepted"
+                                        [title]="!item.documentsUploaded ? 'Upload documents before accepting' : ''"
+                                        (click)="acceptItem(item)">
+                                        {{ item.accepted ? 'Accepted' : 'Accept' }}
+                                    </button>
+                                </td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
 
                 </div>
 
                 <!-- Upload Documents Popup -->
+                <div class="app-recieve-modal-overlay" *ngIf="showUploadPopup">
 
-                <div class="modal-overlay" *ngIf="showUploadPopup">
+                    <div class="app-recieve-upload-modal">
 
-                    <div class="upload-modal">
-
-                        <div class="modal-header">
-
+                        <div class="app-recieve-modal-header">
                             <h3>Attachments {{ selectedItem ? '- PO ' + selectedItem.poNumber : '' }}</h3>
-
                         </div>
 
-                        <div class="modal-body">
+                        <div class="app-recieve-modal-body">
 
-                            <p class="required-note">
-                                <span class="required-mark">*</span> All documents are mandatory to save.
+                            <p class="app-recieve-required-note">
+                                <span class="app-recieve-required-mark">*</span> All documents are mandatory to save.
                             </p>
 
-                            <div class="form-group">
-
-                                <label>DELIVERY NOTE <span class="required-mark">*</span></label>
-
+                            <div class="app-recieve-form-group">
+                                <label>DELIVERY NOTE <span class="app-recieve-required-mark">*</span></label>
                                 <input type="file" (change)="onFileSelected($event, 'deliveryNote')">
-
-                                <div class="file-name" *ngIf="tempDocuments.deliveryNote">
+                                <div class="app-recieve-file-name" *ngIf="tempDocuments.deliveryNote">
                                     Selected: {{ tempDocuments.deliveryNote.name }}
                                 </div>
-
                             </div>
 
-                            <div class="form-group">
-
-                                <label>PURCHASE ORDER <span class="required-mark">*</span></label>
-
+                            <div class="app-recieve-form-group">
+                                <label>PURCHASE ORDER <span class="app-recieve-required-mark">*</span></label>
                                 <input type="file" (change)="onFileSelected($event, 'purchaseOrder')">
-
-                                <div class="file-name" *ngIf="tempDocuments.purchaseOrder">
+                                <div class="app-recieve-file-name" *ngIf="tempDocuments.purchaseOrder">
                                     Selected: {{ tempDocuments.purchaseOrder.name }}
                                 </div>
-
                             </div>
 
-                            <div class="form-group">
-
-                                <label>PURCHASE REQUISITION <span class="required-mark">*</span></label>
-
+                            <div class="app-recieve-form-group">
+                                <label>PURCHASE REQUISITION <span class="app-recieve-required-mark">*</span></label>
                                 <input type="file" (change)="onFileSelected($event, 'purchaseRequisition')">
-
-                                <div class="file-name" *ngIf="tempDocuments.purchaseRequisition">
+                                <div class="app-recieve-file-name" *ngIf="tempDocuments.purchaseRequisition">
                                     Selected: {{ tempDocuments.purchaseRequisition.name }}
                                 </div>
-
                             </div>
 
-                            <div class="form-group">
-
-                                <label>MATERIAL REJECTED REPORT <span class="required-mark">*</span></label>
-
+                            <div class="app-recieve-form-group">
+                                <label>MATERIAL REJECTED REPORT <span class="app-recieve-required-mark">*</span></label>
                                 <input type="file" (change)="onFileSelected($event, 'materialRejectedReport')">
-
-                                <div class="file-name" *ngIf="tempDocuments.materialRejectedReport">
+                                <div class="app-recieve-file-name" *ngIf="tempDocuments.materialRejectedReport">
                                     Selected: {{ tempDocuments.materialRejectedReport.name }}
                                 </div>
-
                             </div>
 
-                            <div class="save-error" *ngIf="saveError">
+                            <div class="app-recieve-save-error" *ngIf="saveError">
                                 {{ saveError }}
                             </div>
 
                         </div>
 
-                        <div class="modal-footer">
-
-                            <button class="cancel-btn"
-                                (click)="closeUploadPopup()">
-
-                                Cancel
-
-                            </button>
-
-                            <button class="save-btn"
-                                [disabled]="!allFilesUploaded()"
-                                (click)="saveDocuments()">
-
-                                Save
-
-                            </button>
-
+                        <div class="app-recieve-modal-footer">
+                            <button class="app-recieve-cancel-btn" (click)="closeUploadPopup()">Cancel</button>
+                            <button class="app-recieve-save-btn" [disabled]="!allFilesUploaded()" (click)="saveDocuments()">Save</button>
                         </div>
 
                     </div>

@@ -1,13 +1,19 @@
-<div class="login-container">
-  <div class="login-card">
+<div class="app-login-container">
+  <div class="app-login-card">
 
-    <div class="login-header">
+    <div class="app-login-header">
+      <button type="button" class="app-login-back-btn" (click)="goBack()" aria-label="Go back to main menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+      </button>
       <h2>Welcome Back</h2>
     </div>
 
     <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
 
-      <div class="form-group">
+      <div class="app-login-form-group">
         <label for="username">Username</label>
         <input 
           id="username"
@@ -16,12 +22,12 @@
           placeholder="admin@gmail.com" 
           autocomplete="username"
         />
-        <small *ngIf="loginForm.get('username')?.invalid && loginForm.get('username')?.touched">
+        <small class="app-login-error-text" *ngIf="loginForm.get('username')?.invalid && loginForm.get('username')?.touched">
           Username is required
         </small>
       </div>
 
-      <div class="form-group">
+      <div class="app-login-form-group">
         <label for="password">Password</label>
         <input 
           id="password"
@@ -30,16 +36,16 @@
           placeholder="•••••" 
           autocomplete="current-password"
         />
-        <small *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+        <small class="app-login-error-text" *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
           Password is required
         </small>
       </div>
 
-      <button type="submit" class="login-btn" [disabled]="loading">
+      <button type="submit" class="app-login-btn" [disabled]="loading">
         {{ loading ? 'Logging in...' : 'Login' }}
       </button>
 
-      <p class="error" *ngIf="errorMsg">{{ errorMsg }}</p>
+      <p class="app-login-error" *ngIf="errorMsg">{{ errorMsg }}</p>
 
     </form>
 

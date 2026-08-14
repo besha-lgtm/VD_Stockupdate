@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import * as QRCode from 'qrcode';
 
 interface POItem {
@@ -64,13 +65,7 @@ export class POQRComponent {
 
   // ---- Create PO Modal state ----
   showCreatePOModal = false;
-  newPO = {
-    poNumber: '',
-    supplierName: '',
-    description: '',
-    boxNumber: '',
-    quantity: 1
-  };
+  poForm: FormGroup;
 
   // ---- QR modal state ----
   showQrModal = false;
@@ -80,6 +75,16 @@ export class POQRComponent {
 
   // ---- Counter for serial number ----
   private serialCounter = 5;
+
+  constructor(private fb: FormBuilder) {
+    this.poForm = this.fb.group({
+      poNumber: ['', Validators.required],
+      supplierName: ['', Validators.required],
+      description: ['', Validators.required],
+      boxNumber: ['', Validators.required],
+      quantity: [1, [Validators.required, Validators.min(1)]]
+    });
+  }
 
   // ---- search ----
   get filteredData(): POItem[] {
@@ -100,13 +105,13 @@ export class POQRComponent {
   // ---- Create PO Modal ----
   openCreatePOModal() {
     this.showCreatePOModal = true;
-    this.newPO = {
+    this.poForm.reset({
       poNumber: '',
       supplierName: '',
       description: '',
       boxNumber: '',
       quantity: 1
-    };
+    });
   }
 
   closeCreatePOModal() {
@@ -114,20 +119,21 @@ export class POQRComponent {
   }
 
   saveNewPO() {
-    if (!this.newPO.poNumber || !this.newPO.supplierName || !this.newPO.description || 
-        !this.newPO.boxNumber || this.newPO.quantity < 1) {
-      alert('Please fill all fields correctly');
+    if (this.poForm.invalid) {
+      this.poForm.markAllAsTouched();
       return;
     }
 
+    const { poNumber, supplierName, description, boxNumber, quantity } = this.poForm.value;
+
     const newItem: POItem = {
       id: this.qrData.length + 1,
-      poNumber: this.newPO.poNumber,
-      supplierName: this.newPO.supplierName,
-      description: this.newPO.description,
-      boxNumber: this.newPO.boxNumber,
+      poNumber: poNumber,
+      supplierName: supplierName,
+      description: description,
+      boxNumber: boxNumber,
       serialNumber: `SN${String(this.serialCounter).padStart(3, '0')}`,
-      quantity: this.newPO.quantity
+      quantity: quantity
     };
 
     this.serialCounter++;
@@ -243,6 +249,7 @@ export class POQRComponent {
               margin: 8px 0;
               padding: 5px 0;
               border-bottom: 1px solid #f0f0f0;
+              margin: 8px 0;
             }
             .qr-details p:last-child {
               border-bottom: none;

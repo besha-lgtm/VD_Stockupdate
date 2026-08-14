@@ -1,75 +1,44 @@
+<div class="app-sidebar">
 
-<div class="sidebar">
+    <div class="app-sidebar-menu">
 
-<div class="menu">
+        <a routerLink="/dashboard" routerLinkActive="app-sidebar-active">
+            <span>Dashboard</span>
+        </a>
 
-<a href="./dashboard" class="active">
+        <a routerLink="/poqr" routerLinkActive="app-sidebar-active">
+            <span>PO QR Generator</span>
+        </a>
 
+        <a routerLink="/recieve" routerLinkActive="app-sidebar-active">
+            <span>Receiving Verification</span>
+        </a>
 
+        <a routerLink="/porecieve" routerLinkActive="app-sidebar-active">
+            <span>Stock Update</span>
+        </a>
 
-<span>Dashboard</span>
+        <a routerLink="/issue" routerLinkActive="app-sidebar-active">
+            <span>Issue item Verification</span>
+        </a>
 
-</a>
+    </div>
 
-<a href="./poqr">
+    <div class="app-sidebar-bottom">
 
+        <button class="app-sidebar-logout-btn" (click)="logout()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="logout-icon">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+            Logout
+        </button>
 
+        <div class="app-sidebar-version">
+            Version 2.0
+        </div>
 
-<span>PO QR Generator</span>
-
-</a>
-
-<a href="./recieve">
-
-
-
-<span>Receiving Verification</span>
-
-</a>
-
-<a href="./porecieve">
-
-
-
-<span>PO Receiving item</span>
-
-</a>
-
-<!-- <a href="#">
-
-<i class="fa-solid fa-layer-group"></i>
-
-<span>Binning</span>
-
-</a> -->
-
-<a href="./issue">
-
-
-
-<span>Issue item Verification</span>
-
-</a>
-
-<!-- <a href="#">
-
-<i class="fa-solid fa-gear"></i>
-
-<span>Settings</span>
-
-</a> -->
+    </div>
 
 </div>
-
-<div class="bottom">
-
-<div class="version">
-
-Version 2.0
-
-</div>
-
-</div>
-
-</div>
-

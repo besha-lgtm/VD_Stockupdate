@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import * as QRCode from 'qrcode';
 
 interface IssueItem {
@@ -21,15 +22,8 @@ export class IssueComponent {
 
   // ---- Show Issue Form ----
   showIssueForm = false;
+  issueForm: FormGroup;
   
-  // ---- New Issue Form Data ----
-  newIssue = {
-    requestNumber: '',
-    department: '',
-    item: '',
-    required: 1
-  };
-
   // ---- Stock Check Message ----
   stockMessage: string | null = null;
   stockChecked = false;
@@ -65,22 +59,32 @@ export class IssueComponent {
     }
   ];
 
+  // ---- Counter for ID ----
+  private issueCounter = 4;
+
   // ---- QR Modal ----
   showQrModal = false;
   selectedItem: IssueItem | null = null;
   generating = false;
 
-  constructor() {}
+  constructor(private fb: FormBuilder) {
+    this.issueForm = this.fb.group({
+      requestNumber: ['', Validators.required],
+      department: ['', Validators.required],
+      item: ['', Validators.required],
+      required: [1, [Validators.required, Validators.min(1)]]
+    });
+  }
 
   // ---- Open Issue Form ----
   openIssueForm() {
     this.showIssueForm = true;
-    this.newIssue = {
+    this.issueForm.reset({
       requestNumber: '',
       department: '',
       item: '',
       required: 1
-    };
+    });
     this.stockMessage = null;
     this.stockChecked = false;
   }
@@ -94,15 +98,15 @@ export class IssueComponent {
 
   // ---- Check Stock ----
   checkStock() {
-    if (!this.newIssue.requestNumber || !this.newIssue.department || 
-        !this.newIssue.item || this.newIssue.required < 1) {
-      alert('Please fill all fields before checking stock');
+    if (this.issueForm.invalid) {
+      this.issueForm.markAllAsTouched();
       return;
     }
 
-    // Simulate stock check - In real app, this would check against actual stock
+    const { department, item, required } = this.issueForm.value;
+
     this.stockChecked = true;
-    this.stockMessage = `Yes, we have stock available! ${this.newIssue.required} units of "${this.newIssue.item}" are available for ${this.newIssue.department}.`;
+    this.stockMessage = `Yes, we have stock available! ${required} units of "${item}" are available for ${department}.`;
   }
 
   // ---- Save Issue (after stock check) ----
@@ -112,18 +116,19 @@ export class IssueComponent {
       return;
     }
 
-    if (!this.newIssue.requestNumber || !this.newIssue.department || 
-        !this.newIssue.item || this.newIssue.required < 1) {
-      alert('Please fill all fields correctly');
+    if (this.issueForm.invalid) {
+      this.issueForm.markAllAsTouched();
       return;
     }
 
+    const { requestNumber, department, item, required } = this.issueForm.value;
+
     const newItem: IssueItem = {
-      id: this.issuingData.length + 1,
-      requestNumber: this.newIssue.requestNumber,
-      department: this.newIssue.department,
-      item: this.newIssue.item,
-      required: this.newIssue.required,
+      id: this.issueCounter++,
+      requestNumber: requestNumber,
+      department: department,
+      item: item,
+      required: required,
       status: 'ISSUED',
       qrDataUrl: null
     };
@@ -132,7 +137,7 @@ export class IssueComponent {
     this.issuingData.unshift(newItem);
     
     // Show success message
-    alert(`✅ Items have been issued successfully!\n\nRequest: ${newItem.requestNumber}\nDepartment: ${newItem.department}\nItem: ${newItem.item}\nQuantity: ${newItem.required}`);
+    alert(`\u2705 Items have been issued successfully!\n\nRequest: ${newItem.requestNumber}\nDepartment: ${newItem.department}\nItem: ${newItem.item}\nQuantity: ${newItem.required}`);
     
     this.closeIssueForm();
   }
@@ -298,7 +303,7 @@ export class IssueComponent {
               <p><strong>Status:</strong> <span class="status-badge">${item.status}</span></p>
             </div>
             <button onclick="window.print()" class="no-print" style="margin-top: 25px; padding: 12px 30px; background: #0f766e; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500;">
-              🖨️ Print QR Code
+              \ud83d\udda8\ufe0f Print QR Code
             </button>
           </div>
         </body>
