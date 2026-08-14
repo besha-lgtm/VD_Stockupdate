@@ -56,8 +56,23 @@ export class RecieveComponent implements OnInit {
     }
   ];
 
+  searchTerm = '';
+
   showUploadPopup = false;
   selectedItem: ReceivingItem | null = null;
+
+  get filteredData(): ReceivingItem[] {
+    const term = this.searchTerm.trim().toLowerCase();
+
+    if (!term) {
+      return this.receivingData;
+    }
+
+    return this.receivingData.filter(item =>
+      item.poNumber.toLowerCase().includes(term) ||
+      item.description.toLowerCase().includes(term)
+    );
+  }
 
   constructor(private poStatusService: PoStatusService) {}
 

@@ -29,6 +29,11 @@ export class LoginComponent {
     });
   }
 
+  goBack(): void {
+    this.router.navigate(['/main-menu']);
+  }
+
+
   onLogin() {
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();

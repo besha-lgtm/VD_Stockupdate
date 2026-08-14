@@ -1,46 +1,47 @@
-<div class="dashboard-layout">
+<div class="app-poqr-layout">
 
     <!-- Header -->
     <app-header></app-header>
 
     <!-- Body -->
-    <div class="dashboard-body">
+    <div class="app-poqr-body">
 
         <!-- Sidebar -->
         <app-sidebar></app-sidebar>
 
         <!-- Main Content -->
-        <main class="dashboard-content">
+        <main class="app-poqr-content">
 
-            <div class="table-container">
+            <div class="app-poqr-table-container">
 
-                <div class="table-header">
+                <div class="app-poqr-table-header">
 
-                    <div class="header-row">
+                    <div class="app-poqr-header-row">
                         <h2>PO QR Generator</h2>
-                        <button class="create-po-btn" (click)="openCreatePOModal()">
+                    </div>
+
+                    <div class="app-poqr-search-create-row">
+                        <div class="app-poqr-search-section">
+                            <input
+                                id="searchTerm"
+                                type="text"
+                                class="app-poqr-search-input"
+                                placeholder="Search by PO No, Supplier, Box or Item Details"
+                                [(ngModel)]="searchTerm"
+                                name="searchTerm"
+                                autocomplete="off">
+                        </div>
+                        <button class="app-poqr-create-btn" (click)="openCreatePOModal()">
                             + Create PO
                         </button>
                     </div>
 
-                    <div class="search-section">
-                        <input
-                            id="searchTerm"
-                            type="text"
-                            class="search-input"
-                            placeholder="Search by PO No, Supplier, Box or Item Details"
-                            [(ngModel)]="searchTerm"
-                            name="searchTerm"
-                            autocomplete="off">
-                    </div>
-
                 </div>
 
-                <div class="table-scroll">
+                <div class="app-poqr-table-scroll">
 
-                    <table>
-
-                        <thead>
+                    <p-table [value]="filteredData" class="app-poqr-p-table" responsiveLayout="scroll">
+                        <ng-template pTemplate="header">
                             <tr>
                                 <th>Serial No</th>
                                 <th>PO Number</th>
@@ -50,10 +51,9 @@
                                 <th>Quantity</th>
                                 <th>Action</th>
                             </tr>
-                        </thead>
-
-                        <tbody>
-                            <tr *ngFor="let item of filteredData">
+                        </ng-template>
+                        <ng-template pTemplate="body" let-item>
+                            <tr>
                                 <td>{{ item.serialNumber }}</td>
                                 <td>{{ item.poNumber }}</td>
                                 <td>{{ item.supplierName }}</td>
@@ -61,20 +61,20 @@
                                 <td>{{ item.boxNumber }}</td>
                                 <td>{{ item.quantity }}</td>
                                 <td>
-                                    <button class="action-btn" (click)="openQrModal(item)">
+                                    <button class="app-poqr-action-btn" (click)="openQrModal(item)">
                                         Generate QR
                                     </button>
                                 </td>
                             </tr>
-
-                            <tr *ngIf="filteredData.length === 0">
-                                <td colspan="7" class="no-data">
+                        </ng-template>
+                        <ng-template pTemplate="emptymessage">
+                            <tr>
+                                <td colspan="7" class="app-poqr-no-data">
                                     No matching records found.
                                 </td>
                             </tr>
-                        </tbody>
-
-                    </table>
+                        </ng-template>
+                    </p-table>
 
                 </div>
 
@@ -85,140 +85,150 @@
     </div>
 
     <!-- Create PO Modal -->
-    <div class="modal-overlay" *ngIf="showCreatePOModal" (click)="closeCreatePOModal()">
-        <div class="modal-box" (click)="$event.stopPropagation()">
-            <div class="modal-header">
+    <div class="app-poqr-modal-overlay" *ngIf="showCreatePOModal" (click)="closeCreatePOModal()">
+        <form class="app-poqr-modal-box" [formGroup]="poForm" (ngSubmit)="saveNewPO()" (click)="$event.stopPropagation()">
+            <div class="app-poqr-modal-header">
                 <h3>Create New PO</h3>
-                <button class="modal-close" (click)="closeCreatePOModal()">&times;</button>
+                <button type="button" class="app-poqr-modal-close" (click)="closeCreatePOModal()">&times;</button>
             </div>
 
-            <div class="modal-body">
-                <div class="form-group">
+            <div class="app-poqr-modal-body">
+                <div class="app-poqr-form-group">
                     <label for="poNumber">PO Number</label>
                     <input
                         id="poNumber"
                         type="text"
-                        class="form-input"
+                        class="app-poqr-form-input"
                         placeholder="Enter PO Number"
-                        [(ngModel)]="newPO.poNumber"
-                        name="poNumber">
+                        formControlName="poNumber">
+                    <small style="color: #ef4444; font-size: 12px; margin-top: 4px; display: block;" *ngIf="poForm.get('poNumber')?.invalid && poForm.get('poNumber')?.touched">
+                        PO Number is required
+                    </small>
                 </div>
 
-                <div class="form-group">
+                <div class="app-poqr-form-group">
                     <label for="supplierName">Supplier Name</label>
                     <input
                         id="supplierName"
                         type="text"
-                        class="form-input"
+                        class="app-poqr-form-input"
                         placeholder="Enter Supplier Name"
-                        [(ngModel)]="newPO.supplierName"
-                        name="supplierName">
+                        formControlName="supplierName">
+                    <small style="color: #ef4444; font-size: 12px; margin-top: 4px; display: block;" *ngIf="poForm.get('supplierName')?.invalid && poForm.get('supplierName')?.touched">
+                        Supplier Name is required
+                    </small>
                 </div>
 
-                <div class="form-group">
+                <div class="app-poqr-form-group">
                     <label for="description">Item Description</label>
                     <input
                         id="description"
                         type="text"
-                        class="form-input"
+                        class="app-poqr-form-input"
                         placeholder="Enter Item Description"
-                        [(ngModel)]="newPO.description"
-                        name="description">
+                        formControlName="description">
+                    <small style="color: #ef4444; font-size: 12px; margin-top: 4px; display: block;" *ngIf="poForm.get('description')?.invalid && poForm.get('description')?.touched">
+                        Item Description is required
+                    </small>
                 </div>
 
-                <div class="form-group">
+                <div class="app-poqr-form-group">
                     <label for="boxNumber">Box Number</label>
                     <input
                         id="boxNumber"
                         type="text"
-                        class="form-input"
+                        class="app-poqr-form-input"
                         placeholder="Enter Box Number"
-                        [(ngModel)]="newPO.boxNumber"
-                        name="boxNumber">
+                        formControlName="boxNumber">
+                    <small style="color: #ef4444; font-size: 12px; margin-top: 4px; display: block;" *ngIf="poForm.get('boxNumber')?.invalid && poForm.get('boxNumber')?.touched">
+                        Box Number is required
+                    </small>
                 </div>
 
-                <div class="form-group">
+                <div class="app-poqr-form-group">
                     <label for="quantity">Expected Quantity</label>
                     <input
                         id="quantity"
                         type="number"
-                        class="form-input"
+                        class="app-poqr-form-input"
                         placeholder="Enter Quantity"
-                        [(ngModel)]="newPO.quantity"
-                        name="quantity"
+                        formControlName="quantity"
                         min="1">
+                    <small style="color: #ef4444; font-size: 12px; margin-top: 4px; display: block;" *ngIf="poForm.get('quantity')?.invalid && poForm.get('quantity')?.touched">
+                        Quantity must be at least 1
+                    </small>
                 </div>
 
-                <div class="form-actions">
-                    <button class="cancel-btn" (click)="closeCreatePOModal()">Cancel</button>
-                    <button class="save-btn" (click)="saveNewPO()">Save</button>
+                <div class="app-poqr-form-actions">
+                    <button type="button" class="app-poqr-cancel-btn" (click)="closeCreatePOModal()">Cancel</button>
+                    <button type="submit" class="app-poqr-save-btn" [disabled]="poForm.invalid">Save</button>
                 </div>
             </div>
-        </div>
+        </form>
     </div>
 
     <!-- QR Generation Modal -->
-    <div class="modal-overlay" *ngIf="showQrModal" (click)="closeQrModal()">
-        <div class="modal-box qr-modal-box" (click)="$event.stopPropagation()">
-            <div class="modal-header">
+    <div class="app-poqr-modal-overlay" *ngIf="showQrModal" (click)="closeQrModal()">
+        <div class="app-poqr-modal-box app-poqr-qr-modal-box" (click)="$event.stopPropagation()">
+            <div class="app-poqr-modal-header">
                 <h3>Generate QR - PO {{ selectedItem?.poNumber }}</h3>
-                <button class="modal-close" (click)="closeQrModal()">&times;</button>
+                <button class="app-poqr-modal-close" (click)="closeQrModal()">&times;</button>
             </div>
 
-            <div class="modal-body qr-modal-body">
+            <div class="app-poqr-modal-body app-poqr-qr-modal-body">
                 <!-- PO Details -->
-                <div class="po-details-card">
-                    <div class="po-detail-row">
-                        <span class="po-detail-label">PO Number:</span>
-                        <span class="po-detail-value">{{ selectedItem?.poNumber }}</span>
+                <div class="app-poqr-details-card">
+                    <div class="app-poqr-detail-row">
+                        <span class="app-poqr-detail-label">PO Number:</span>
+                        <span class="app-poqr-detail-value">{{ selectedItem?.poNumber }}</span>
                     </div>
-                    <div class="po-detail-row">
-                        <span class="po-detail-label">Supplier:</span>
-                        <span class="po-detail-value">{{ selectedItem?.supplierName }}</span>
+                    <div class="app-poqr-detail-row">
+                        <span class="app-poqr-detail-label">Supplier:</span>
+                        <span class="app-poqr-detail-value">{{ selectedItem?.supplierName }}</span>
                     </div>
-                    <div class="po-detail-row">
-                        <span class="po-detail-label">Description:</span>
-                        <span class="po-detail-value">{{ selectedItem?.description }}</span>
+                    <div class="app-poqr-detail-row">
+                        <span class="app-poqr-detail-label">Description:</span>
+                        <span class="app-poqr-detail-value">{{ selectedItem?.description }}</span>
                     </div>
-                    <div class="po-detail-row">
-                        <span class="po-detail-label">Box Number:</span>
-                        <span class="po-detail-value">{{ selectedItem?.boxNumber }}</span>
+                    <div class="app-poqr-detail-row">
+                        <span class="app-poqr-detail-label">Box Number:</span>
+                        <span class="app-poqr-detail-value">{{ selectedItem?.boxNumber }}</span>
                     </div>
-                    <div class="po-detail-row">
-                        <span class="po-detail-label">Expected Quantity:</span>
-                        <span class="po-detail-value">{{ selectedItem?.quantity }}</span>
+                    <div class="app-poqr-detail-row">
+                        <span class="app-poqr-detail-label">Expected Quantity:</span>
+                        <span class="app-poqr-detail-value">{{ selectedItem?.quantity }}</span>
                     </div>
                 </div>
 
                 <!-- QR Code Display -->
-                <div class="qr-display-section">
-                    <div class="qr-image-container" *ngIf="qrDataUrl">
-                        <img [src]="qrDataUrl" alt="QR Code" class="qr-display-image" />
+                <div class="app-poqr-qr-display-section">
+                    <div class="app-poqr-qr-image-container" *ngIf="qrDataUrl">
+                        <img [src]="qrDataUrl" alt="QR Code" class="app-poqr-qr-display-image" />
                     </div>
-                    <div class="qr-placeholder-large" *ngIf="!qrDataUrl && !generating">
+                    <div class="app-poqr-qr-placeholder-large" *ngIf="!qrDataUrl && !generating">
                         <span>Click "Generate QR" to create QR code</span>
                     </div>
-                    <div class="qr-placeholder-large" *ngIf="generating">
+                    <div class="app-poqr-qr-placeholder-large" *ngIf="generating">
                         <span>Generating QR Code...</span>
                     </div>
                 </div>
 
                 <!-- QR Actions -->
-                <div class="qr-actions-section">
+                <div class="app-poqr-qr-actions-section">
                     <button 
-                        class="generate-qr-btn" 
+                        class="app-poqr-generate-qr-btn" 
                         (click)="generateQr()" 
                         [disabled]="generating">
                         {{ generating ? 'Generating...' : 'Generate QR' }}
                     </button>
                     <button 
-                        class="download-btn" 
+                        class="app-poqr-download-btn" 
                         (click)="downloadQr()" 
                         [disabled]="!qrDataUrl">
                         Download
                     </button>
                     <button 
-                        class="print-btn" 
+                        class="app-poqr-print-btn" 
                         (click)="printQr()" 
                         [disabled]="!qrDataUrl">
                         Print
@@ -226,8 +236,8 @@
                 </div>
             </div>
 
-            <div class="modal-footer">
-                <button class="close-btn" (click)="closeQrModal()">
+            <div class="app-poqr-modal-footer">
+                <button class="app-poqr-close-btn" (click)="closeQrModal()">
                     Close
                 </button>
             </div>

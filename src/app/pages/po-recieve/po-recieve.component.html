@@ -1,36 +1,35 @@
-<div class="dashboard-layout">
+<div class="app-porecieve-layout">
 
     <!-- Header -->
     <app-header></app-header>
 
     <!-- Body -->
-    <div class="dashboard-body">
+    <div class="app-porecieve-body">
 
         <!-- Sidebar -->
         <app-sidebar></app-sidebar>
 
         <!-- Main Content -->
-        <main class="dashboard-content">
+        <main class="app-porecieve-content">
 
-            <div class="table-container">
+            <div class="app-porecieve-table-container">
 
-                <div class="table-header">
-                    <div class="header-row">
+                <div class="app-porecieve-table-header">
+                    <div class="app-porecieve-header-row">
                         <h2>Stock Management</h2>
-                        <div class="stock-summary">
-                            <span class="total-items">Total Items: {{ receivingData.length }}</span>
+                        <div class="app-porecieve-stock-summary">
+                            <span class="app-porecieve-total-items">Total Items: {{ receivingData.length }}</span>
                         </div>
                     </div>
-                    <div class="last-updated-info">
+                    <div class="app-porecieve-last-updated-info">
                         <span>Last Updated: {{ getFormattedDate(currentDate) }}</span>
                     </div>
                 </div>
 
-                <div class="table-scroll">
+                <div class="app-porecieve-table-scroll">
 
-                    <table>
-
-                        <thead>
+                    <p-table [value]="receivingData" class="app-porecieve-p-table" responsiveLayout="scroll">
+                        <ng-template pTemplate="header">
                             <tr>
                                 <th>S.No</th>
                                 <th>PO Number</th>
@@ -38,39 +37,38 @@
                                 <th>Stock Last Updated On</th>
                                 <th>Total Stock</th>
                             </tr>
-                        </thead>
-
-                        <tbody>
-                            <tr *ngFor="let item of receivingData">
-                                <td>{{ item.sno }}</td>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-item let-i="rowIndex">
+                            <tr>
+                                <td>{{ item.sno || (i + 1) }}</td>
                                 <td>{{ item.poNumber }}</td>
                                 <td>{{ item.description }}</td>
                                 <td>{{ getFormattedDate(item.lastUpdated) }}</td>
                                 <td>
-                                    <span class="stock-badge">{{ item.totalStock }}</span>
+                                    <span class="app-porecieve-stock-badge">{{ item.totalStock }}</span>
                                 </td>
                             </tr>
-
-                            <tr *ngIf="receivingData.length === 0">
-                                <td colspan="5" class="no-data">
+                        </ng-template>
+                        <ng-template pTemplate="emptymessage">
+                            <tr>
+                                <td colspan="5" class="app-porecieve-no-data">
                                     No stock items found.
                                 </td>
                             </tr>
-                        </tbody>
-
-                    </table>
+                        </ng-template>
+                    </p-table>
 
                 </div>
 
                 <!-- Stock Summary Footer -->
-                <div class="table-footer" *ngIf="receivingData.length > 0">
-                    <div class="summary-item">
-                        <span class="summary-label">Total Stock Items:</span>
-                        <span class="summary-value">{{ receivingData.length }}</span>
+                <div class="app-porecieve-table-footer" *ngIf="receivingData.length > 0">
+                    <div class="app-porecieve-summary-item">
+                        <span class="app-porecieve-summary-label">Total Stock Items:</span>
+                        <span class="app-porecieve-summary-value">{{ receivingData.length }}</span>
                     </div>
-                    <div class="summary-item">
-                        <span class="summary-label">Total Units in Stock:</span>
-                        <span class="summary-value">{{ getTotalStock() }}</span>
+                    <div class="app-porecieve-summary-item">
+                        <span class="app-porecieve-summary-label">Total Units in Stock:</span>
+                        <span class="app-porecieve-summary-value">{{ getTotalStock() }}</span>
                     </div>
                 </div>
 

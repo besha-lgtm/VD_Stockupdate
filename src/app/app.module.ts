@@ -39,8 +39,9 @@ import { POQRComponent } from './pages/po-qr/po-qr.component';
 import { RecieveComponent } from './pages/recieve/recieve.component';
 import { PORecieveComponent } from './pages/po-recieve/po-recieve.component';
 import { IssueComponent } from './pages/issue/issue.component';
-import { RscanComponent } from './pages/rscan/rscan.component';
-import { IscanComponent } from './pages/iscan/iscan.component';
+import { IscanComponent } from "./pages/iscan/iscan.component";
+import { RscanComponent } from "./pages/rscan/rscan.component";
+
 
 @NgModule({
   declarations: [
@@ -55,8 +56,8 @@ import { IscanComponent } from './pages/iscan/iscan.component';
     RecieveComponent,
     PORecieveComponent,
     IssueComponent,
-    RscanComponent,
     IscanComponent,
+    RscanComponent
   ],
   imports: [
     BrowserModule,
