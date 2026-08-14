@@ -1310,7 +1310,7 @@ body ::ng-deep .app-issue-p-table .p-datatable-tbody>tr>td {
    PRIME NG P-TABLE CUSTOM STYLING (Professional #aae0fa Theme)
    ============================================================ */
 
-body ::ng-deep .app-poqr-p-table .p-datatable-thead>tr>th {
+.app-poqr-p-table .p-datatable-thead>tr>th {
   background: #f8fafc !important;
   color: #000000 !important;
   padding: 18px 16px !important;
@@ -1320,8 +1320,7 @@ body ::ng-deep .app-poqr-p-table .p-datatable-thead>tr>th {
   text-align: left !important;
   vertical-align: middle !important;
 }
-
-body ::ng-deep .app-poqr-p-table .p-datatable-tbody>tr>td {
+ .app-poqr-p-table .p-datatable-tbody>tr>td {
   padding: 18px 16px !important;
   color: #475569 !important;
   font-size: 14px !important;
@@ -1329,7 +1328,7 @@ body ::ng-deep .app-poqr-p-table .p-datatable-tbody>tr>td {
   vertical-align: middle !important;
 }
 
-::ng-deep .app-poqr-p-table .p-datatable-tbody>tr:hover {
+.app-poqr-p-table .p-datatable-tbody>tr:hover {
   background: rgba(170, 224, 250, 0.15) !important;
 }
 
@@ -1713,7 +1712,7 @@ body ::ng-deep .app-poqr-p-table .p-datatable-tbody>tr>td {
    PRIME NG P-TABLE CUSTOM STYLING (Professional #aae0fa Theme)
    ============================================================ */
 
-body ::ng-deep .app-porecieve-p-table .p-datatable-thead>tr>th {
+.app-porecieve-p-table .p-datatable-thead>tr>th {
   background: #f8fafc !important;
   color: #000000 !important;
   padding: 18px 16px !important;
@@ -1723,8 +1722,7 @@ body ::ng-deep .app-porecieve-p-table .p-datatable-thead>tr>th {
   text-align: left !important;
   vertical-align: middle !important;
 }
-
-body ::ng-deep .app-porecieve-p-table .p-datatable-tbody>tr>td {
+ .app-porecieve-p-table .p-datatable-tbody>tr>td {
   padding: 18px 16px !important;
   color: #475569 !important;
   font-size: 14px !important;
@@ -1732,7 +1730,7 @@ body ::ng-deep .app-porecieve-p-table .p-datatable-tbody>tr>td {
   vertical-align: middle !important;
 }
 
-::ng-deep .app-porecieve-p-table .p-datatable-tbody>tr:hover {
+.app-porecieve-p-table .p-datatable-tbody>tr:hover {
   background: rgba(170, 224, 250, 0.15) !important;
 }
 
@@ -2076,7 +2074,7 @@ body ::ng-deep .app-porecieve-p-table .p-datatable-tbody>tr>td {
    PRIME NG P-TABLE CUSTOM STYLING (Professional #aae0fa Theme)
    ============================================================ */
 
-body ::ng-deep .app-recieve-p-table .p-datatable-thead>tr>th {
+.app-recieve-p-table .p-datatable-thead>tr>th {
   background: #f8fafc !important;
   color: #000000 !important;
   padding: 18px 16px !important;
@@ -2087,15 +2085,14 @@ body ::ng-deep .app-recieve-p-table .p-datatable-thead>tr>th {
   vertical-align: middle !important;
 }
 
-body ::ng-deep .app-recieve-p-table .p-datatable-tbody>tr>td {
+.app-recieve-p-table .p-datatable-tbody>tr>td {
   padding: 18px 16px !important;
   color: #475569 !important;
   font-size: 14px !important;
   border-bottom: 1px solid #e2e8f0 !important;
   vertical-align: middle !important;
 }
-
-::ng-deep .app-recieve-p-table .p-datatable-tbody>tr:hover {
+ .app-recieve-p-table .p-datatable-tbody>tr:hover {
   background: rgba(170, 224, 250, 0.15) !important;
 }
 
@@ -2307,6 +2304,590 @@ body ::ng-deep .app-recieve-p-table .p-datatable-tbody>tr>td {
   border-radius: 8px;
   font-size: 13px;
 }
+
+/* ============================================================
+   ISSUE VERIFICATION TABLE - PRIME NG P-TABLE
+   Professional #aae0fa Theme
+   ============================================================ */
+
+.app-issue-p-table .p-datatable-thead > tr > th {
+  background: #f8fafc !important;
+  color: #000000 !important;
+  padding: 18px 16px !important;
+  font-weight: 700 !important;
+  font-size: 14px !important;
+  border-bottom: 2px solid #aae0fa !important;
+  text-align: left !important;
+  vertical-align: middle !important;
+}
+
+.app-issue-p-table .p-datatable-tbody > tr > td {
+  padding: 18px 16px !important;
+  color: #475569 !important;
+  font-size: 14px !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+  vertical-align: middle !important;
+}
+
+.app-issue-p-table .p-datatable-tbody > tr:hover {
+  background: rgba(170, 224, 250, 0.15) !important;
+}
+
+
+/* ============================================================
+   ISSUE TABLE CONTAINER
+   ============================================================ */
+
+
+.app-issue-stock-summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.app-issue-divider {
+  color: #cbd5e1;
+}
+
+.app-issue-table-scroll {
+  width: 100%;
+  overflow-x: auto;
+}
+
+
+/* ============================================================
+   CREATE ISSUE BUTTON
+   ============================================================ */
+
+.app-issue-create-btn {
+  border: none;
+  border-radius: 8px;
+  padding: 9px 16px;
+  background: #0c4a6e;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.app-issue-create-btn:hover {
+  background: #075985;
+  box-shadow: 0 4px 10px rgba(170, 224, 250, 0.4);
+}
+
+
+/* ============================================================
+   STATUS BADGE
+   ============================================================ */
+
+.app-issue-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.app-issue-status-issued {
+  background: #e8f5e9;
+  color: #15803d;
+}
+
+
+/* ============================================================
+   GENERATE QR BUTTON
+   ============================================================ */
+
+.app-issue-qr-btn {
+  border: none;
+  border-radius: 8px;
+  padding: 7px 14px;
+  background: #0c4a6e;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  white-space: nowrap;
+}
+
+.app-issue-qr-btn:hover {
+  background: #075985;
+  box-shadow: 0 4px 10px rgba(170, 224, 250, 0.4);
+}
+
+
+/* ============================================================
+   NO DATA
+   ============================================================ */
+
+.app-issue-no-data {
+  text-align: center !important;
+  padding: 35px 20px !important;
+  color: #64748b !important;
+  font-size: 14px !important;
+}
+
+
+/* ============================================================
+   ISSUE FORM MODAL
+   ============================================================ */
+
+.app-issue-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.app-issue-modal-box {
+  width: 550px;
+  max-width: 100%;
+  max-height: 90vh;
+  background: #ffffff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  border: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-issue-modal-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.app-issue-modal-header h3 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.app-issue-modal-close {
+  border: none;
+  background: transparent;
+  color: #64748b;
+  font-size: 26px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 2px 6px;
+  transition: all 0.2s ease;
+}
+
+.app-issue-modal-close:hover {
+  color: #0f172a;
+  background: #f1f5f9;
+  border-radius: 6px;
+}
+
+
+/* ============================================================
+   MODAL BODY
+   ============================================================ */
+
+.app-issue-modal-body {
+  padding: 24px;
+  overflow-y: auto;
+}
+
+.app-issue-form-group {
+  margin-bottom: 18px;
+}
+
+.app-issue-form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #475569;
+  font-size: 13px;
+}
+
+.app-issue-form-input {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: #f8fafc;
+  color: #0f172a;
+  outline: none;
+  font-size: 13px;
+  transition: all 0.2s ease;
+}
+
+.app-issue-form-input:focus {
+  border-color: #aae0fa;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(170, 224, 250, 0.2);
+}
+
+.app-issue-form-input::placeholder {
+  color: #94a3b8;
+}
+
+
+/* ============================================================
+   STOCK CHECK
+   ============================================================ */
+
+.app-issue-stock-check-section {
+  margin-top: 6px;
+  margin-bottom: 18px;
+}
+
+.app-issue-check-stock-btn {
+  width: 100%;
+  border: none;
+  border-radius: 8px;
+  padding: 11px 16px;
+  background: #475569;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.app-issue-check-stock-btn:hover:not(:disabled) {
+  background: #1e293b;
+  box-shadow: 0 4px 10px rgba(71, 85, 105, 0.2);
+}
+
+.app-issue-check-stock-btn:disabled {
+  background: #cbd5e1;
+  color: #94a3b8;
+  cursor: not-allowed;
+}
+
+
+/* ============================================================
+   STOCK MESSAGE
+   ============================================================ */
+
+.app-issue-stock-message {
+  margin-bottom: 18px;
+  padding: 12px 14px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+}
+
+.app-issue-message-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.app-issue-message-icon {
+  font-size: 16px;
+}
+
+.app-issue-message-text {
+  color: #15803d;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+
+/* ============================================================
+   FORM ACTIONS
+   ============================================================ */
+
+.app-issue-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.app-issue-cancel-btn,
+.app-issue-save-btn {
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.app-issue-cancel-btn {
+  background: #ffffff;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+}
+
+.app-issue-cancel-btn:hover {
+  background: #f1f5f9;
+}
+
+.app-issue-save-btn {
+  background: #0c4a6e;
+  color: #ffffff;
+  border: none;
+}
+
+.app-issue-save-btn:hover:not(:disabled) {
+  background: #075985;
+  box-shadow: 0 4px 10px rgba(170, 224, 250, 0.4);
+}
+
+.app-issue-save-btn:disabled {
+  background: #cbd5e1;
+  color: #94a3b8;
+  cursor: not-allowed;
+}
+
+
+/* ============================================================
+   QR MODAL
+   ============================================================ */
+
+.app-issue-qr-modal-box {
+  width: 500px;
+}
+
+.app-issue-qr-modal-body {
+  text-align: center;
+}
+
+
+/* ============================================================
+   ISSUE DETAILS CARD
+   ============================================================ */
+
+.app-issue-details-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 22px;
+  text-align: left;
+}
+
+.app-issue-detail-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 9px 0;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.app-issue-detail-row:last-child {
+  border-bottom: none;
+}
+
+.app-issue-detail-label {
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.app-issue-detail-value {
+  color: #0f172a;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: right;
+}
+
+
+/* ============================================================
+   QR DISPLAY
+   ============================================================ */
+
+.app-issue-qr-display-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0;
+}
+
+.app-issue-qr-image-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+}
+
+.app-issue-qr-display-image {
+  width: 220px;
+  height: 220px;
+  object-fit: contain;
+}
+
+.app-issue-qr-placeholder-large {
+  width: 220px;
+  height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: 12px;
+  color: #64748b;
+  font-size: 13px;
+}
+
+
+/* ============================================================
+   QR ACTIONS
+   ============================================================ */
+
+.app-issue-qr-actions-section {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.app-issue-download-btn,
+.app-issue-print-btn {
+  min-width: 100px;
+  border: none;
+  border-radius: 8px;
+  padding: 9px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.app-issue-download-btn {
+  background: #0c4a6e;
+  color: #ffffff;
+}
+
+.app-issue-download-btn:hover:not(:disabled) {
+  background: #075985;
+}
+
+.app-issue-print-btn {
+  background: #475569;
+  color: #ffffff;
+}
+
+.app-issue-print-btn:hover:not(:disabled) {
+  background: #1e293b;
+}
+
+.app-issue-download-btn:disabled,
+.app-issue-print-btn:disabled {
+  background: #cbd5e1;
+  color: #94a3b8;
+  cursor: not-allowed;
+}
+
+
+/* ============================================================
+   QR MODAL FOOTER
+   ============================================================ */
+
+.app-issue-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 20px 24px;
+  border-top: 1px solid #e2e8f0;
+  background: #f8fafc;
+  flex-shrink: 0;
+}
+
+.app-issue-close-btn {
+  background: #ffffff;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.app-issue-close-btn:hover {
+  background: #f1f5f9;
+}
+
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 768px) {
+
+  .app-issue-header-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .app-issue-create-btn {
+    width: 100%;
+  }
+
+  .app-issue-modal-box {
+    width: 100%;
+  }
+
+  .app-issue-detail-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .app-issue-detail-value {
+    text-align: left;
+  }
+
+  .app-issue-qr-display-image {
+    width: 180px;
+    height: 180px;
+  }
+
+  .app-issue-qr-placeholder-large {
+    width: 180px;
+    height: 180px;
+  }
+}
+
+
 
 
 /*RSCAN*/
@@ -2806,22 +3387,22 @@ body ::ng-deep .app-recieve-p-table .p-datatable-tbody>tr>td {
 /* ============================================================
    RESPONSIVE TABLES & ROW SPACING SYSTEM
    ============================================================ */
-body ::ng-deep .p-datatable,
-body ::ng-deep .p-datatable-wrapper,
-body ::ng-deep .p-datatable-table {
+.p-datatable,
+.p-datatable-wrapper,
+.p-datatable-table {
   border-collapse: separate !important;
   border-spacing: 0 12px !important;
   background: transparent !important;
 }
 
-body ::ng-deep .p-datatable-tbody > tr {
+.p-datatable-tbody > tr {
   background: transparent !important;
 }
 
-body ::ng-deep .app-issue-p-table .p-datatable-tbody > tr > td,
-body ::ng-deep .app-poqr-p-table .p-datatable-tbody > tr > td,
-body ::ng-deep .app-porecieve-p-table .p-datatable-tbody > tr > td,
-body ::ng-deep .app-recieve-p-table .p-datatable-tbody > tr > td {
+.app-issue-p-table .p-datatable-tbody > tr > td,
+.app-poqr-p-table .p-datatable-tbody > tr > td,
+.app-porecieve-p-table .p-datatable-tbody > tr > td,
+.app-recieve-p-table .p-datatable-tbody > tr > td {
   background: #ffffff !important;
   border-top: 1px solid #e2e8f0 !important;
   border-bottom: 1px solid #e2e8f0 !important;
@@ -2829,29 +3410,29 @@ body ::ng-deep .app-recieve-p-table .p-datatable-tbody > tr > td {
   border-right: none !important;
 }
 
-body ::ng-deep .app-issue-p-table .p-datatable-tbody > tr > td:first-child,
-body ::ng-deep .app-poqr-p-table .p-datatable-tbody > tr > td:first-child,
-body ::ng-deep .app-porecieve-p-table .p-datatable-tbody > tr > td:first-child,
-body ::ng-deep .app-recieve-p-table .p-datatable-tbody > tr > td:first-child {
+.app-issue-p-table .p-datatable-tbody > tr > td:first-child,
+.app-poqr-p-table .p-datatable-tbody > tr > td:first-child,
+.app-porecieve-p-table .p-datatable-tbody > tr > td:first-child,
+.app-recieve-p-table .p-datatable-tbody > tr > td:first-child {
   border-left: 1px solid #e2e8f0 !important;
   border-top-left-radius: 8px !important;
   border-bottom-left-radius: 8px !important;
 }
 
-body ::ng-deep .app-issue-p-table .p-datatable-tbody > tr > td:last-child,
-body ::ng-deep .app-poqr-p-table .p-datatable-tbody > tr > td:last-child,
-body ::ng-deep .app-porecieve-p-table .p-datatable-tbody > tr > td:last-child,
-body ::ng-deep .app-recieve-p-table .p-datatable-tbody > tr > td:last-child {
+.app-issue-p-table .p-datatable-tbody > tr > td:last-child,
+.app-poqr-p-table .p-datatable-tbody > tr > td:last-child,
+.app-porecieve-p-table .p-datatable-tbody > tr > td:last-child,
+.app-recieve-p-table .p-datatable-tbody > tr > td:last-child {
   border-right: 1px solid #e2e8f0 !important;
   border-top-right-radius: 8px !important;
   border-bottom-right-radius: 8px !important;
 }
 
 /* Hover effect on cells instead of rows to maintain transparent spacing */
-body ::ng-deep .app-issue-p-table .p-datatable-tbody > tr:hover > td,
-body ::ng-deep .app-poqr-p-table .p-datatable-tbody > tr:hover > td,
-body ::ng-deep .app-porecieve-p-table .p-datatable-tbody > tr:hover > td,
-body ::ng-deep .app-recieve-p-table .p-datatable-tbody > tr:hover > td {
+.app-issue-p-table .p-datatable-tbody > tr:hover > td,
+.app-poqr-p-table .p-datatable-tbody > tr:hover > td,
+.app-porecieve-p-table .p-datatable-tbody > tr:hover > td,
+.app-recieve-p-table .p-datatable-tbody > tr:hover > td {
   background: rgba(170, 224, 250, 0.15) !important;
 }
 
