@@ -16,7 +16,7 @@ import { RscanComponent } from "./pages/rscan/rscan.component";
 
 const routes: Routes = [
   // ✅ Redirect FIRST
-  { path: '', redirectTo: 'main-menu', pathMatch: 'full' },
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
 
   // ✅ Login (public)
   { path: 'login', component: LoginComponent },
