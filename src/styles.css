@@ -1,12 +1,10 @@
+@import './assets/style.css';
+
 /* ============================================
    DIZI EDUTECH - COMPLETE GLOBAL STYLES
    All CSS in One File (style.css)
    NO CSS ROOT VARIABLES - Direct Color Values
    Fresh, Clean & Professional Dashboard
-   ============================================ */
-
-/* ============================================
-   RESET & BASE
    ============================================ */
 
 * {

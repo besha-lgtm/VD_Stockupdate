@@ -30,21 +30,41 @@
 
                 <div class="app-recieve-table-scroll">
 
-                    <p-table [value]="filteredData" class="app-recieve-p-table" responsiveLayout="scroll">
+                    <p-table #dt [value]="filteredData" class="app-recieve-p-table" [paginator]="true" [rows]="5" [rowsPerPageOptions]="[5,10,20]" dropdownAppendTo="body" responsiveLayout="scroll">
                         <ng-template pTemplate="header">
                             <tr>
                                 <th>S.No</th>
-                                <th>PO Number</th>
-                                <th>Item Description</th>
-                                <th>Ordered Qty</th>
-                                <th>Received Qty</th>
+                                <th pSortableColumn="poNumber">
+                                    <div class="header-cell-content">
+                                        <span>PO Number</span>
+                                        <p-sortIcon field="poNumber"></p-sortIcon>
+                                    </div>
+                                </th>
+                                <th pSortableColumn="description">
+                                    <div class="header-cell-content">
+                                        <span>Item Description</span>
+                                        <p-sortIcon field="description"></p-sortIcon>
+                                    </div>
+                                </th>
+                                <th pSortableColumn="orderedQty">
+                                    <div class="header-cell-content">
+                                        <span>Ordered Qty</span>
+                                        <p-sortIcon field="orderedQty"></p-sortIcon>
+                                    </div>
+                                </th>
+                                <th pSortableColumn="receivedQty">
+                                    <div class="header-cell-content">
+                                        <span>Received Qty</span>
+                                        <p-sortIcon field="receivedQty"></p-sortIcon>
+                                    </div>
+                                </th>
                                 <th>Documents</th>
                                 <th>Action</th>
                             </tr>
                         </ng-template>
                         <ng-template pTemplate="body" let-item let-i="rowIndex">
                             <tr>
-                                <td>{{ i + 1 }}</td>
+                                <td>{{ dt.first + i + 1 }}</td>
                                 <td>{{ item.poNumber }}</td>
                                 <td>{{ item.description }}</td>
                                 <td>{{ item.orderedQty }}</td>
@@ -92,6 +112,9 @@
                                 <div class="app-recieve-file-name" *ngIf="tempDocuments.deliveryNote">
                                     Selected: {{ tempDocuments.deliveryNote.name }}
                                 </div>
+                                <small style="color: #ef4444; font-size: 12px; margin-top: 4px; display: block;" *ngIf="submitted && !tempDocuments.deliveryNote">
+                                    Delivery Note is required
+                                </small>
                             </div>
 
                             <div class="app-recieve-form-group">
@@ -100,6 +123,9 @@
                                 <div class="app-recieve-file-name" *ngIf="tempDocuments.purchaseOrder">
                                     Selected: {{ tempDocuments.purchaseOrder.name }}
                                 </div>
+                                <small style="color: #ef4444; font-size: 12px; margin-top: 4px; display: block;" *ngIf="submitted && !tempDocuments.purchaseOrder">
+                                    Purchase Order is required
+                                </small>
                             </div>
 
                             <div class="app-recieve-form-group">
@@ -108,6 +134,9 @@
                                 <div class="app-recieve-file-name" *ngIf="tempDocuments.purchaseRequisition">
                                     Selected: {{ tempDocuments.purchaseRequisition.name }}
                                 </div>
+                                <small style="color: #ef4444; font-size: 12px; margin-top: 4px; display: block;" *ngIf="submitted && !tempDocuments.purchaseRequisition">
+                                    Purchase Requisition is required
+                                </small>
                             </div>
 
                             <div class="app-recieve-form-group">
@@ -116,6 +145,9 @@
                                 <div class="app-recieve-file-name" *ngIf="tempDocuments.materialRejectedReport">
                                     Selected: {{ tempDocuments.materialRejectedReport.name }}
                                 </div>
+                                <small style="color: #ef4444; font-size: 12px; margin-top: 4px; display: block;" *ngIf="submitted && !tempDocuments.materialRejectedReport">
+                                    Material Rejected Report is required
+                                </small>
                             </div>
 
                             <div class="app-recieve-save-error" *ngIf="saveError">

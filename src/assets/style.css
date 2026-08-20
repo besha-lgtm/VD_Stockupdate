@@ -669,7 +669,7 @@ body {
 body ::ng-deep .app-issue-p-table .p-datatable-thead>tr>th {
   background: #f8fafc !important;
   color: #000000 !important;
-  padding: 18px 16px !important;
+  padding: 8px 12px !important;
   font-weight: 700 !important;
   font-size: 14px !important;
   border-bottom: 2px solid #aae0fa !important;
@@ -678,7 +678,7 @@ body ::ng-deep .app-issue-p-table .p-datatable-thead>tr>th {
 }
 
 body ::ng-deep .app-issue-p-table .p-datatable-tbody>tr>td {
-  padding: 18px 16px !important;
+  padding: 8px 12px !important;
   color: #475569 !important;
   font-size: 14px !important;
   border-bottom: 1px solid #e2e8f0 !important;
@@ -1313,7 +1313,7 @@ body ::ng-deep .app-issue-p-table .p-datatable-tbody>tr>td {
 .app-poqr-p-table .p-datatable-thead>tr>th {
   background: #f8fafc !important;
   color: #000000 !important;
-  padding: 18px 16px !important;
+  padding: 8px 12px !important;
   font-weight: 700 !important;
   font-size: 14px !important;
   border-bottom: 2px solid #aae0fa !important;
@@ -1335,7 +1335,7 @@ body ::ng-deep .app-issue-p-table .p-datatable-tbody>tr>td {
 .app-poqr-no-data {
   text-align: center;
   color: #94a3b8;
-  padding: 24px !important;
+  padding: 16px !important;
 }
 
 .app-poqr-action-btn,
@@ -1345,8 +1345,8 @@ body ::ng-deep .app-issue-p-table .p-datatable-tbody>tr>td {
   background: #0c4a6e;
   color: #ffffff;
   border: none;
-  border-radius: 8px;
-  padding: 6px 14px;
+  border-radius: 6px;
+  padding: 4px 10px;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
@@ -1472,6 +1472,17 @@ body ::ng-deep .app-issue-p-table .p-datatable-tbody>tr>td {
   flex: 1;
 }
 
+.app-poqr-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 20px;
+  row-gap: 15px;
+}
+
+.app-poqr-form-full-width {
+  grid-column: span 2;
+}
+
 .app-poqr-modal-footer {
   display: flex;
   justify-content: flex-end;
@@ -1521,14 +1532,21 @@ body ::ng-deep .app-issue-p-table .p-datatable-tbody>tr>td {
 }
 
 .app-poqr-qr-modal-box {
-  max-width: 600px;
+  max-width: 720px;
 }
 
 .app-poqr-qr-modal-body {
   padding: 24px;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.app-poqr-qr-right-column {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 15px;
 }
 
 .app-poqr-details-card {
@@ -1627,6 +1645,18 @@ body ::ng-deep .app-issue-p-table .p-datatable-tbody>tr>td {
     flex-direction: column;
     align-items: stretch;
   }
+
+  .app-poqr-qr-modal-body {
+    grid-template-columns: 1fr;
+  }
+
+  .app-poqr-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .app-poqr-form-full-width {
+    grid-column: span 1;
+  }
 }
 
 /*po-recive*/
@@ -1715,7 +1745,7 @@ body ::ng-deep .app-issue-p-table .p-datatable-tbody>tr>td {
 .app-porecieve-p-table .p-datatable-thead>tr>th {
   background: #f8fafc !important;
   color: #000000 !important;
-  padding: 18px 16px !important;
+  padding: 8px 12px !important;
   font-weight: 700 !important;
   font-size: 14px !important;
   border-bottom: 2px solid #aae0fa !important;
@@ -2077,7 +2107,7 @@ body ::ng-deep .app-issue-p-table .p-datatable-tbody>tr>td {
 .app-recieve-p-table .p-datatable-thead>tr>th {
   background: #f8fafc !important;
   color: #000000 !important;
-  padding: 18px 16px !important;
+  padding: 8px 12px !important;
   font-weight: 700 !important;
   font-size: 14px !important;
   border-bottom: 2px solid #aae0fa !important;
@@ -2103,8 +2133,8 @@ body ::ng-deep .app-issue-p-table .p-datatable-tbody>tr>td {
 .app-recieve-upload-btn,
 .app-recieve-action-btn {
   border: none;
-  border-radius: 8px;
-  padding: 6px 14px;
+  border-radius: 6px;
+  padding: 4px 10px;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;

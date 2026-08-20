@@ -1,31 +1,41 @@
-import { Component } from '@angular/core';
+import { Component, Output, EventEmitter } from '@angular/core';
+import { SidebarService } from '../sidebar/sidebar.service';
+import { HeaderService, HeaderConfig } from './header.service';
+import { Observable } from 'rxjs';
+import { LoginService } from '../../login/login.service';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-header',
   standalone: false,
   templateUrl: './header.component.html',
-  styleUrl: './header.component.css'
+  styleUrls: ['./header.component.css']
 })
 export class HeaderComponent {
 
-  // If the logo image fails to load (missing file, wrong path/case, etc.)
-  // fall back to showing initials instead of a broken image icon.
-  logoLoadFailed = false;
+  @Output() addNewClicked = new EventEmitter<void>();
 
-  constructor(private router: Router) {}
+  headerConfig$: Observable<HeaderConfig>;
 
-  onLogoError(): void {
-    this.logoLoadFailed = true;
+  constructor(
+    private sidebarService: SidebarService,
+    private headerService: HeaderService,
+    private loginService: LoginService,
+    private router: Router
+  ) {
+    this.headerConfig$ = this.headerService.headerConfig$;
+  }
+
+  toggleSidebar(): void {
+    this.sidebarService.toggle();
+  }
+
+  onAddNew(): void {
+    this.addNewClicked.emit();
   }
 
   logout(): void {
-    // Optional: Clear session/local storage
-    localStorage.clear();
-    sessionStorage.clear();
-
-    // Navigate to login page
+    this.loginService.logout();
     this.router.navigate(['/login']);
   }
-
 }

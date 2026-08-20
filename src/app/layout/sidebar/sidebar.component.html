@@ -1,44 +1,63 @@
-<div class="app-sidebar">
+<div class="sidebar-backdrop" [class.visible]="!isCollapsed && isMobile" (click)="closeSidebar()">
+</div>
 
-    <div class="app-sidebar-menu">
+<div class="sidebar" [class.collapsed]="isCollapsed">
 
-        <a routerLink="/dashboard" routerLinkActive="app-sidebar-active">
-            <span>Dashboard</span>
-        </a>
+    <!-- LOGO -->
+    <div class="logo">
+        <div class="logo-image">
+            <img src="assets/logo.png" alt="VISIPACK Logo">
+        </div>
 
-        <a routerLink="/poqr" routerLinkActive="app-sidebar-active">
-            <span>PO QR Generator</span>
-        </a>
-
-        <a routerLink="/recieve" routerLinkActive="app-sidebar-active">
-            <span>Receiving Verification</span>
-        </a>
-
-        <a routerLink="/porecieve" routerLinkActive="app-sidebar-active">
-            <span>Stock Update</span>
-        </a>
-
-        <a routerLink="/issue" routerLinkActive="app-sidebar-active">
-            <span>Issue item Verification</span>
-        </a>
-
+        <div class="logo-text" *ngIf="!isCollapsed">
+            <h4>STOCK UPDATE WMS</h4>
+            <span>Smart WMS</span>
+        </div>
     </div>
 
-    <div class="app-sidebar-bottom">
+    <!-- SCROLLABLE MENU -->
+    <div class="menu-container">
+        <div class="menu">
 
-        <button class="app-sidebar-logout-btn" (click)="logout()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="logout-icon">
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                <polyline points="16 17 21 12 16 7"></polyline>
-                <line x1="21" y1="12" x2="9" y2="12"></line>
-            </svg>
-            Logout
-        </button>
+            <!-- OVERVIEW / WMS MODULES -->
+            <p class="menu-title">OVERVIEW</p>
+            <div class="menu-group">
 
+                <a routerLink="/dashboard" routerLinkActive="active" (click)="onNavClick()">
+                    <i class="pi pi-chart-bar"></i>
+                    <span class="menu-text">Dashboard</span>
+                </a>
+
+                <a routerLink="/poqr" routerLinkActive="active" (click)="onNavClick()">
+                    <i class="pi pi-qrcode"></i>
+                    <span class="menu-text">PO QR Generator</span>
+                </a>
+
+                <a routerLink="/recieve" routerLinkActive="active" (click)="onNavClick()">
+                    <i class="pi pi-check-square"></i>
+                    <span class="menu-text">Receiving Verification</span>
+                </a>
+
+                <a routerLink="/porecieve" routerLinkActive="active" (click)="onNavClick()">
+                    <i class="pi pi-refresh"></i>
+                    <span class="menu-text">Stock Update</span>
+                </a>
+
+                <a routerLink="/issue" routerLinkActive="active" (click)="onNavClick()">
+                    <i class="pi pi-box"></i>
+                    <span class="menu-text">Issue item Verification</span>
+                </a>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- BOTTOM SECTION -->
+    <div class="app-sidebar-bottom" *ngIf="!isCollapsed">
         <div class="app-sidebar-version">
             Version 2.0
         </div>
-
     </div>
 
 </div>
