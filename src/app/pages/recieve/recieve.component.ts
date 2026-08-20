@@ -85,7 +85,7 @@ export class RecieveComponent implements OnInit {
 
   // working copy edited inside the modal, only committed on Save
   tempDocuments: DocumentSet = this.emptyDocuments();
-
+  submitted = false;
   saveError = '';
 
   private emptyDocuments(): DocumentSet {
@@ -101,6 +101,7 @@ export class RecieveComponent implements OnInit {
     this.selectedItem = item;
     this.tempDocuments = { ...item.documents };
     this.saveError = '';
+    this.submitted = false;
     this.showUploadPopup = true;
   }
 
@@ -109,6 +110,7 @@ export class RecieveComponent implements OnInit {
     this.selectedItem = null;
     this.tempDocuments = this.emptyDocuments();
     this.saveError = '';
+    this.submitted = false;
   }
 
   onFileSelected(event: Event, key: keyof DocumentSet) {
@@ -122,6 +124,7 @@ export class RecieveComponent implements OnInit {
   }
 
   saveDocuments() {
+    this.submitted = true;
     if (!this.allFilesUploaded()) {
       this.saveError = 'Please upload all documents before saving.';
       return;

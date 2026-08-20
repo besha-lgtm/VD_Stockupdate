@@ -28,19 +28,39 @@
 
                 <div class="app-porecieve-table-scroll">
 
-                    <p-table [value]="receivingData" class="app-porecieve-p-table" responsiveLayout="scroll">
+                    <p-table #dt [value]="receivingData" class="app-porecieve-p-table" [paginator]="true" [rows]="5" [rowsPerPageOptions]="[5,10,20]" dropdownAppendTo="body" responsiveLayout="scroll">
                         <ng-template pTemplate="header">
                             <tr>
                                 <th>S.No</th>
-                                <th>PO Number</th>
-                                <th>Item Description</th>
-                                <th>Stock Last Updated On</th>
-                                <th>Total Stock</th>
+                                <th pSortableColumn="poNumber">
+                                    <div class="header-cell-content">
+                                        <span>PO Number</span>
+                                        <p-sortIcon field="poNumber"></p-sortIcon>
+                                    </div>
+                                </th>
+                                <th pSortableColumn="description">
+                                    <div class="header-cell-content">
+                                        <span>Item Description</span>
+                                        <p-sortIcon field="description"></p-sortIcon>
+                                    </div>
+                                </th>
+                                <th pSortableColumn="lastUpdated">
+                                    <div class="header-cell-content">
+                                        <span>Stock Last Updated On</span>
+                                        <p-sortIcon field="lastUpdated"></p-sortIcon>
+                                    </div>
+                                </th>
+                                <th pSortableColumn="totalStock">
+                                    <div class="header-cell-content">
+                                        <span>Total Stock</span>
+                                        <p-sortIcon field="totalStock"></p-sortIcon>
+                                    </div>
+                                </th>
                             </tr>
                         </ng-template>
                         <ng-template pTemplate="body" let-item let-i="rowIndex">
                             <tr>
-                                <td>{{ item.sno || (i + 1) }}</td>
+                                <td>{{ item.sno || (dt.first + i + 1) }}</td>
                                 <td>{{ item.poNumber }}</td>
                                 <td>{{ item.description }}</td>
                                 <td>{{ getFormattedDate(item.lastUpdated) }}</td>

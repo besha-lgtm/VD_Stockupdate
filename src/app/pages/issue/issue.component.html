@@ -30,21 +30,46 @@
 
                 <div class="app-issue-table-scroll">
 
-                    <p-table [value]="issuingData" class="app-issue-p-table" responsiveLayout="scroll">
+                    <p-table #dt [value]="issuingData" class="app-issue-p-table" [paginator]="true" [rows]="5" [rowsPerPageOptions]="[5,10,20]" dropdownAppendTo="body" responsiveLayout="scroll">
                         <ng-template pTemplate="header">
                             <tr>
                                 <th>S.No</th>
-                                <th>Request No</th>
-                                <th>Department</th>
-                                <th>Item Description</th>
-                                <th>Required</th>
-                                <th>Status</th>
+                                <th pSortableColumn="requestNumber">
+                                    <div class="header-cell-content">
+                                        <span>Request No</span>
+                                        <p-sortIcon field="requestNumber"></p-sortIcon>
+                                    </div>
+                                </th>
+                                <th pSortableColumn="department">
+                                    <div class="header-cell-content">
+                                        <span>Department</span>
+                                        <p-sortIcon field="department"></p-sortIcon>
+                                    </div>
+                                </th>
+                                <th pSortableColumn="item">
+                                    <div class="header-cell-content">
+                                        <span>Item Description</span>
+                                        <p-sortIcon field="item"></p-sortIcon>
+                                    </div>
+                                </th>
+                                <th pSortableColumn="required">
+                                    <div class="header-cell-content">
+                                        <span>Required</span>
+                                        <p-sortIcon field="required"></p-sortIcon>
+                                    </div>
+                                </th>
+                                <th pSortableColumn="status">
+                                    <div class="header-cell-content">
+                                        <span>Status</span>
+                                        <p-sortIcon field="status"></p-sortIcon>
+                                    </div>
+                                </th>
                                 <th>Generate QR</th>
                             </tr>
                         </ng-template>
                         <ng-template pTemplate="body" let-item let-i="rowIndex">
                             <tr>
-                                <td>{{ i + 1 }}</td>
+                                <td>{{ dt.first + i + 1 }}</td>
                                 <td>{{ item.requestNumber }}</td>
                                 <td>{{ item.department }}</td>
                                 <td>{{ item.item }}</td>

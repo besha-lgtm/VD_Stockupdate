@@ -669,7 +669,7 @@ body {
 body ::ng-deep .app-issue-p-table .p-datatable-thead>tr>th {
   background: #f8fafc !important;
   color: #000000 !important;
-  padding: 18px 16px !important;
+  padding: 8px 12px !important;
   font-weight: 700 !important;
   font-size: 14px !important;
   border-bottom: 2px solid #aae0fa !important;
@@ -678,7 +678,7 @@ body ::ng-deep .app-issue-p-table .p-datatable-thead>tr>th {
 }
 
 body ::ng-deep .app-issue-p-table .p-datatable-tbody>tr>td {
-  padding: 18px 16px !important;
+  padding: 8px 12px !important;
   color: #475569 !important;
   font-size: 14px !important;
   border-bottom: 1px solid #e2e8f0 !important;
@@ -1313,7 +1313,7 @@ body ::ng-deep .app-issue-p-table .p-datatable-tbody>tr>td {
 body ::ng-deep .app-poqr-p-table .p-datatable-thead>tr>th {
   background: #f8fafc !important;
   color: #000000 !important;
-  padding: 18px 16px !important;
+  padding: 8px 12px !important;
   font-weight: 700 !important;
   font-size: 14px !important;
   border-bottom: 2px solid #aae0fa !important;
@@ -1322,7 +1322,7 @@ body ::ng-deep .app-poqr-p-table .p-datatable-thead>tr>th {
 }
 
 body ::ng-deep .app-poqr-p-table .p-datatable-tbody>tr>td {
-  padding: 18px 16px !important;
+  padding: 8px 12px !important;
   color: #475569 !important;
   font-size: 14px !important;
   border-bottom: 1px solid #e2e8f0 !important;
@@ -1336,7 +1336,7 @@ body ::ng-deep .app-poqr-p-table .p-datatable-tbody>tr>td {
 .app-poqr-no-data {
   text-align: center;
   color: #94a3b8;
-  padding: 24px !important;
+  padding: 16px !important;
 }
 
 .app-poqr-action-btn,
@@ -1346,8 +1346,8 @@ body ::ng-deep .app-poqr-p-table .p-datatable-tbody>tr>td {
   background: #0c4a6e;
   color: #ffffff;
   border: none;
-  border-radius: 8px;
-  padding: 6px 14px;
+  border-radius: 6px;
+  padding: 4px 10px;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
@@ -1473,6 +1473,17 @@ body ::ng-deep .app-poqr-p-table .p-datatable-tbody>tr>td {
   flex: 1;
 }
 
+.app-poqr-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 20px;
+  row-gap: 15px;
+}
+
+.app-poqr-form-full-width {
+  grid-column: span 2;
+}
+
 .app-poqr-modal-footer {
   display: flex;
   justify-content: flex-end;
@@ -1522,14 +1533,21 @@ body ::ng-deep .app-poqr-p-table .p-datatable-tbody>tr>td {
 }
 
 .app-poqr-qr-modal-box {
-  max-width: 600px;
+  max-width: 720px;
 }
 
 .app-poqr-qr-modal-body {
   padding: 24px;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.app-poqr-qr-right-column {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 15px;
 }
 
 .app-poqr-details-card {
@@ -1628,6 +1646,18 @@ body ::ng-deep .app-poqr-p-table .p-datatable-tbody>tr>td {
     flex-direction: column;
     align-items: stretch;
   }
+
+  .app-poqr-qr-modal-body {
+    grid-template-columns: 1fr;
+  }
+
+  .app-poqr-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .app-poqr-form-full-width {
+    grid-column: span 1;
+  }
 }
 
 /*po-recive*/
@@ -1716,7 +1746,7 @@ body ::ng-deep .app-poqr-p-table .p-datatable-tbody>tr>td {
 body ::ng-deep .app-porecieve-p-table .p-datatable-thead>tr>th {
   background: #f8fafc !important;
   color: #000000 !important;
-  padding: 18px 16px !important;
+  padding: 8px 12px !important;
   font-weight: 700 !important;
   font-size: 14px !important;
   border-bottom: 2px solid #aae0fa !important;
@@ -1725,7 +1755,7 @@ body ::ng-deep .app-porecieve-p-table .p-datatable-thead>tr>th {
 }
 
 body ::ng-deep .app-porecieve-p-table .p-datatable-tbody>tr>td {
-  padding: 18px 16px !important;
+  padding: 8px 12px !important;
   color: #475569 !important;
   font-size: 14px !important;
   border-bottom: 1px solid #e2e8f0 !important;
@@ -2079,7 +2109,7 @@ body ::ng-deep .app-porecieve-p-table .p-datatable-tbody>tr>td {
 body ::ng-deep .app-recieve-p-table .p-datatable-thead>tr>th {
   background: #f8fafc !important;
   color: #000000 !important;
-  padding: 18px 16px !important;
+  padding: 8px 12px !important;
   font-weight: 700 !important;
   font-size: 14px !important;
   border-bottom: 2px solid #aae0fa !important;
@@ -2088,7 +2118,7 @@ body ::ng-deep .app-recieve-p-table .p-datatable-thead>tr>th {
 }
 
 body ::ng-deep .app-recieve-p-table .p-datatable-tbody>tr>td {
-  padding: 18px 16px !important;
+  padding: 8px 12px !important;
   color: #475569 !important;
   font-size: 14px !important;
   border-bottom: 1px solid #e2e8f0 !important;
@@ -2106,8 +2136,8 @@ body ::ng-deep .app-recieve-p-table .p-datatable-tbody>tr>td {
 .app-recieve-upload-btn,
 .app-recieve-action-btn {
   border: none;
-  border-radius: 8px;
-  padding: 6px 14px;
+  border-radius: 6px;
+  padding: 4px 10px;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
@@ -2814,14 +2844,14 @@ body ::ng-deep .p-datatable-table {
   background: transparent !important;
 }
 
-body ::ng-deep .p-datatable-tbody > tr {
+body ::ng-deep .p-datatable-tbody>tr {
   background: transparent !important;
 }
 
-body ::ng-deep .app-issue-p-table .p-datatable-tbody > tr > td,
-body ::ng-deep .app-poqr-p-table .p-datatable-tbody > tr > td,
-body ::ng-deep .app-porecieve-p-table .p-datatable-tbody > tr > td,
-body ::ng-deep .app-recieve-p-table .p-datatable-tbody > tr > td {
+body ::ng-deep .app-issue-p-table .p-datatable-tbody>tr>td,
+body ::ng-deep .app-poqr-p-table .p-datatable-tbody>tr>td,
+body ::ng-deep .app-porecieve-p-table .p-datatable-tbody>tr>td,
+body ::ng-deep .app-recieve-p-table .p-datatable-tbody>tr>td {
   background: #ffffff !important;
   border-top: 1px solid #e2e8f0 !important;
   border-bottom: 1px solid #e2e8f0 !important;
@@ -2829,29 +2859,29 @@ body ::ng-deep .app-recieve-p-table .p-datatable-tbody > tr > td {
   border-right: none !important;
 }
 
-body ::ng-deep .app-issue-p-table .p-datatable-tbody > tr > td:first-child,
-body ::ng-deep .app-poqr-p-table .p-datatable-tbody > tr > td:first-child,
-body ::ng-deep .app-porecieve-p-table .p-datatable-tbody > tr > td:first-child,
-body ::ng-deep .app-recieve-p-table .p-datatable-tbody > tr > td:first-child {
+body ::ng-deep .app-issue-p-table .p-datatable-tbody>tr>td:first-child,
+body ::ng-deep .app-poqr-p-table .p-datatable-tbody>tr>td:first-child,
+body ::ng-deep .app-porecieve-p-table .p-datatable-tbody>tr>td:first-child,
+body ::ng-deep .app-recieve-p-table .p-datatable-tbody>tr>td:first-child {
   border-left: 1px solid #e2e8f0 !important;
   border-top-left-radius: 8px !important;
   border-bottom-left-radius: 8px !important;
 }
 
-body ::ng-deep .app-issue-p-table .p-datatable-tbody > tr > td:last-child,
-body ::ng-deep .app-poqr-p-table .p-datatable-tbody > tr > td:last-child,
-body ::ng-deep .app-porecieve-p-table .p-datatable-tbody > tr > td:last-child,
-body ::ng-deep .app-recieve-p-table .p-datatable-tbody > tr > td:last-child {
+body ::ng-deep .app-issue-p-table .p-datatable-tbody>tr>td:last-child,
+body ::ng-deep .app-poqr-p-table .p-datatable-tbody>tr>td:last-child,
+body ::ng-deep .app-porecieve-p-table .p-datatable-tbody>tr>td:last-child,
+body ::ng-deep .app-recieve-p-table .p-datatable-tbody>tr>td:last-child {
   border-right: 1px solid #e2e8f0 !important;
   border-top-right-radius: 8px !important;
   border-bottom-right-radius: 8px !important;
 }
 
 /* Hover effect on cells instead of rows to maintain transparent spacing */
-body ::ng-deep .app-issue-p-table .p-datatable-tbody > tr:hover > td,
-body ::ng-deep .app-poqr-p-table .p-datatable-tbody > tr:hover > td,
-body ::ng-deep .app-porecieve-p-table .p-datatable-tbody > tr:hover > td,
-body ::ng-deep .app-recieve-p-table .p-datatable-tbody > tr:hover > td {
+body ::ng-deep .app-issue-p-table .p-datatable-tbody>tr:hover>td,
+body ::ng-deep .app-poqr-p-table .p-datatable-tbody>tr:hover>td,
+body ::ng-deep .app-porecieve-p-table .p-datatable-tbody>tr:hover>td,
+body ::ng-deep .app-recieve-p-table .p-datatable-tbody>tr:hover>td {
   background: rgba(170, 224, 250, 0.15) !important;
 }
 
@@ -2870,5 +2900,751 @@ body ::ng-deep .app-recieve-p-table .p-datatable-tbody > tr:hover > td {
   .app-recieve-table-scroll {
     overflow-x: auto !important;
     -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* ============================================
+   PROJECT SPECIFIC GRID & SIDEBAR ALIGNMENTS
+   ============================================ */
+
+app-sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 240px;
+  height: 100vh;
+  z-index: 999;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body.sidebar-collapsed app-sidebar {
+  width: 75px !important;
+}
+
+.app-dashboard-layout,
+.app-recieve-layout,
+.app-porecieve-layout,
+.app-poqr-layout,
+.app-issue-layout {
+  padding-left: 240px !important;
+  transition: padding-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  min-height: 100vh;
+}
+
+body.sidebar-collapsed .app-dashboard-layout,
+body.sidebar-collapsed .app-recieve-layout,
+body.sidebar-collapsed .app-porecieve-layout,
+body.sidebar-collapsed .app-poqr-layout,
+body.sidebar-collapsed .app-issue-layout {
+  padding-left: 75px !important;
+}
+
+.app-dashboard-body,
+.app-recieve-body,
+.app-porecieve-body,
+.app-poqr-body,
+.app-issue-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.app-dashboard-content,
+.app-recieve-content,
+.app-porecieve-content,
+.app-poqr-content,
+.app-issue-content {
+  flex: 1;
+  padding: 24px;
+  background: #f8fafc;
+  overflow-y: auto;
+}
+
+/* ============================================
+   WMS COMPONENTS OVERRIDES (DIRECT CLASS NAMES)
+   ============================================ */
+
+/* Search Inputs */
+.app-poqr-search-input,
+.app-recieve-search-input,
+.app-porecieve-search-input,
+.app-issue-search-input {
+  width: 100% !important;
+  max-width: 320px;
+  padding: 10px 14px !important;
+  border-radius: 10px !important;
+  border: 1px solid #dcdfe6 !important;
+  background: #f9fafb !important;
+  font-size: 13.5px !important;
+  transition: all 0.25s ease !important;
+  color: #1a202c !important;
+  outline: none !important;
+}
+
+.app-poqr-search-input:focus,
+.app-recieve-search-input:focus,
+.app-porecieve-search-input:focus,
+.app-issue-search-input:focus {
+  border-color: #00a5cf !important;
+  background: #fff !important;
+  box-shadow: 0 0 0 3px rgba(0, 165, 207, 0.15) !important;
+}
+
+/* Action & Create Buttons */
+.app-poqr-create-btn,
+.app-poqr-action-btn,
+.app-recieve-action-btn,
+.app-recieve-upload-btn,
+.app-porecieve-save-btn,
+.app-issue-create-btn,
+.app-issue-qr-btn,
+.app-issue-action-btn,
+.app-issue-save-btn,
+.app-poqr-modal-save-btn {
+  background: linear-gradient(135deg, #00a5cf, #004e64) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(0, 165, 207, 0.35) !important;
+  border: none !important;
+  padding: 10px 20px !important;
+  font-size: 13.5px !important;
+  font-weight: 600 !important;
+  border-radius: 8px !important;
+  cursor: pointer !important;
+  transition: all 0.25s ease !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  text-decoration: none !important;
+}
+
+.app-poqr-create-btn:hover,
+.app-poqr-action-btn:hover,
+.app-recieve-action-btn:hover,
+.app-recieve-upload-btn:hover,
+.app-porecieve-save-btn:hover,
+.app-issue-create-btn:hover,
+.app-issue-qr-btn:hover,
+.app-issue-action-btn:hover,
+.app-issue-save-btn:hover,
+.app-poqr-modal-save-btn:hover {
+  background: linear-gradient(135deg, #3284b3, #336c9d) !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+  transform: translateY(-2px) !important;
+  color: #ffffff !important;
+}
+
+.app-poqr-create-btn:active,
+.app-poqr-action-btn:active,
+.app-recieve-action-btn:active,
+.app-recieve-upload-btn:active,
+.app-porecieve-save-btn:active,
+.app-issue-create-btn:active,
+.app-issue-qr-btn:active,
+.app-issue-action-btn:active,
+.app-issue-save-btn:active,
+.app-poqr-modal-save-btn:active {
+  transform: translateY(0) !important;
+}
+
+/* WMS Custom Table Row Spacing & Rounded Borders */
+.app-poqr-p-table,
+.app-recieve-p-table,
+.app-porecieve-p-table,
+.app-issue-p-table {
+  border-collapse: separate !important;
+  border-spacing: 0 12px !important;
+  background: transparent !important;
+}
+
+.app-poqr-p-table .p-datatable-tbody>tr>td,
+.app-recieve-p-table .p-datatable-tbody>tr>td,
+.app-porecieve-p-table .p-datatable-tbody>tr>td,
+.app-issue-p-table .p-datatable-tbody>tr>td {
+  background: #ffffff !important;
+  border-top: 1px solid #edf2f7 !important;
+  border-bottom: 1px solid #edf2f7 !important;
+  border-left: none !important;
+  border-right: none !important;
+  padding: 8px 18px !important;
+  color: #374151 !important;
+  font-size: 13.5px !important;
+}
+
+.app-poqr-p-table .p-datatable-tbody>tr>td:first-child,
+.app-recieve-p-table .p-datatable-tbody>tr>td:first-child,
+.app-porecieve-p-table .p-datatable-tbody>tr>td:first-child,
+.app-issue-p-table .p-datatable-tbody>tr>td:first-child {
+  border-left: 1px solid #edf2f7 !important;
+  border-top-left-radius: 10px !important;
+  border-bottom-left-radius: 10px !important;
+}
+
+.app-poqr-p-table .p-datatable-tbody>tr>td:last-child,
+.app-recieve-p-table .p-datatable-tbody>tr>td:last-child,
+.app-porecieve-p-table .p-datatable-tbody>tr>td:last-child,
+.app-issue-p-table .p-datatable-tbody>tr>td:last-child {
+  border-right: 1px solid #edf2f7 !important;
+  border-top-right-radius: 10px !important;
+  border-bottom-right-radius: 10px !important;
+}
+
+.app-poqr-p-table .p-datatable-tbody>tr:hover>td,
+.app-recieve-p-table .p-datatable-tbody>tr:hover>td,
+.app-porecieve-p-table .p-datatable-tbody>tr:hover>td,
+.app-issue-p-table .p-datatable-tbody>tr:hover>td {
+  background: rgba(0, 165, 207, 0.04) !important;
+}
+
+.app-poqr-p-table .p-datatable-thead>tr>th,
+.app-recieve-p-table .p-datatable-thead>tr>th,
+.app-porecieve-p-table .p-datatable-thead>tr>th,
+.app-issue-p-table .p-datatable-thead>tr>th {
+  background: #f8fafc !important;
+  color: #475569 !important;
+  font-size: 13.5px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 12px 18px !important;
+  border-bottom: 2px solid #edf2f7 !important;
+}
+
+/* Custom Badges & Tags Overrides */
+.app-issue-status-issued,
+.app-issue-status {
+  display: inline-flex !important;
+  align-items: center !important;
+  padding: 4px 12px !important;
+  border-radius: 20px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  background: #f0fdf4 !important;
+  color: #16a34a !important;
+  border: 1px solid #bbf7d0 !important;
+}
+
+.app-recieve-uploaded-tag {
+  display: inline-flex !important;
+  align-items: center !important;
+  padding: 4px 12px !important;
+  border-radius: 20px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  background: #eff6ff !important;
+  color: #3b82f6 !important;
+  border: 1px solid #bfdbfe !important;
+}
+
+.app-porecieve-stock-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  padding: 4px 12px !important;
+  border-radius: 20px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  background: #fff7ed !important;
+  color: #ea580c !important;
+  border: 1px solid #ffedd5 !important;
+}
+
+/* ============================================
+   SIDEBAR - RESPONSIVE (add to style.css)
+   ============================================ */
+
+/* Overlay backdrop for mobile/tablet */
+.sidebar-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 998;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.sidebar-backdrop.visible {
+  display: block !important;
+  opacity: 1;
+}
+
+/* ── Tablet (≤ 1024px): sidebar collapses by default, overlay on open ── */
+@media screen and (max-width: 1024px) {
+
+  .sidebar-backdrop {
+    display: block;
+    pointer-events: none;
+  }
+
+  .sidebar-backdrop.visible {
+    pointer-events: auto;
+  }
+
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    z-index: 999;
+    width: 280px;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.25);
+  }
+
+  /* When NOT collapsed = open on mobile */
+  .sidebar:not(.collapsed) {
+    transform: translateX(0);
+    width: 280px;
+  }
+
+  /* When collapsed = fully hidden */
+  .sidebar.collapsed {
+    transform: translateX(-100%);
+    width: 280px;
+    /* keep width so animation is smooth */
+  }
+
+  /* Main content takes full width */
+  .layout-container .main-section {
+    width: 100%;
+    margin-left: 0 !important;
+  }
+
+  .layout-container {
+    overflow: hidden;
+  }
+}
+
+/* ── Mobile (≤ 640px): same drawer pattern, slightly tweaked ── */
+@media screen and (max-width: 640px) {
+  .sidebar {
+    width: 220px;
+  }
+
+  .sidebar:not(.collapsed) {
+    width: 220px;
+  }
+}
+
+.menu-title {
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.menu-group a {
+  padding-left: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.expandable i {
+  transition: transform 0.3s ease;
+}
+
+
+/* ===== Logo ===== */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 18px;
+  min-height: 70px;
+}
+
+.logo-image {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.logo-text {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.logo-text h4 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #e8ebef;
+  line-height: 1.2;
+  letter-spacing: 0.4px;
+}
+
+.logo-text span {
+  margin-top: 3px;
+  font-size: 11px;
+  color: #e8ebef;
+  white-space: nowrap;
+}
+
+/* PrimeNG Paginator Styling Overrides */
+body ::ng-deep .p-paginator {
+  background: #ffffff !important;
+  border-top: 1px solid #e2e8f0 !important;
+  border-bottom-left-radius: 8px !important;
+  border-bottom-right-radius: 8px !important;
+  padding: 8px 16px !important;
+  display: flex !important;
+  justify-content: flex-end !important;
+  gap: 4px !important;
+}
+
+body ::ng-deep .p-paginator .p-paginator-pages .p-paginator-page {
+  border-radius: 6px !important;
+  min-width: 2.2rem !important;
+  height: 2.2rem !important;
+  transition: all 0.2s ease !important;
+  font-size: 13px !important;
+  color: #475569 !important;
+}
+
+body ::ng-deep .p-paginator .p-paginator-pages .p-paginator-page.p-highlight {
+  background: rgba(12, 74, 110, 0.1) !important;
+  color: #0c4a6e !important;
+  font-weight: 600 !important;
+}
+
+body ::ng-deep .p-paginator .p-paginator-pages .p-paginator-page:not(.p-highlight):hover {
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+body ::ng-deep .p-paginator button {
+  border-radius: 6px !important;
+  min-width: 2.2rem !important;
+  height: 2.2rem !important;
+  color: #64748b !important;
+}
+
+body ::ng-deep .p-paginator button:hover {
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+/* ============================================================
+   GLOBAL TABLE ROW & BUTTON PADDING DECREASE (PREMIUM LOOK)
+   ============================================================ */
+body ::ng-deep .p-datatable-thead>tr>th {
+  padding: 6px 12px !important;
+  font-size: 13px !important;
+  height: 38px !important;
+  vertical-align: middle !important;
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 10 !important;
+  background: #f8fafc !important;
+}
+
+body ::ng-deep .p-datatable-tbody>tr>td {
+  padding: 6px 12px !important;
+  font-size: 13px !important;
+  height: 38px !important;
+  vertical-align: middle !important;
+}
+
+body ::ng-deep .p-sortable-column {
+  outline: none !important;
+  cursor: pointer !important;
+  user-select: none !important;
+}
+
+body ::ng-deep .p-sortable-column .p-sortable-column-icon,
+body ::ng-deep .p-sortable-column p-sorticon,
+body ::ng-deep .p-sortable-column p-sorticon svg,
+body ::ng-deep .p-sortable-column p-sorticon .p-sortable-column-icon {
+  font-size: 8px !important;
+  width: 8px !important;
+  height: 8px !important;
+  margin-left: 4px !important;
+  color: #94a3b8 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  vertical-align: middle !important;
+  flex-shrink: 0 !important;
+}
+
+body ::ng-deep .p-sortable-column.p-highlight {
+  color: #0c4a6e !important;
+}
+
+body ::ng-deep .p-sortable-column.p-highlight .p-sortable-column-icon,
+body ::ng-deep .p-sortable-column.p-highlight p-sorticon svg {
+  color: #0c4a6e !important;
+  fill: #0c4a6e !important;
+}
+
+body ::ng-deep .p-datatable button,
+body ::ng-deep .p-datatable .p-button,
+body ::ng-deep .p-datatable .app-poqr-action-btn,
+body ::ng-deep .p-datatable .app-recieve-upload-btn,
+body ::ng-deep .p-datatable .app-recieve-action-btn,
+body ::ng-deep .p-datatable .app-issue-qr-btn {
+  padding: 4px 10px !important;
+  font-size: 12px !important;
+  border-radius: 6px !important;
+  height: auto !important;
+  min-height: unset !important;
+}
+
+/* ============================================
+   LAYOUT CONTAINER
+   ============================================ */
+
+.layout-container {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
+
+.main-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  overflow: hidden;
+}
+
+.content-area {
+  flex: 1;
+  padding: 15px;
+  background: #f8fafc;
+  overflow-y: auto;
+}
+
+.content-area::-webkit-scrollbar {
+  width: 8px;
+}
+
+.content-area::-webkit-scrollbar-track {
+  background: #f8fafc;
+}
+
+.content-area::-webkit-scrollbar-thumb {
+  background: #e2e8f0;
+  border-radius: 4px;
+}
+
+.content-area::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* ============================================
+   USER SECTION & AVATARS
+   ============================================ */
+
+.user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.user:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.user-info h5,
+.user-info h6 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-info span {
+  font-size: 11px;
+  opacity: 0.6;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ============================================================
+   Fixes PrimeNG paginator rows-per-page dropdown styling
+   ============================================================ */
+
+.p-paginator .p-dropdown {
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 8px !important;
+  height: 32px !important;
+  min-width: 64px !important;
+  background: #fff !important;
+  box-shadow: none !important;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s !important;
+}
+
+.p-paginator .p-dropdown:hover,
+.p-paginator .p-dropdown.p-focus {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+}
+
+.p-paginator .p-dropdown .p-dropdown-label {
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  color: #374151 !important;
+  padding: 0 4px 0 10px !important;
+  display: flex !important;
+  align-items: center !important;
+  height: 100% !important;
+}
+
+.p-paginator .p-dropdown .p-dropdown-trigger {
+  width: 24px !important;
+  color: #94a3b8 !important;
+}
+
+.p-paginator .p-dropdown .p-dropdown-trigger .p-dropdown-trigger-icon {
+  font-size: 10px !important;
+}
+
+.p-paginator-rpp-options+div>.p-dropdown-panel,
+.p-dropdown-panel.p-component {
+  z-index: 99991000 !important;
+}
+
+.p-dropdown-panel .p-dropdown-items .p-dropdown-item {
+  border-radius: 7px !important;
+  padding: 7px 14px !important;
+  margin: 2px 4px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  color: #374151 !important;
+  transition: background 0.15s !important;
+  text-align: center !important;
+}
+
+.p-dropdown-panel .p-dropdown-items .p-dropdown-item:hover {
+  background: #f1f5f9 !important;
+  color: #1a202c !important;
+}
+
+.p-dropdown-panel .p-dropdown-items .p-dropdown-item.p-highlight {
+  background: #eff6ff !important;
+  color: #3b82f6 !important;
+  font-weight: 700 !important;
+}
+
+.p-dropdown-panel {
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 10px !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1) !important;
+  padding: 6px !important;
+  overflow: hidden !important;
+  background: #ffffff !important;
+}
+
+.p-dropdown-panel .p-dropdown-items-wrapper {
+  padding: 0 !important;
+}
+
+ul.p-dropdown-items,
+.p-dropdown-panel ul.p-dropdown-items {
+  padding: 0 !important;
+  margin: 0 !important;
+  list-style: none !important;
+  padding-left: 0 !important;
+}
+
+ul.p-dropdown-items .p-dropdown-item,
+.p-dropdown-panel ul.p-dropdown-items li.p-dropdown-item {
+  padding: 7px 14px !important;
+  margin: 2px 4px !important;
+  list-style: none !important;
+  border-radius: 7px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: #374151 !important;
+  cursor: pointer !important;
+  transition: background 0.15s !important;
+}
+
+ul.p-dropdown-items .p-dropdown-item:hover,
+.p-dropdown-panel ul.p-dropdown-items li.p-dropdown-item:hover {
+  background: #f1f5f9 !important;
+  color: #1a202c !important;
+}
+
+ul.p-dropdown-items .p-dropdown-item.p-highlight,
+.p-dropdown-panel ul.p-dropdown-items li.p-dropdown-item.p-highlight {
+  background: #eff6ff !important;
+  color: #3b82f6 !important;
+  font-weight: 700 !important;
+}
+
+/* Header Cell Content Alignment Styles */
+body ::ng-deep .header-cell-content {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 6px !important;
+  justify-content: flex-start !important;
+  white-space: nowrap !important;
+}
+
+body .p-dropdown-panel,
+body .p-component.p-dropdown-panel {
+  z-index: 999999999 !important;
+}
+
+/* Prevent table wrappers from clipping absolute overlays like dropdowns on desktop */
+@media (min-width: 993px) {
+
+  .app-issue-table-scroll,
+  .app-poqr-table-scroll,
+  .app-porecieve-table-scroll,
+  .app-recieve-table-scroll {
+    overflow: visible !important;
+    max-height: none !important;
   }
 }

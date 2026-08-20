@@ -1,53 +1,258 @@
-<div class="app-login-container">
-  <div class="app-login-card">
+<div class="login-wrapper">
+  <!-- Dynamic Ambient Background Blobs -->
+  <div class="ambient-glow blob-1"></div>
+  <div class="ambient-glow blob-2"></div>
+  <div class="ambient-glow blob-3"></div>
 
-    <div class="app-login-header">
-      <button type="button" class="app-login-back-btn" (click)="goBack()" aria-label="Go back to main menu">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="19" y1="12" x2="5" y2="12"></line>
-          <polyline points="12 19 5 12 12 5"></polyline>
-        </svg>
-      </button>
-      <h2>Welcome Back</h2>
+  <div class="login-container">
+    <!-- Left panel: Visual Branding and KPI Stats (Hidden on smaller screens) -->
+    <div class="branding-panel">
+      <!-- Top header branding -->
+      <div class="branding-header">
+        <span class="brand-tag">
+          <i class="pi pi-shield"></i> ENTERPRISE SECURE
+        </span>
+      </div>
+
+      <!-- Center text branding -->
+      <div class="branding-content">
+        <div class="brand-glow-bg"></div>
+        <h1>Smart Packaging & Box Manufacturing</h1>
+        <p>Enterprise Resource Planning optimized for high-volume shop floors, real-time shift tracking, quality
+          control, and logistics.</p>
+
+        <!-- Interactive Layered Visual illustrating Box Manufacturing Process -->
+        <div class="branding-visual-container">
+          <img src="assets/smart-packaging.jpg" alt="Smart Packaging & Manufacturing" class="branding-hero-image">
+        </div>
+      </div>
+
+      <!-- Bottom branding info -->
+      <div class="branding-footer">
+        <p>© 2026 Visipack ERP. Real-Time Production & Operations Management.</p>
+      </div>
     </div>
 
-    <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
+    <!-- Right panel: Credentials Form -->
+    <div class="form-panel">
+      <div class="login-card">
+        <!-- Logo centered above welcome headers -->
+        <div class="logo-section">
+          <div class="logo-glow-wrapper"></div>
+          <img src="assets/logo.png" alt="VISIPACK Logo" class="center-login-logo">
+        </div>
 
-      <div class="app-login-form-group">
-        <label for="username">Username</label>
-        <input 
-          id="username"
-          type="text" 
-          formControlName="username" 
-          placeholder="admin@gmail.com" 
-          autocomplete="username"
-        />
-        <small class="app-login-error-text" *ngIf="loginForm.get('username')?.invalid && loginForm.get('username')?.touched">
-          Username is required
-        </small>
+        <div class="login-header">
+          <!-- View Headers -->
+          <ng-container [ngSwitch]="currentView">
+            <div *ngSwitchCase="'login'">
+              <h2>Welcome Back</h2>
+              <p>Please enter your credentials to login</p>
+            </div>
+            <div *ngSwitchCase="'forgot-password'">
+              <h2>Reset Password</h2>
+              <p>Enter your registered email address to receive a secure OTP code</p>
+            </div>
+            <div *ngSwitchCase="'verify-otp'">
+              <h2>Verify OTP</h2>
+              <p>Enter the 6-digit verification code sent to your email</p>
+            </div>
+            <div *ngSwitchCase="'reset-password'">
+              <h2>Set New Password</h2>
+              <p>Choose a secure, strong password for your account</p>
+            </div>
+            <div *ngSwitchCase="'reset-success'">
+              <h2>Reset Completed</h2>
+              <p>Your password has been changed successfully</p>
+            </div>
+          </ng-container>
+        </div>
+
+        <!-- ══ VIEW 1: LOGIN ══ -->
+        <form *ngIf="currentView === 'login'" [formGroup]="loginForm" (ngSubmit)="onLogin()" autocomplete="off">
+
+          <!-- Input Email -->
+          <div class="form-group"
+            [class.input-error]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+            <label class="input-label">Email Address</label>
+            <div class="input-wrapper">
+              <i class="pi pi-envelope input-prefix-icon"></i>
+              <input type="email" formControlName="email" placeholder="name@company.com" class="login-input" />
+            </div>
+            <small class="error-msg" *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+              <i class="pi pi-exclamation-circle"></i> Valid email address is required
+            </small>
+          </div>
+
+          <!-- Input Password -->
+          <div class="form-group"
+            [class.input-error]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+            <label class="input-label">Password</label>
+            <div class="input-wrapper">
+              <i class="pi pi-lock input-prefix-icon"></i>
+              <input [type]="showPassword ? 'text' : 'password'" formControlName="password" placeholder="••••••••"
+                class="login-input password-input" />
+              <button type="button" class="password-toggle-btn" (click)="togglePasswordVisibility()"
+                [title]="showPassword ? 'Hide password' : 'Show password'">
+                <i [class]="showPassword ? 'pi pi-eye-slash' : 'pi pi-eye'"></i>
+              </button>
+            </div>
+            <small class="error-msg" *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+              <i class="pi pi-exclamation-circle"></i> Password is required
+            </small>
+          </div>
+
+          <!-- Forgot Password Link -->
+          <div class="forgot-pwd-link-row">
+            <a type="button" class="forgot-pwd-link" (click)="switchView('forgot-password')">Forgot Password?</a>
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" class="login-submit-btn" [disabled]="loading">
+            <span *ngIf="!loading" class="btn-text">Login <i class="pi pi-arrow-right"></i></span>
+            <span *ngIf="loading" class="btn-loader-content">
+              <i class="pi pi-spin pi-spinner"></i> Authenticating...
+            </span>
+          </button>
+
+          <!-- Error Alert Banner -->
+          <div class="error-alert-banner animate-slide-up" *ngIf="errorMsg">
+            <i class="pi pi-times-circle error-banner-icon"></i>
+            <span>{{ errorMsg }}</span>
+          </div>
+
+        </form>
+
+        <!-- ══ VIEW 2: FORGOT PASSWORD ══ -->
+        <form *ngIf="currentView === 'forgot-password'" (ngSubmit)="sendOtp()" autocomplete="off">
+
+          <div class="form-group">
+            <label class="input-label">Email Address</label>
+            <div class="input-wrapper">
+              <i class="pi pi-envelope input-prefix-icon"></i>
+              <input type="email" name="forgotEmail" placeholder="name@company.com" class="login-input"
+                [(ngModel)]="forgotEmail" required />
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <button type="submit" class="login-submit-btn" [disabled]="loading">
+            <span *ngIf="!loading">Send OTP Code <i class="pi pi-envelope"></i></span>
+            <span *ngIf="loading" class="btn-loader-content">
+              <i class="pi pi-spin pi-spinner"></i> Sending Code...
+            </span>
+          </button>
+
+          <button type="button" class="login-back-btn" (click)="switchView('login')">
+            <i class="pi pi-arrow-left"></i> Back to Login
+          </button>
+
+          <!-- Status Alerts -->
+          <div class="error-alert-banner animate-slide-up" *ngIf="errorMsg">
+            <i class="pi pi-times-circle error-banner-icon"></i>
+            <span>{{ errorMsg }}</span>
+          </div>
+
+        </form>
+
+        <!-- ══ VIEW 3: VERIFY OTP ══ -->
+        <form *ngIf="currentView === 'verify-otp'" (ngSubmit)="verifyOtp()" autocomplete="off">
+
+          <!-- Demo OTP Helper Alert -->
+          <div class="info-alert-banner animate-slide-up" *ngIf="successMsg">
+            <i class="pi pi-info-circle info-banner-icon"></i>
+            <span>{{ successMsg }}</span>
+          </div>
+
+          <div class="form-group">
+            <label class="input-label">One-Time Password (OTP)</label>
+            <div class="input-wrapper">
+              <i class="pi pi-key input-prefix-icon"></i>
+              <input type="text" name="otpCode" placeholder="123456" maxlength="6" class="login-input letter-spacing-lg"
+                [(ngModel)]="otpCode" required />
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <button type="submit" class="login-submit-btn" [disabled]="loading">
+            <span *ngIf="!loading">Verify OTP <i class="pi pi-check"></i></span>
+            <span *ngIf="loading" class="btn-loader-content">
+              <i class="pi pi-spin pi-spinner"></i> Verifying...
+            </span>
+          </button>
+
+          <button type="button" class="login-back-btn" (click)="switchView('forgot-password')">
+            <i class="pi pi-arrow-left"></i> Back
+          </button>
+
+          <!-- Status Alerts -->
+          <div class="error-alert-banner animate-slide-up" *ngIf="errorMsg">
+            <i class="pi pi-times-circle error-banner-icon"></i>
+            <span>{{ errorMsg }}</span>
+          </div>
+
+        </form>
+
+        <!-- ══ VIEW 4: RESET PASSWORD ══ -->
+        <form *ngIf="currentView === 'reset-password'" (ngSubmit)="resetPassword()" autocomplete="off">
+
+          <!-- New Password -->
+          <div class="form-group">
+            <label class="input-label">New Password</label>
+            <div class="input-wrapper">
+              <i class="pi pi-lock input-prefix-icon"></i>
+              <input [type]="showNewPassword ? 'text' : 'password'" name="newPassword" placeholder="••••••••"
+                class="login-input password-input" [(ngModel)]="newPassword" required />
+              <button type="button" class="password-toggle-btn" (click)="showNewPassword = !showNewPassword"
+                [title]="showNewPassword ? 'Hide password' : 'Show password'">
+                <i [class]="showNewPassword ? 'pi pi-eye-slash' : 'pi pi-eye'"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Confirm Password -->
+          <div class="form-group">
+            <label class="input-label">Confirm Password</label>
+            <div class="input-wrapper">
+              <i class="pi pi-lock input-prefix-icon"></i>
+              <input [type]="showConfirmPassword ? 'text' : 'password'" name="confirmPassword" placeholder="••••••••"
+                class="login-input password-input" [(ngModel)]="confirmPassword" required />
+              <button type="button" class="password-toggle-btn" (click)="showConfirmPassword = !showConfirmPassword"
+                [title]="showConfirmPassword ? 'Hide password' : 'Show password'">
+                <i [class]="showConfirmPassword ? 'pi pi-eye-slash' : 'pi pi-eye'"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <button type="submit" class="login-submit-btn" [disabled]="loading">
+            <span *ngIf="!loading">Reset Password <i class="pi pi-save"></i></span>
+            <span *ngIf="loading" class="btn-loader-content">
+              <i class="pi pi-spin pi-spinner"></i> Resetting...
+            </span>
+          </button>
+
+          <!-- Status Alerts -->
+          <div class="error-alert-banner animate-slide-up" *ngIf="errorMsg">
+            <i class="pi pi-times-circle error-banner-icon"></i>
+            <span>{{ errorMsg }}</span>
+          </div>
+
+        </form>
+
+        <!-- ══ VIEW 5: SUCCESS ══ -->
+        <div *ngIf="currentView === 'reset-success'" class="success-screen-wrapper">
+          <div class="success-icon-container">
+            <i class="pi pi-check-circle"></i>
+          </div>
+          <p class="success-text">Your password has been changed successfully. You can now log in with your new
+            credentials.</p>
+          <button type="button" class="login-submit-btn" (click)="switchView('login')">
+            Back to Login <i class="pi pi-sign-in"></i>
+          </button>
+        </div>
+
       </div>
-
-      <div class="app-login-form-group">
-        <label for="password">Password</label>
-        <input 
-          id="password"
-          type="password" 
-          formControlName="password" 
-          placeholder="•••••" 
-          autocomplete="current-password"
-        />
-        <small class="app-login-error-text" *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
-          Password is required
-        </small>
-      </div>
-
-      <button type="submit" class="app-login-btn" [disabled]="loading">
-        {{ loading ? 'Logging in...' : 'Login' }}
-      </button>
-
-      <p class="app-login-error" *ngIf="errorMsg">{{ errorMsg }}</p>
-
-    </form>
-
+    </div>
   </div>
 </div>
