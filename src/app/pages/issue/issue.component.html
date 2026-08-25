@@ -12,25 +12,35 @@
         <!-- Main Content -->
         <main class="app-issue-content">
 
-            <div class="app-issue-table-container">
+            <div class="um-table-section">
 
-                <div class="app-issue-table-header">
-                    <div class="app-issue-header-row">
-                        <h2>Issue Verification</h2>
-                        <button class="app-issue-create-btn" (click)="openIssueForm()">
-                            + Issue
-                        </button>
-                    </div>
-                    <div class="app-issue-stock-summary" *ngIf="issuingData.length > 0">
-                        <span>Total Issued Items: {{ issuingData.length }}</span>
-                        <span class="app-issue-divider">|</span>
-                        <span>Total Quantity: {{ getTotalIssued() }}</span>
+                <div class="um-section-header">
+                    <div class="um-header-row">
+                        <div class="um-section-text">
+                            <h3 class="um-section-title">Issue Verification</h3>
+                            <p class="um-section-desc" *ngIf="issuingData.length > 0">
+                                Total Items: {{ issuingData.length }} &nbsp;|&nbsp; Total Quantity: {{ getTotalIssued() }}
+                            </p>
+                            <p class="um-section-desc" *ngIf="issuingData.length === 0">
+                                Verify and generate QR codes for issued stock items
+                            </p>
+                        </div>
+                        <div class="right">
+                            <button
+                                pButton
+                                type="button"
+                                icon="pi pi-plus"
+                                label="Issue Items"
+                                class="p-button-sm create-emp-btn"
+                                (click)="openIssueForm()">
+                            </button>
+                        </div>
                     </div>
                 </div>
 
-                <div class="app-issue-table-scroll">
+                <div class="um-table-wrapper">
 
-                    <p-table #dt [value]="issuingData" class="app-issue-p-table" [paginator]="true" [rows]="5" [rowsPerPageOptions]="[5,10,20]" dropdownAppendTo="body" responsiveLayout="scroll">
+                    <p-table #dt [value]="issuingData" styleClass="p-datatable-sm um-custom-table" [paginator]="true" [rows]="5" [rowsPerPageOptions]="[5,10,20]" dropdownAppendTo="body" responsiveLayout="scroll">
                         <ng-template pTemplate="header">
                             <tr>
                                 <th>S.No</th>
@@ -64,31 +74,45 @@
                                         <p-sortIcon field="status"></p-sortIcon>
                                     </div>
                                 </th>
-                                <th>Generate QR</th>
+                                <th style="text-align: center;">Generate QR</th>
                             </tr>
                         </ng-template>
                         <ng-template pTemplate="body" let-item let-i="rowIndex">
                             <tr>
                                 <td>{{ dt.first + i + 1 }}</td>
-                                <td>{{ item.requestNumber }}</td>
+                                <td>
+                                    <span class="um-badge um-badge-po">
+                                        {{ item.requestNumber }}
+                                    </span>
+                                </td>
                                 <td>{{ item.department }}</td>
-                                <td>{{ item.item }}</td>
+                                <td>
+                                    <span class="um-badge um-badge-desc">
+                                        {{ item.item }}
+                                    </span>
+                                </td>
                                 <td>{{ item.required }}</td>
                                 <td>
-                                    <span class="app-issue-status app-issue-status-issued">
+                                    <span class="um-badge um-badge-active">
                                         {{ item.status }}
                                     </span>
                                 </td>
-                                <td>
-                                    <button class="app-issue-qr-btn" (click)="openQrModal(item)">
-                                        Generate QR
+                                <td style="text-align: center;">
+                                    <button
+                                        pButton
+                                        type="button"
+                                        icon="pi pi-qrcode"
+                                        label="Generate QR"
+                                        class="p-button-sm create-emp-btn"
+                                        (click)="openQrModal(item)">
                                     </button>
                                 </td>
                             </tr>
                         </ng-template>
                         <ng-template pTemplate="emptymessage">
                             <tr>
-                                <td colspan="7" class="app-issue-no-data">
+                                <td colspan="7" class="text-center" style="padding: 24px !important; color: #64748b;">
+                                    <i class="pi pi-box" style="font-size: 24px; margin-bottom: 8px; display: block; opacity: 0.5;"></i>
                                     No issue records found.
                                 </td>
                             </tr>
@@ -107,7 +131,7 @@
     <div class="app-issue-modal-overlay" *ngIf="showIssueForm" (click)="closeIssueForm()">
         <form class="app-issue-modal-box" [formGroup]="issueForm" (click)="$event.stopPropagation()">
             <div class="app-issue-modal-header">
-                <h3>Issue Items</h3>
+                <h3><i class="pi pi-box" style="margin-right: 8px; color: #f59e0b;"></i>Issue Items</h3>
                 <button type="button" class="app-issue-modal-close" (click)="closeIssueForm()">&times;</button>
             </div>
 
@@ -194,7 +218,7 @@
     <div class="app-issue-modal-overlay" *ngIf="showQrModal" (click)="closeQrModal()">
         <div class="app-issue-modal-box app-issue-qr-modal-box" (click)="$event.stopPropagation()">
             <div class="app-issue-modal-header">
-                <h3>Issue QR Code</h3>
+                <h3><i class="pi pi-qrcode" style="margin-right: 8px; color: #10b981;"></i>QR - Req {{ selectedItem?.requestNumber }}</h3>
                 <button class="app-issue-modal-close" (click)="closeQrModal()">&times;</button>
             </div>
 

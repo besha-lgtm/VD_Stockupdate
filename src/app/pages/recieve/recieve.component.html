@@ -12,25 +12,32 @@
         <!-- Main Content -->
         <main class="app-recieve-content">
 
-            <div class="app-recieve-table-container">
+            <div class="um-table-section">
 
-                <div class="app-recieve-table-header">
-                    <h2>Receiving Verification</h2>
-                    <div class="app-recieve-search-section">
-                        <input
-                            id="searchTerm"
-                            type="text"
-                            class="app-recieve-search-input"
-                            placeholder="Search by PO No or Item Details"
-                            [(ngModel)]="searchTerm"
-                            name="searchTerm"
-                            autocomplete="off">
+                <div class="um-section-header">
+                    <div class="um-header-row">
+                        <div class="um-section-text">
+                            <h3 class="um-section-title">Receiving Verification</h3>
+                            <p class="um-section-desc">Verify inbound shipments and upload required documents</p>
+                        </div>
+                        <div class="right">
+                            <div class="cust-search-wrap" style="display: inline-block; vertical-align: middle;">
+                                <i class="pi pi-search cust-search-icon"></i>
+                                <input
+                                    type="text"
+                                    class="cust-search-input"
+                                    placeholder="Search PO or Item..."
+                                    [(ngModel)]="searchTerm"
+                                    name="searchTerm"
+                                    autocomplete="off" />
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="app-recieve-table-scroll">
+                <div class="um-table-wrapper">
 
-                    <p-table #dt [value]="filteredData" class="app-recieve-p-table" [paginator]="true" [rows]="5" [rowsPerPageOptions]="[5,10,20]" dropdownAppendTo="body" responsiveLayout="scroll">
+                    <p-table #dt [value]="filteredData" styleClass="p-datatable-sm um-custom-table" [paginator]="true" [rows]="5" [rowsPerPageOptions]="[5,10,20]" dropdownAppendTo="body" responsiveLayout="scroll">
                         <ng-template pTemplate="header">
                             <tr>
                                 <th>S.No</th>
@@ -59,31 +66,57 @@
                                     </div>
                                 </th>
                                 <th>Documents</th>
-                                <th>Action</th>
+                                <th style="text-align: center;">Action</th>
                             </tr>
                         </ng-template>
                         <ng-template pTemplate="body" let-item let-i="rowIndex">
                             <tr>
                                 <td>{{ dt.first + i + 1 }}</td>
-                                <td>{{ item.poNumber }}</td>
-                                <td>{{ item.description }}</td>
+                                <td>
+                                    <span class="um-badge um-badge-po">
+                                        {{ item.poNumber }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="um-badge um-badge-desc">
+                                        {{ item.description }}
+                                    </span>
+                                </td>
                                 <td>{{ item.orderedQty }}</td>
                                 <td>{{ item.receivedQty }}</td>
                                 <td>
-                                    <button class="app-recieve-upload-btn" (click)="openUploadPopup(item)">
-                                        {{ item.documentsUploaded ? 'Re-upload' : 'Upload' }}
-                                    </button>
-                                    <span class="app-recieve-uploaded-tag" *ngIf="item.documentsUploaded">Uploaded</span>
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <button
+                                            pButton
+                                            type="button"
+                                            icon="pi pi-paperclip"
+                                            [label]="item.documentsUploaded ? 'Re-upload' : 'Upload'"
+                                            class="p-button-sm p-button-outlined"
+                                            (click)="openUploadPopup(item)">
+                                        </button>
+                                        <span class="um-badge um-badge-active" *ngIf="item.documentsUploaded">Uploaded</span>
+                                    </div>
                                 </td>
-                                <td>
+                                <td style="text-align: center;">
                                     <button
-                                        class="app-recieve-action-btn"
-                                        [class.app-recieve-accepted-btn]="item.accepted"
+                                        pButton
+                                        type="button"
+                                        [icon]="item.accepted ? 'pi pi-check-circle' : 'pi pi-check'"
+                                        [label]="item.accepted ? 'Accepted' : 'Accept'"
+                                        class="p-button-sm create-emp-btn"
+                                        [class.p-button-success]="item.accepted"
                                         [disabled]="!item.documentsUploaded || item.accepted"
                                         [title]="!item.documentsUploaded ? 'Upload documents before accepting' : ''"
                                         (click)="acceptItem(item)">
-                                        {{ item.accepted ? 'Accepted' : 'Accept' }}
                                     </button>
+                                </td>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="emptymessage">
+                            <tr>
+                                <td colspan="7" class="text-center" style="padding: 24px !important; color: #64748b;">
+                                    <i class="pi pi-check-square" style="font-size: 24px; margin-bottom: 8px; display: block; opacity: 0.5;"></i>
+                                    No records found.
                                 </td>
                             </tr>
                         </ng-template>
@@ -97,7 +130,7 @@
                     <div class="app-recieve-upload-modal">
 
                         <div class="app-recieve-modal-header">
-                            <h3>Attachments {{ selectedItem ? '- PO ' + selectedItem.poNumber : '' }}</h3>
+                            <h3><i class="pi pi-paperclip" style="margin-right: 8px; color: #6366f1;"></i>Attachments {{ selectedItem ? '- PO ' + selectedItem.poNumber : '' }}</h3>
                         </div>
 
                         <div class="app-recieve-modal-body">

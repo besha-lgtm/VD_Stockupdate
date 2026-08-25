@@ -12,23 +12,25 @@
         <!-- Main Content -->
         <main class="app-porecieve-content">
 
-            <div class="app-porecieve-table-container">
+            <div class="um-table-section">
 
-                <div class="app-porecieve-table-header">
-                    <div class="app-porecieve-header-row">
-                        <h2>Stock Management</h2>
-                        <div class="app-porecieve-stock-summary">
-                            <span class="app-porecieve-total-items">Total Items: {{ receivingData.length }}</span>
+                <div class="um-section-header">
+                    <div class="um-header-row">
+                        <div class="um-section-text">
+                            <h3 class="um-section-title">Stock Management</h3>
+                            <p class="um-section-desc" *ngIf="receivingData.length > 0">
+                                Total Items: {{ receivingData.length }} &nbsp;|&nbsp; Last Updated: {{ getFormattedDate(currentDate) }}
+                            </p>
+                            <p class="um-section-desc" *ngIf="receivingData.length === 0">
+                                View inventory stock levels and updates
+                            </p>
                         </div>
-                    </div>
-                    <div class="app-porecieve-last-updated-info">
-                        <span>Last Updated: {{ getFormattedDate(currentDate) }}</span>
                     </div>
                 </div>
 
-                <div class="app-porecieve-table-scroll">
+                <div class="um-table-wrapper">
 
-                    <p-table #dt [value]="receivingData" class="app-porecieve-p-table" [paginator]="true" [rows]="5" [rowsPerPageOptions]="[5,10,20]" dropdownAppendTo="body" responsiveLayout="scroll">
+                    <p-table #dt [value]="receivingData" styleClass="p-datatable-sm um-custom-table" [paginator]="true" [rows]="5" [rowsPerPageOptions]="[5,10,20]" dropdownAppendTo="body" responsiveLayout="scroll">
                         <ng-template pTemplate="header">
                             <tr>
                                 <th>S.No</th>
@@ -61,17 +63,26 @@
                         <ng-template pTemplate="body" let-item let-i="rowIndex">
                             <tr>
                                 <td>{{ item.sno || (dt.first + i + 1) }}</td>
-                                <td>{{ item.poNumber }}</td>
-                                <td>{{ item.description }}</td>
+                                <td>
+                                    <span class="um-badge um-badge-po">
+                                        {{ item.poNumber }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="um-badge um-badge-desc">
+                                        {{ item.description }}
+                                    </span>
+                                </td>
                                 <td>{{ getFormattedDate(item.lastUpdated) }}</td>
                                 <td>
-                                    <span class="app-porecieve-stock-badge">{{ item.totalStock }}</span>
+                                    <span class="um-badge um-badge-active" style="padding: 4px 12px; font-size: 13px;">{{ item.totalStock }}</span>
                                 </td>
                             </tr>
                         </ng-template>
                         <ng-template pTemplate="emptymessage">
                             <tr>
-                                <td colspan="5" class="app-porecieve-no-data">
+                                <td colspan="5" class="text-center" style="padding: 24px !important; color: #64748b;">
+                                    <i class="pi pi-refresh" style="font-size: 24px; margin-bottom: 8px; display: block; opacity: 0.5;"></i>
                                     No stock items found.
                                 </td>
                             </tr>
