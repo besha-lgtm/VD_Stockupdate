@@ -12,35 +12,40 @@
         <!-- Main Content -->
         <main class="app-poqr-content">
 
-            <div class="app-poqr-table-container">
+            <div class="um-table-section">
 
-                <div class="app-poqr-table-header">
-
-                    <div class="app-poqr-header-row">
-                        <h2>PO QR Generator</h2>
-                    </div>
-
-                    <div class="app-poqr-search-create-row">
-                        <div class="app-poqr-search-section">
-                            <input
-                                id="searchTerm"
-                                type="text"
-                                class="app-poqr-search-input"
-                                placeholder="Search by PO No, Supplier, Box or Item Details"
-                                [(ngModel)]="searchTerm"
-                                name="searchTerm"
-                                autocomplete="off">
+                <div class="um-section-header">
+                    <div class="um-header-row">
+                        <div class="um-section-text">
+                            <h3 class="um-section-title">PO QR Generator</h3>
+                            <p class="um-section-desc">Generate and manage purchase order QR codes</p>
                         </div>
-                        <button class="app-poqr-create-btn" (click)="openCreatePOModal()">
-                            <i class="pi pi-plus" style="margin-right: 6px;"></i>Create PO
-                        </button>
+                        <div class="right">
+                            <div class="cust-search-wrap" style="display: inline-block; margin-right: 12px; vertical-align: middle;">
+                                <i class="pi pi-search cust-search-icon"></i>
+                                <input
+                                    type="text"
+                                    class="cust-search-input"
+                                    placeholder="Search PO, Supplier, Box..."
+                                    [(ngModel)]="searchTerm"
+                                    name="searchTerm"
+                                    autocomplete="off" />
+                            </div>
+                            <button
+                                pButton
+                                type="button"
+                                icon="pi pi-plus"
+                                label="Create PO"
+                                class="p-button-sm create-emp-btn"
+                                (click)="openCreatePOModal()">
+                            </button>
+                        </div>
                     </div>
-
                 </div>
 
-                <div class="app-poqr-table-scroll">
+                <div class="um-table-wrapper">
 
-                    <p-table [value]="filteredData" class="app-poqr-p-table" [paginator]="true" [rows]="5" [rowsPerPageOptions]="[5,10,20]" dropdownAppendTo="body" responsiveLayout="scroll">
+                    <p-table [value]="filteredData" styleClass="p-datatable-sm um-custom-table" [paginator]="true" [rows]="5" [rowsPerPageOptions]="[5,10,20]" dropdownAppendTo="body" responsiveLayout="scroll">
                         <ng-template pTemplate="header">
                             <tr>
                                 <th pSortableColumn="serialNumber">
@@ -79,27 +84,41 @@
                                         <p-sortIcon field="quantity"></p-sortIcon>
                                     </div>
                                 </th>
-                                <th>Action</th>
+                                <th style="text-align: center;">Action</th>
                             </tr>
                         </ng-template>
                         <ng-template pTemplate="body" let-item>
                             <tr>
                                 <td>{{ item.serialNumber }}</td>
-                                <td>{{ item.poNumber }}</td>
+                                <td>
+                                    <span class="um-badge um-badge-po">
+                                        {{ item.poNumber }}
+                                    </span>
+                                </td>
                                 <td>{{ item.supplierName }}</td>
-                                <td>{{ item.description }}</td>
+                                <td>
+                                    <span class="um-badge um-badge-desc">
+                                        {{ item.description }}
+                                    </span>
+                                </td>
                                 <td>{{ item.boxNumber }}</td>
                                 <td>{{ item.quantity }}</td>
-                                <td>
-                                    <button class="app-poqr-action-btn" (click)="openQrModal(item)">
-                                        Generate QR
+                                <td style="text-align: center;">
+                                    <button
+                                        pButton
+                                        type="button"
+                                        icon="pi pi-qrcode"
+                                        label="Generate QR"
+                                        class="p-button-sm create-emp-btn"
+                                        (click)="openQrModal(item)">
                                     </button>
                                 </td>
                             </tr>
                         </ng-template>
                         <ng-template pTemplate="emptymessage">
                             <tr>
-                                <td colspan="7" class="app-poqr-no-data">
+                                <td colspan="7" class="text-center" style="padding: 24px !important; color: #64748b;">
+                                    <i class="pi pi-qrcode" style="font-size: 24px; margin-bottom: 8px; display: block; opacity: 0.5;"></i>
                                     No matching records found.
                                 </td>
                             </tr>
@@ -118,7 +137,7 @@
     <div class="app-poqr-modal-overlay" *ngIf="showCreatePOModal" (click)="closeCreatePOModal()">
         <form class="app-poqr-modal-box" [formGroup]="poForm" (ngSubmit)="saveNewPO()" (click)="$event.stopPropagation()">
             <div class="app-poqr-modal-header">
-                <h3>Create New PO</h3>
+                <h3><i class="pi pi-file-edit" style="margin-right: 8px; color: #3b82f6;"></i>Create New PO</h3>
                 <button type="button" class="app-poqr-modal-close" (click)="closeCreatePOModal()">&times;</button>
             </div>
 
@@ -201,7 +220,7 @@
     <div class="app-poqr-modal-overlay" *ngIf="showQrModal" (click)="closeQrModal()">
         <div class="app-poqr-modal-box app-poqr-qr-modal-box" (click)="$event.stopPropagation()">
             <div class="app-poqr-modal-header">
-                <h3>Generate QR - PO {{ selectedItem?.poNumber }}</h3>
+                <h3><i class="pi pi-qrcode" style="margin-right: 8px; color: #10b981;"></i>Generate QR - PO {{ selectedItem?.poNumber }}</h3>
                 <button class="app-poqr-modal-close" (click)="closeQrModal()">&times;</button>
             </div>
 
