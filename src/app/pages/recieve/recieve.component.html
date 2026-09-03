@@ -102,7 +102,7 @@
                                         pButton
                                         type="button"
                                         [icon]="item.accepted ? 'pi pi-check-circle' : 'pi pi-check'"
-                                        [label]="item.accepted ? 'Accepted' : 'Accept'"
+                                        [label]="item.accepted ? 'Request Approval' : 'Confirm'"
                                         class="p-button-sm create-emp-btn"
                                         [class.p-button-success]="item.accepted"
                                         [disabled]="!item.documentsUploaded || item.accepted"
