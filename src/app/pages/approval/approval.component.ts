@@ -17,7 +17,7 @@ export class ApprovalComponent implements OnInit {
   // acceptedQty/rejectedQty/rejectionReason entered by the approver, keyed by receivingItemId
   edits: Record<number, { acceptedQty: number; rejectedQty: number; rejectionReason: string }> = {};
 
-  constructor(private receivingService: ReceivingService) {}
+  constructor(private receivingService: ReceivingService) { }
 
   ngOnInit(): void {
     this.load();

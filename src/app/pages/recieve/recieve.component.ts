@@ -50,7 +50,7 @@ export class RecieveComponent implements OnInit {
 
   constructor(
     private receivingService: ReceivingService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.loadReceivings();
@@ -132,27 +132,38 @@ export class RecieveComponent implements OnInit {
     this.saveError = '';
   }
 
-  allFilesUploaded(): boolean {
-    return Object.values(this.tempDocuments).every(file => file !== null);
+  hasAnyDocument(): boolean {
+    return Object.values(this.tempDocuments).some(file => file !== null);
   }
 
-  // "Bills and documents upload" — really uploads all 4 files to WMS
-  // (POST /receiving-verifications/{no}/documents), one call per file.
+  // "Bills and documents upload" — uploads selected files to WMS
+  // (POST /receiving-verifications/{no}/documents), one call per selected file.
   saveDocuments() {
     this.submitted = true;
-    if (!this.allFilesUploaded() || !this.selectedItem) {
-      this.saveError = 'Please upload all documents before saving.';
+    if (!this.selectedItem) {
+      return;
+    }
+
+    const receivingNumber = this.selectedItem.receivingNumber;
+    const allDocConfigs: { type: string; file: File | null }[] = [
+      { type: 'DELIVERY_NOTE', file: this.tempDocuments.deliveryNote },
+      { type: 'PURCHASE_ORDER', file: this.tempDocuments.purchaseOrder },
+      { type: 'PURCHASE_REQUISITION', file: this.tempDocuments.purchaseRequisition },
+      { type: 'MATERIAL_REJECTED_REPORT', file: this.tempDocuments.materialRejectedReport }
+    ];
+
+    const uploads = allDocConfigs.filter(u => u.file !== null) as { type: string; file: File }[];
+
+    // If no files were selected, simply close modal and keep state
+    if (uploads.length === 0) {
+      this.showUploadPopup = false;
+      this.selectedItem = null;
+      this.tempDocuments = this.emptyDocuments();
+      this.saveError = '';
       return;
     }
 
     this.saving = true;
-    const receivingNumber = this.selectedItem.receivingNumber;
-    const uploads = [
-      { type: 'DELIVERY_NOTE', file: this.tempDocuments.deliveryNote! },
-      { type: 'PURCHASE_ORDER', file: this.tempDocuments.purchaseOrder! },
-      { type: 'PURCHASE_REQUISITION', file: this.tempDocuments.purchaseRequisition! },
-      { type: 'MATERIAL_REJECTED_REPORT', file: this.tempDocuments.materialRejectedReport! }
-    ];
 
     forkJoin(
       uploads.map(u =>

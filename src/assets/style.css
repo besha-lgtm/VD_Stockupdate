@@ -4833,7 +4833,9 @@ body ::ng-deep .header-cell-content {
 }
 
 .app-recieve-upload-modal {
-  width: 500px;
+  width: 520px;
+  max-width: 92vw;
+  max-height: 85vh;
   background: #ffffff;
   border-radius: 16px;
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
@@ -4847,6 +4849,7 @@ body ::ng-deep .header-cell-content {
   padding: 18px 24px;
   background: #f8fafc;
   border-bottom: 1px solid #e2e8f0;
+  flex-shrink: 0;
 }
 
 .app-recieve-modal-header h3 {
@@ -4864,6 +4867,26 @@ body ::ng-deep .header-cell-content {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  overflow-y: auto;
+  max-height: calc(85vh - 140px);
+}
+
+.app-recieve-modal-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.app-recieve-modal-body::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.app-recieve-modal-body::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.app-recieve-modal-body::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
 
 .app-recieve-required-note {

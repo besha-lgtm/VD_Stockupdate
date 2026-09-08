@@ -29,37 +29,59 @@
                 <div class="app-approval-card" *ngFor="let r of pending">
                     <div class="app-approval-card-header">
                         <div class="app-approval-card-header-left">
-                            <span class="um-badge um-badge-po">{{ r.poNumber }}</span>
-                            <span class="app-approval-supplier">{{ r.supplierName }}</span>
+                            <span class="um-badge um-badge-po">
+                                <i class="pi pi-file" style="margin-right: 4px; font-size: 11px;"></i>{{ r.poNumber }}
+                            </span>
+                            <div class="app-approval-supplier-wrap">
+                                <span class="app-approval-supplier-label">Supplier:</span>
+                                <span class="app-approval-supplier">{{ r.supplierName }}</span>
+                            </div>
                         </div>
-                        <span class="um-badge um-badge-desc">{{ r.receivingNumber }}</span>
+                        <div class="app-approval-card-header-right">
+                            <span class="um-badge um-badge-desc">
+                                <i class="pi pi-box" style="margin-right: 4px; font-size: 11px;"></i>{{ r.receivingNumber }}
+                            </span>
+                        </div>
                     </div>
 
-                    <div class="um-table-wrapper">
+                    <div class="um-table-wrapper app-approval-table-wrapper">
                         <table class="app-approval-items-table">
                             <thead>
                                 <tr>
-                                    <th>Item</th>
-                                    <th>Ordered</th>
-                                    <th>Received</th>
-                                    <th>Accept Qty</th>
-                                    <th>Reject Qty</th>
+                                    <th>Item Details</th>
+                                    <th style="text-align: center;">Ordered</th>
+                                    <th style="text-align: center;">Received</th>
+                                    <th style="min-width: 120px;">Accept Qty</th>
+                                    <th style="min-width: 120px;">Reject Qty</th>
                                     <th>Rejection Reason</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr *ngFor="let item of r.items">
-                                    <td class="app-approval-item-cell">{{ item.itemCode }} — {{ item.itemName }}</td>
-                                    <td>{{ item.orderedQty }}</td>
-                                    <td>{{ item.receivedQty }}</td>
-                                    <td>
-                                        <input type="number" min="0" [(ngModel)]="edits[item.receivingItemId].acceptedQty" class="app-approval-qty-input" />
+                                    <td class="app-approval-item-cell">
+                                        <div class="app-approval-item-info">
+                                            <span class="app-approval-item-code">{{ item.itemCode }}</span>
+                                            <span class="app-approval-item-name">{{ item.itemName }}</span>
+                                        </div>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <span class="app-approval-qty-badge app-qty-ordered">{{ item.orderedQty }}</span>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <span class="app-approval-qty-badge app-qty-received">{{ item.receivedQty }}</span>
                                     </td>
                                     <td>
-                                        <input type="number" min="0" [(ngModel)]="edits[item.receivingItemId].rejectedQty" class="app-approval-qty-input" />
+                                        <div class="app-approval-input-wrap">
+                                            <input type="number" min="0" [(ngModel)]="edits[item.receivingItemId].acceptedQty" class="app-approval-qty-input app-input-accept" placeholder="0" />
+                                        </div>
                                     </td>
                                     <td>
-                                        <input type="text" [(ngModel)]="edits[item.receivingItemId].rejectionReason" class="app-approval-reason-input" placeholder="optional" />
+                                        <div class="app-approval-input-wrap">
+                                            <input type="number" min="0" [(ngModel)]="edits[item.receivingItemId].rejectedQty" class="app-approval-qty-input app-input-reject" placeholder="0" />
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <input type="text" [(ngModel)]="edits[item.receivingItemId].rejectionReason" class="app-approval-reason-input" placeholder="Enter reason if rejected..." />
                                     </td>
                                 </tr>
                             </tbody>
@@ -71,8 +93,8 @@
                             pButton
                             type="button"
                             icon="pi pi-check"
-                            label="Approve"
-                            class="p-button-sm p-button-success"
+                            label="Approve & Push to VISIPACK"
+                            class="p-button-sm app-approval-approve-btn"
                             [disabled]="actingOn === r.receivingNumber"
                             (click)="decide(r, 'APPROVED')">
                         </button>
@@ -81,7 +103,7 @@
                             type="button"
                             icon="pi pi-times"
                             label="Reject"
-                            class="p-button-sm p-button-danger"
+                            class="p-button-sm app-approval-reject-btn"
                             [disabled]="actingOn === r.receivingNumber"
                             (click)="decide(r, 'REJECTED')">
                         </button>

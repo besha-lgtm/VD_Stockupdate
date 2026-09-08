@@ -1,27 +1,38 @@
-/* Layout (.app-porecieve-layout / -body / -content), .um-table-section,
-   .um-section-header, .um-badge etc. all come from src/assets/style.css
-   (loaded globally via angular.json) — reusing the same classes as
-   Stock Update/Receiving Verification instead of inventing new ones is
-   what fixes the overflow: this page now gets the same sidebar-aware
-   width handling every other screen already has. */
+/* ============================================================
+   APPROVAL REQUEST COMPONENT STYLING (VISIPAK / Modern Theme)
+   ============================================================ */
 
 .app-approval-status {
-  padding: 32px;
+  padding: 40px 24px;
   text-align: center;
   color: #64748b;
   font-size: 14px;
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #edf2f7;
+  margin-top: 16px;
 }
 
 .app-approval-error {
   color: #ef4444;
+  background: #fef2f2;
+  border-color: #fecaca;
+  font-weight: 500;
 }
 
 .app-approval-card {
-  background: #fff;
-  border: 1px solid #edf2f7;
-  border-radius: 12px;
-  padding: 18px 20px;
-  margin-top: 16px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 20px 22px;
+  margin-top: 20px;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.app-approval-card:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.07);
 }
 
 .app-approval-card-header {
@@ -29,78 +40,249 @@
   flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 14px;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #f1f5f9;
 }
 
 .app-approval-card-header-left {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 14px;
   flex-wrap: wrap;
 }
 
+.app-approval-supplier-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.app-approval-supplier-label {
+  font-size: 12px;
+  color: #94a3b8;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
 .app-approval-supplier {
-  color: #334155;
+  color: #1e293b;
   font-weight: 600;
   font-size: 14px;
 }
 
-/* Plain <table>, not p-table, so style it directly rather than relying
-   on the .um-custom-table PrimeNG overrides. */
+.app-approval-table-wrapper {
+  border: 1px solid #edf2f7;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #ffffff;
+}
+
 .app-approval-items-table {
   width: 100%;
-  min-width: 720px; /* keeps columns usable; .um-table-wrapper scrolls this, not the page */
+  min-width: 780px;
   border-collapse: collapse;
   font-size: 13px;
 }
 
 .app-approval-items-table th {
   text-align: left;
-  color: #64748b;
-  font-weight: 600;
-  padding: 10px 12px;
-  border-bottom: 1px solid #edf2f7;
+  background: #f8fafc;
+  color: #475569;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 12px 14px;
+  border-bottom: 1px solid #e2e8f0;
   white-space: nowrap;
 }
 
 .app-approval-items-table td {
-  padding: 10px 12px;
-  border-bottom: 1px solid #f8fafc;
+  padding: 12px 14px;
+  border-bottom: 1px solid #f1f5f9;
   vertical-align: middle;
-}
-
-.app-approval-item-cell {
-  min-width: 180px;
   color: #334155;
 }
 
-.app-approval-qty-input {
-  width: 90px;
-  padding: 6px 8px;
-  border: 1px solid #d9e2ec;
-  border-radius: 6px;
+.app-approval-items-table tr:last-child td {
+  border-bottom: none;
+}
+
+.app-approval-items-table tr:hover td {
+  background: #fafcff;
+}
+
+.app-approval-item-cell {
+  min-width: 220px;
+}
+
+.app-approval-item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.app-approval-item-code {
+  font-weight: 700;
+  color: #0369a1;
+  font-size: 12px;
+  letter-spacing: 0.3px;
+}
+
+.app-approval-item-name {
+  color: #1e293b;
+  font-weight: 500;
   font-size: 13px;
+}
+
+/* Quantity display badges */
+.app-approval-qty-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 13px;
+  min-width: 36px;
+  text-align: center;
+}
+
+.app-qty-ordered {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.app-qty-received {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+/* Inputs styling */
+.app-approval-input-wrap {
+  display: flex;
+  align-items: center;
+}
+
+.app-approval-qty-input {
+  width: 95px;
+  padding: 8px 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  background: #f8fafc;
+  color: #1e293b;
+  transition: all 0.2s ease;
+}
+
+.app-input-accept:focus {
+  border-color: #10b981;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+}
+
+.app-input-reject:focus {
+  border-color: #ef4444;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
 }
 
 .app-approval-reason-input {
   width: 100%;
-  min-width: 160px;
-  padding: 6px 8px;
-  border: 1px solid #d9e2ec;
-  border-radius: 6px;
+  min-width: 170px;
+  padding: 8px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
   font-size: 13px;
+  background: #f8fafc;
+  color: #1e293b;
+  transition: all 0.2s ease;
 }
 
-.app-approval-qty-input:focus,
 .app-approval-reason-input:focus {
   outline: none;
-  border-color: #2e90fa;
-  box-shadow: 0 0 0 3px rgba(46, 144, 250, 0.12);
+  border-color: #00a5cf;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(0, 165, 207, 0.15);
 }
 
+/* Action buttons */
 .app-approval-actions {
   display: flex;
-  gap: 10px;
-  margin-top: 14px;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid #f1f5f9;
+}
+
+/* Approve Button - Gradient Theme Matching Project */
+.app-approval-approve-btn,
+.app-approval-approve-btn.p-button {
+  background: linear-gradient(135deg, #00a5cf, #004e64) !important;
+  border: none !important;
+  color: #ffffff !important;
+  padding: 9px 20px !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  font-size: 13px !important;
+  box-shadow: 0 4px 12px rgba(0, 165, 207, 0.35) !important;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  cursor: pointer !important;
+}
+
+.app-approval-approve-btn:hover:not(:disabled),
+.app-approval-approve-btn.p-button:hover:not(:disabled) {
+  background: linear-gradient(135deg, #3284b3, #336c9d) !important;
+  box-shadow: 0 6px 16px rgba(0, 165, 207, 0.45) !important;
+  transform: translateY(-1px) !important;
+}
+
+.app-approval-approve-btn:disabled,
+.app-approval-approve-btn.p-button:disabled {
+  background: #94a3b8 !important;
+  box-shadow: none !important;
+  cursor: not-allowed !important;
+  opacity: 0.7 !important;
+  transform: none !important;
+}
+
+/* Reject Button */
+.app-approval-reject-btn,
+.app-approval-reject-btn.p-button {
+  background: #ffffff !important;
+  border: 1px solid #fecaca !important;
+  color: #dc2626 !important;
+  padding: 9px 18px !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  font-size: 13px !important;
+  transition: all 0.2s ease !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  cursor: pointer !important;
+}
+
+.app-approval-reject-btn:hover:not(:disabled),
+.app-approval-reject-btn.p-button:hover:not(:disabled) {
+  background: #fef2f2 !important;
+  border-color: #ef4444 !important;
+  color: #b91c1c !important;
+  transform: translateY(-1px) !important;
+}
+
+.app-approval-reject-btn:disabled,
+.app-approval-reject-btn.p-button:disabled {
+  background: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+  color: #94a3b8 !important;
+  cursor: not-allowed !important;
+  transform: none !important;
 }
