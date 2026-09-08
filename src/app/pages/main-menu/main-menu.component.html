@@ -7,7 +7,7 @@
 
     <div class="menu-grid">
       <!-- PO Card -->
-      <div class="menu-card" (click)="onSelect('login')">
+      <div class="menu-card" (click)="onSelect('PO')">
         <div class="icon-wrapper">
           <svg class="card-icon" viewBox="0 0 64 64" fill="none" stroke="#1e293b" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
             Document Outline
@@ -67,6 +67,18 @@
           </svg>
         </div>
         <span class="card-title">ISSUE</span>
+      </div>
+
+      <!-- APPROVAL Card -->
+      <div class="menu-card" (click)="onSelect('APPROVAL')">
+        <div class="icon-wrapper">
+          <svg class="card-icon" viewBox="0 0 64 64" fill="none" stroke="#1e293b" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 8h24l10 10v38a4 4 0 0 1-4 4H16a4 4 0 0 1-4-4V12a4 4 0 0 1 4-4z" />
+            <path d="M40 8v10h10" />
+            <path d="M22 34l6 6 14-14" />
+          </svg>
+        </div>
+        <span class="card-title">APPROVAL</span>
       </div>
     </div>
 

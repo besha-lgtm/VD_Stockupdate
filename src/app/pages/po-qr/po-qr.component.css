@@ -1,0 +1,33 @@
+/* Line Items popup (new — between the PO table and Generate QR) */
+.app-poqr-lineitems-modal-box {
+  width: 100%;
+  max-width: 720px;
+}
+
+.app-poqr-lineitems-meta {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 14px;
+  font-size: 13px;
+  color: #475569;
+}
+
+.app-poqr-lineitems-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.app-poqr-lineitems-table th {
+  text-align: left;
+  color: #64748b;
+  font-weight: 600;
+  padding: 8px 10px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.app-poqr-lineitems-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: middle;
+}

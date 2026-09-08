@@ -12,12 +12,14 @@ export class MainMenuComponent {
 
   onSelect(option: string): void {
     console.log(`Main Menu selection: ${option}`);
-    if (option === 'login') {
-      this.router.navigate(['/login']);
+    if (option === 'PO') {
+      this.router.navigate(['/poqr']);
     } else if (option === 'RECEIVE') {
       this.router.navigate(['/rscan']);
     } else if (option === 'ISSUE') {
       this.router.navigate(['/iscan']);
+    } else if (option === 'APPROVAL') {
+      this.router.navigate(['/approval']);
     }
   }
 }

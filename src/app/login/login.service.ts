@@ -19,11 +19,14 @@ export class LoginService {
   }
 
   login(values: any): Observable<any> {
-    return this.http.post<any>(`${AppSettings.API_BASE_URL}/auth/login`, values).pipe(
+    // WMS backend responds { success, data: { token, user } } — not a bare { token }.
+    return this.http.post<any>(AppSettings.API.login, values).pipe(
       map((res) => {
-        if (res?.token) {
-          sessionStorage.setItem('token', res.token);
-          this._isLoggedIn.next(true); // ✅ update state
+        const token = res?.data?.token;
+        if (token) {
+          sessionStorage.setItem('token', token);
+          sessionStorage.setItem('user', JSON.stringify(res.data.user));
+          this._isLoggedIn.next(true);
         }
         return res;
       })

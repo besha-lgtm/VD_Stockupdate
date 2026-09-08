@@ -64,18 +64,18 @@ export class LoginComponent {
 
     const { email, password } = this.loginForm.value;
 
-    // Simulate network delay for a better user experience
-    setTimeout(() => {
-      if (email === 'admin@gmail.com' && password === 'admin@123') {
-        console.log('Static login success');
-        sessionStorage.setItem('token', 'mock-session-token');
+    // WMS's /api/auth/login accepts either username or email in the same
+    // field — see auth.service.js on the backend.
+    this.loginService.login({ username: email, password }).subscribe({
+      next: () => {
         this.loading = false;
         this.router.navigate(['/dashboard']);
-      } else {
+      },
+      error: (err) => {
         this.loading = false;
-        this.errorMsg = 'Invalid email or password';
+        this.errorMsg = err?.error?.message || 'Invalid username or password';
       }
-    }, 800);
+    });
   }
 
   sendOtp(): void {

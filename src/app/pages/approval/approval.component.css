@@ -1,0 +1,106 @@
+/* Layout (.app-porecieve-layout / -body / -content), .um-table-section,
+   .um-section-header, .um-badge etc. all come from src/assets/style.css
+   (loaded globally via angular.json) — reusing the same classes as
+   Stock Update/Receiving Verification instead of inventing new ones is
+   what fixes the overflow: this page now gets the same sidebar-aware
+   width handling every other screen already has. */
+
+.app-approval-status {
+  padding: 32px;
+  text-align: center;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.app-approval-error {
+  color: #ef4444;
+}
+
+.app-approval-card {
+  background: #fff;
+  border: 1px solid #edf2f7;
+  border-radius: 12px;
+  padding: 18px 20px;
+  margin-top: 16px;
+}
+
+.app-approval-card-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.app-approval-card-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.app-approval-supplier {
+  color: #334155;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* Plain <table>, not p-table, so style it directly rather than relying
+   on the .um-custom-table PrimeNG overrides. */
+.app-approval-items-table {
+  width: 100%;
+  min-width: 720px; /* keeps columns usable; .um-table-wrapper scrolls this, not the page */
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.app-approval-items-table th {
+  text-align: left;
+  color: #64748b;
+  font-weight: 600;
+  padding: 10px 12px;
+  border-bottom: 1px solid #edf2f7;
+  white-space: nowrap;
+}
+
+.app-approval-items-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #f8fafc;
+  vertical-align: middle;
+}
+
+.app-approval-item-cell {
+  min-width: 180px;
+  color: #334155;
+}
+
+.app-approval-qty-input {
+  width: 90px;
+  padding: 6px 8px;
+  border: 1px solid #d9e2ec;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.app-approval-reason-input {
+  width: 100%;
+  min-width: 160px;
+  padding: 6px 8px;
+  border: 1px solid #d9e2ec;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.app-approval-qty-input:focus,
+.app-approval-reason-input:focus {
+  outline: none;
+  border-color: #2e90fa;
+  box-shadow: 0 0 0 3px rgba(46, 144, 250, 0.12);
+}
+
+.app-approval-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+}
