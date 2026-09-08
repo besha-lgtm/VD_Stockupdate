@@ -1,18 +1,20 @@
 export class AppSettings {
-  public static readonly API_BASE_URL = 'http://localhost:3000/api';
+  public static readonly API_BASE_URL = 'http://localhost:3001/api';
 
   public static API = {
-    users: AppSettings.API_BASE_URL + '/users',
-    employees: AppSettings.API_BASE_URL + '/employees',
-    departments: AppSettings.API_BASE_URL + '/departments',
-    roles: AppSettings.API_BASE_URL + '/roles',
+    login: AppSettings.API_BASE_URL + '/auth/login',
 
-    projectStats: AppSettings.API_BASE_URL + '/project/project-stats',
-    masterStats: AppSettings.API_BASE_URL + '/master/master-stats',
-    customers: AppSettings.API_BASE_URL + '/master/customers',
-    projects: AppSettings.API_BASE_URL + '/projects',
+    // Supplier PO (synced from VISIPACK, Steps 1-3)
+    syncSupplierPos: AppSettings.API_BASE_URL + '/integration/sync-supplier-pos',
+    purchaseOrders: AppSettings.API_BASE_URL + '/purchase-orders',
 
-    dashboardStats: AppSettings.API_BASE_URL + '/admin/dashboard-stats'
+    // Generate QR
+    qrTransactions: AppSettings.API_BASE_URL + '/qr-transactions',
+
+    // Scan QR
+    scan: AppSettings.API_BASE_URL + '/scanner/scan',
+
+    // Receiving Verification / Documents / Confirm / Approval
+    receivingVerifications: AppSettings.API_BASE_URL + '/receiving-verifications'
   };
 }
-

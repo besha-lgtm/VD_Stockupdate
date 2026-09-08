@@ -3,7 +3,7 @@ import { BrowserModule } from "@angular/platform-browser";
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent } from "./app.component";
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -31,7 +31,6 @@ import { TagModule } from 'primeng/tag';
 import { LoginComponent } from './login/login.component';
 import { FileUploadModule } from 'primeng/fileupload';
 import { MainMenuComponent } from './pages/main-menu/main-menu.component';
-import { PurchaseOrderQrComponent } from './pages/purchase-order-qr/purchase-order-qr.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { SidebarComponent } from './layout/sidebar/sidebar.component';
 import { HeaderComponent } from './layout/header/header.component';
@@ -41,6 +40,8 @@ import { PORecieveComponent } from './pages/po-recieve/po-recieve.component';
 import { IssueComponent } from './pages/issue/issue.component';
 import { IscanComponent } from "./pages/iscan/iscan.component";
 import { RscanComponent } from "./pages/rscan/rscan.component";
+import { ApprovalComponent } from './pages/approval/approval.component';
+import { AuthInterceptor } from './core/auth.interceptor';
 
 
 @NgModule({
@@ -48,7 +49,6 @@ import { RscanComponent } from "./pages/rscan/rscan.component";
     AppComponent,
     LoginComponent,
     MainMenuComponent,
-    PurchaseOrderQrComponent,
     DashboardComponent,
     SidebarComponent,
     HeaderComponent,
@@ -57,7 +57,8 @@ import { RscanComponent } from "./pages/rscan/rscan.component";
     PORecieveComponent,
     IssueComponent,
     IscanComponent,
-    RscanComponent
+    RscanComponent,
+    ApprovalComponent
   ],
   imports: [
     BrowserModule,
@@ -85,7 +86,11 @@ import { RscanComponent } from "./pages/rscan/rscan.component";
     FileUploadModule,
     HttpClientModule
   ],
-  providers: [ConfirmationService, MessageService],
+  providers: [
+    ConfirmationService,
+    MessageService,
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

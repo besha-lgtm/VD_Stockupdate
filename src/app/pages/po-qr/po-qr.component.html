@@ -34,10 +34,11 @@
                             <button
                                 pButton
                                 type="button"
-                                icon="pi pi-plus"
-                                label="Create PO"
+                                icon="pi pi-refresh"
+                                label="Sync from VISIPACK"
                                 class="p-button-sm create-emp-btn"
-                                (click)="openCreatePOModal()">
+                                [disabled]="syncing"
+                                (click)="syncPOs()">
                             </button>
                         </div>
                     </div>
@@ -48,12 +49,6 @@
                     <p-table [value]="filteredData" styleClass="p-datatable-sm um-custom-table" [paginator]="true" [rows]="5" [rowsPerPageOptions]="[5,10,20]" dropdownAppendTo="body" responsiveLayout="scroll">
                         <ng-template pTemplate="header">
                             <tr>
-                                <th pSortableColumn="serialNumber">
-                                    <div class="header-cell-content">
-                                        <span>Serial No</span>
-                                        <p-sortIcon field="serialNumber"></p-sortIcon>
-                                    </div>
-                                </th>
                                 <th pSortableColumn="poNumber">
                                     <div class="header-cell-content">
                                         <span>PO Number</span>
@@ -66,58 +61,57 @@
                                         <p-sortIcon field="supplierName"></p-sortIcon>
                                     </div>
                                 </th>
-                                <th pSortableColumn="description">
+                                <th pSortableColumn="poDate">
                                     <div class="header-cell-content">
-                                        <span>Item Description</span>
-                                        <p-sortIcon field="description"></p-sortIcon>
+                                        <span>PO Date</span>
+                                        <p-sortIcon field="poDate"></p-sortIcon>
                                     </div>
                                 </th>
-                                <th pSortableColumn="boxNumber">
+                                <th pSortableColumn="status">
                                     <div class="header-cell-content">
-                                        <span>Box Number</span>
-                                        <p-sortIcon field="boxNumber"></p-sortIcon>
+                                        <span>Status</span>
+                                        <p-sortIcon field="status"></p-sortIcon>
                                     </div>
                                 </th>
-                                <th pSortableColumn="quantity">
+                                <th pSortableColumn="itemCount">
                                     <div class="header-cell-content">
-                                        <span>Quantity</span>
-                                        <p-sortIcon field="quantity"></p-sortIcon>
+                                        <span>Line Items</span>
+                                        <p-sortIcon field="itemCount"></p-sortIcon>
                                     </div>
                                 </th>
                                 <th style="text-align: center;">Action</th>
                             </tr>
                         </ng-template>
-                        <ng-template pTemplate="body" let-item>
+                        <ng-template pTemplate="body" let-po>
                             <tr>
-                                <td>{{ item.serialNumber }}</td>
                                 <td>
                                     <span class="um-badge um-badge-po">
-                                        {{ item.poNumber }}
+                                        {{ po.poNumber }}
                                     </span>
                                 </td>
-                                <td>{{ item.supplierName }}</td>
+                                <td>{{ po.supplierName }}</td>
+                                <td>{{ po.poDate }}</td>
                                 <td>
                                     <span class="um-badge um-badge-desc">
-                                        {{ item.description }}
+                                        {{ po.status }}
                                     </span>
                                 </td>
-                                <td>{{ item.boxNumber }}</td>
-                                <td>{{ item.quantity }}</td>
+                                <td>{{ po.itemCount }}</td>
                                 <td style="text-align: center;">
                                     <button
                                         pButton
                                         type="button"
-                                        icon="pi pi-qrcode"
-                                        label="Generate QR"
+                                        icon="pi pi-list"
+                                        label="View Line Items"
                                         class="p-button-sm create-emp-btn"
-                                        (click)="openQrModal(item)">
+                                        (click)="openLineItems(po)">
                                     </button>
                                 </td>
                             </tr>
                         </ng-template>
                         <ng-template pTemplate="emptymessage">
                             <tr>
-                                <td colspan="7" class="text-center" style="padding: 24px !important; color: #64748b;">
+                                <td colspan="6" class="text-center" style="padding: 24px !important; color: #64748b;">
                                     <i class="pi pi-qrcode" style="font-size: 24px; margin-bottom: 8px; display: block; opacity: 0.5;"></i>
                                     No matching records found.
                                 </td>
@@ -214,6 +208,63 @@
                 </div>
             </div>
         </form>
+    </div>
+
+    <!-- Line Items Modal — new: sits between the PO table and Generate QR,
+         so each PO's line items are picked from here before generating a QR -->
+    <div class="app-poqr-modal-overlay" *ngIf="showLineItemsModal" (click)="closeLineItemsModal()">
+        <div class="app-poqr-modal-box app-poqr-lineitems-modal-box" (click)="$event.stopPropagation()">
+            <div class="app-poqr-modal-header">
+                <h3><i class="pi pi-list" style="margin-right: 8px; color: #3b82f6;"></i>Line Items — PO {{ selectedPO?.poNumber }}</h3>
+                <button class="app-poqr-modal-close" (click)="closeLineItemsModal()">&times;</button>
+            </div>
+
+            <div class="app-poqr-modal-body">
+                <div class="app-poqr-lineitems-meta">
+                    <span><strong>Supplier:</strong> {{ selectedPO?.supplierName }}</span>
+                    <span><strong>Status:</strong> {{ selectedPO?.status }}</span>
+                </div>
+
+                <table class="app-poqr-lineitems-table">
+                    <thead>
+                        <tr>
+                            <th>Item Code</th>
+                            <th>Description</th>
+                            <th>Ordered Qty</th>
+                            <th style="text-align: center;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of selectedPOItems">
+                            <td><span class="um-badge um-badge-desc">{{ item.boxNumber }}</span></td>
+                            <td>{{ item.description }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td style="text-align: center;">
+                                <button
+                                    pButton
+                                    type="button"
+                                    icon="pi pi-qrcode"
+                                    label="Generate QR"
+                                    class="p-button-sm create-emp-btn"
+                                    (click)="openQrModal(item)">
+                                </button>
+                            </td>
+                        </tr>
+                        <tr *ngIf="selectedPOItems.length === 0">
+                            <td colspan="4" class="text-center" style="padding: 20px; color: #64748b;">
+                                No line items on this PO.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="app-poqr-modal-footer">
+                <button class="app-poqr-close-btn" (click)="closeLineItemsModal()">
+                    Close
+                </button>
+            </div>
+        </div>
     </div>
 
     <!-- QR Generation Modal -->

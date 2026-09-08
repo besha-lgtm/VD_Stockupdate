@@ -10,39 +10,26 @@ import { POQRComponent } from './pages/po-qr/po-qr.component';
 import { PORecieveComponent } from './pages/po-recieve/po-recieve.component';
 import { IssueComponent } from './pages/issue/issue.component';
 import { RecieveComponent } from './pages/recieve/recieve.component';
-import { PurchaseOrderQrComponent } from './pages/purchase-order-qr/purchase-order-qr.component';
-import { IscanComponent } from './pages/iscan/iscan.component';
-import { RscanComponent } from './pages/rscan/rscan.component';
-
-
+import { IscanComponent } from "./pages/iscan/iscan.component";
+import { RscanComponent } from "./pages/rscan/rscan.component";
+import { ApprovalComponent } from './pages/approval/approval.component';
 
 const routes: Routes = [
-  // ✅ Redirect FIRST
-  { path: '', redirectTo: 'main-menu', pathMatch: 'full' },
-
-  // ✅ Login (public)
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
-
-  // ✅ Main Menu (standalone)
   { path: 'main-menu', component: MainMenuComponent },
+  { path: 'dashboard', component: DashboardComponent },
+  { path: 'header', component: HeaderComponent },
 
-  {path: 'dashboard', component: DashboardComponent},
+  { path: 'poqr', component: POQRComponent },
+  { path: 'porecieve', component: PORecieveComponent },
+  { path: 'issue', component: IssueComponent },
+  { path: 'recieve', component: RecieveComponent },
+  { path: 'iscan', component: IscanComponent },
+  { path: 'rscan', component: RscanComponent },
+  { path: 'approval', component: ApprovalComponent },
 
-  {path: 'header', component: HeaderComponent},
-
-  {path:'poqr',component:POQRComponent},
-   {path:'porecieve',component:PORecieveComponent},
-    {path:'issue',component:IssueComponent},
-     {path:'recieve',component:RecieveComponent},
-      {path:'iscan',component:IscanComponent},
-      {path:'rscan',component:RscanComponent},
-      
-
-   {path: 'sidebar', component: SidebarComponent},
-
-
-  // ✅ PO QR Generator (standalone)
-  { path: 'po-qr', component: PurchaseOrderQrComponent }
+  { path: 'sidebar', component: SidebarComponent }
 ];
 
 @NgModule({

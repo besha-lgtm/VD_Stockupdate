@@ -16,8 +16,8 @@
     <!-- Scanner Area -->
     <div class="scanner-area" *ngIf="!showReceipt && !isLoading">
       <div class="scanner-container">
-        <!-- Using video element directly as fallback -->
-        <video id="scanner-video" #videoElement autoplay playsinline></video>
+        <!-- html5-qrcode renders its own video/canvas into this div -->
+        <div id="scanner-video"></div>
         <div class="scanner-overlay">
           <div class="scan-frame"></div>
           <p class="scan-instruction">Position QR code in the center</p>

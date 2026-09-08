@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { PoStatusService } from '../../services/po-status.service';
+import { ReceivingService } from '../../services/receiving.service';
 
 interface POReceivingItem {
   sno: number;
@@ -18,53 +19,22 @@ interface POReceivingItem {
 })
 export class PORecieveComponent implements OnInit, OnDestroy {
 
-  receivingData: POReceivingItem[] = [
-    {
-      sno: 1,
-      poNumber: '47243',
-      description: 'KIT MAINTENANCE FOR GA55',
-      lastUpdated: new Date('2024-01-15T10:30:00'),
-      totalStock: 100
-    },
-    {
-      sno: 2,
-      poNumber: '47226',
-      description: 'Hydraulic Hose',
-      lastUpdated: new Date('2024-01-14T14:45:00'),
-      totalStock: 50
-    },
-    {
-      sno: 3,
-      poNumber: '47230',
-      description: 'Brake Pipe',
-      lastUpdated: new Date('2024-01-13T09:15:00'),
-      totalStock: 75
-    },
-    {
-      sno: 4,
-      poNumber: '47244',
-      description: 'VALVE',
-      lastUpdated: new Date('2024-01-12T16:20:00'),
-      totalStock: 30
-    },
-    {
-      sno: 5,
-      poNumber: '47245',
-      description: 'COOLER',
-      lastUpdated: new Date('2024-01-11T11:00:00'),
-      totalStock: 45
-    }
-  ];
+  receivingData: POReceivingItem[] = [];
+  loading = false;
+  loadError = '';
 
-  // Current date for display
   currentDate: Date = new Date();
 
   private statusSub?: Subscription;
 
-  constructor(private poStatusService: PoStatusService) {}
+  constructor(
+    private poStatusService: PoStatusService,
+    private receivingService: ReceivingService
+  ) {}
 
   ngOnInit(): void {
-    // Subscribe to status updates from the service
+    this.loadReceivings();
+
     this.statusSub = this.poStatusService.getAcceptedPoNumbers().subscribe(acceptedPoNumbers => {
       console.log('Updated PO statuses:', acceptedPoNumbers);
     });
@@ -74,24 +44,49 @@ export class PORecieveComponent implements OnInit, OnDestroy {
     this.statusSub?.unsubscribe();
   }
 
-  // Get formatted date
-  getFormattedDate(date: Date): string {
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+  loadReceivings(): void {
+    this.loading = true;
+    this.loadError = '';
+    this.receivingService.list().subscribe({
+      next: (res) => {
+        let sno = 1;
+        const rows: POReceivingItem[] = [];
+        for (const r of res.data || []) {
+          for (const item of r.items) {
+            // Once QC has passed, acceptedQty is the real usable stock figure;
+            // before that, receivedQty (what physically arrived) is the best we know.
+            const qty = r.qcStatus === 'PASSED' ? item.acceptedQty : item.receivedQty;
+            rows.push({
+              sno: sno++,
+              poNumber: r.poNumber,
+              description: item.itemName,
+              lastUpdated: r.approvedAt ? new Date(r.approvedAt) : this.currentDate,
+              totalStock: qty
+            });
+          }
+        }
+        this.receivingData = rows;
+        this.loading = false;
+      },
+      error: (err) => {
+        this.loadError = err?.error?.message || 'Failed to load stock data';
+        this.loading = false;
+      }
     });
   }
 
-  // Calculate total stock
+  getFormattedDate(date: Date): string {
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+    });
+  }
+
   getTotalStock(): number {
     return this.receivingData.reduce((total, item) => total + item.totalStock, 0);
   }
 
-  // Refresh current date
   refreshCurrentDate(): void {
     this.currentDate = new Date();
+    this.loadReceivings();
   }
 }
