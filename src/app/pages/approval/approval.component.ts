@@ -49,7 +49,9 @@ export class ApprovalComponent implements OnInit {
   }
 
   // "Approval Request" decision — on APPROVE, the WMS backend automatically
-  // pushes to VISIPACK (Step 5) and creates a real GRN there.
+  // pushes to VISIPACK (Step 5) as a pre-QC "Incoming Receipt". No GRN exists
+  // yet at this point — VISIPACK only mints a real GRN once its own QC
+  // Incoming Approval accepts the material.
   decide(r: ReceivingDto, decision: 'APPROVED' | 'REJECTED'): void {
     const itemDecisions = r.items.map(item => ({
       receivingItemId: item.receivingItemId,
@@ -64,7 +66,7 @@ export class ApprovalComponent implements OnInit {
         this.actingOn = null;
         alert(
           decision === 'APPROVED'
-            ? `✅ ${r.receivingNumber} approved and pushed to VISIPACK for QC.`
+            ? `✅ ${r.receivingNumber} approved and pushed to VISIPACK as an incoming receipt for QC. A GRN will be issued once QC Incoming Approval accepts it.`
             : `❌ ${r.receivingNumber} rejected.`
         );
         this.load();

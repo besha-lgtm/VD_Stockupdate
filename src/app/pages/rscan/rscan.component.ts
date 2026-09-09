@@ -135,7 +135,10 @@ export class RscanComponent implements OnInit, AfterViewInit, OnDestroy {
     }).subscribe({
       next: (res) => {
         this.isLoading = false;
-        alert(`✅ PO ${this.scannedPO?.poNumber} received as ${res.data.receivingNumber}. Continue in the Receive screen to upload documents and confirm.`);
+        // res.data.receivingNumber is WMS's own receiving reference (e.g. RCV-WH-...),
+        // not a GRN — no GRN exists yet at this point, it's only minted later by
+        // VISIPACK once QC Incoming Approval actually accepts the material.
+        alert(`✅ PO ${this.scannedPO?.poNumber} received — receiving ref ${res.data.receivingNumber}. Continue in the Receive screen to upload documents and confirm.`);
         this.router.navigate(['/recieve']);
       },
       error: (err) => {
