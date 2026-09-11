@@ -69,7 +69,7 @@ export class LoginComponent {
     this.loginService.login({ username: email, password }).subscribe({
       next: () => {
         this.loading = false;
-        this.router.navigate(['/dashboard']);
+        this.router.navigate(['/main-menu']);
       },
       error: (err) => {
         this.loading = false;

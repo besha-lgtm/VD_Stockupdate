@@ -17,6 +17,26 @@ export class HeaderComponent {
 
   headerConfig$: Observable<HeaderConfig>;
 
+  // Dropdown states
+  isPlantMenuOpen = false;
+  isWarehouseMenuOpen = false;
+  isUserMenuOpen = false;
+
+  // Selected values
+  selectedPlant = { name: 'Plant 101', location: 'Cherlapally Plant' };
+  selectedWarehouse = 'Warehouse-01';
+  
+  plants = [
+    { name: 'Plant 101', location: 'Cherlapally Plant' },
+    { name: 'Plant 102', location: 'Patancheru Plant' },
+    { name: 'Plant 103', location: 'Nacharam Plant' }
+  ];
+
+  warehouses = ['Warehouse-01', 'Warehouse-02', 'Warehouse-03', 'Central Store'];
+
+  notificationCount = 3;
+  lastSyncTime = '10 Sep 2026, 10:15 AM';
+
   constructor(
     private sidebarService: SidebarService,
     private headerService: HeaderService,
@@ -28,6 +48,34 @@ export class HeaderComponent {
 
   toggleSidebar(): void {
     this.sidebarService.toggle();
+  }
+
+  togglePlantMenu(): void {
+    this.isPlantMenuOpen = !this.isPlantMenuOpen;
+    this.isWarehouseMenuOpen = false;
+    this.isUserMenuOpen = false;
+  }
+
+  selectPlant(plant: { name: string; location: string }): void {
+    this.selectedPlant = plant;
+    this.isPlantMenuOpen = false;
+  }
+
+  toggleWarehouseMenu(): void {
+    this.isWarehouseMenuOpen = !this.isWarehouseMenuOpen;
+    this.isPlantMenuOpen = false;
+    this.isUserMenuOpen = false;
+  }
+
+  selectWarehouse(wh: string): void {
+    this.selectedWarehouse = wh;
+    this.isWarehouseMenuOpen = false;
+  }
+
+  toggleUserMenu(): void {
+    this.isUserMenuOpen = !this.isUserMenuOpen;
+    this.isPlantMenuOpen = false;
+    this.isWarehouseMenuOpen = false;
   }
 
   onAddNew(): void {
