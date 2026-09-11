@@ -1,319 +1,405 @@
 <div class="app-poqr-layout">
 
-    <!-- Header -->
-    <app-header></app-header>
+  <!-- Header -->
+  <app-header></app-header>
 
-    <!-- Body -->
-    <div class="app-poqr-body">
+  <!-- Body -->
+  <div class="app-poqr-body">
 
-        <!-- Sidebar -->
-        <app-sidebar></app-sidebar>
+    <!-- Sidebar -->
+    <app-sidebar></app-sidebar>
 
-        <!-- Main Content -->
-        <main class="app-poqr-content">
+    <!-- Main Content -->
+    <main class="app-poqr-content">
 
-            <div class="um-table-section">
-
-                <div class="um-section-header">
-                    <div class="um-header-row">
-                        <div class="um-section-text">
-                            <h3 class="um-section-title">PO QR Generator</h3>
-                            <p class="um-section-desc">Generate and manage purchase order QR codes</p>
-                        </div>
-                        <div class="right">
-                            <div class="cust-search-wrap" style="display: inline-block; margin-right: 12px; vertical-align: middle;">
-                                <i class="pi pi-search cust-search-icon"></i>
-                                <input
-                                    type="text"
-                                    class="cust-search-input"
-                                    placeholder="Search PO, Supplier, Box..."
-                                    [(ngModel)]="searchTerm"
-                                    name="searchTerm"
-                                    autocomplete="off" />
-                            </div>
-                            <button
-                                pButton
-                                type="button"
-                                icon="pi pi-refresh"
-                                label="Sync from VISIPACK"
-                                class="p-button-sm create-emp-btn"
-                                [disabled]="syncing"
-                                (click)="syncPOs()">
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="um-table-wrapper">
-
-                    <p-table [value]="filteredData" styleClass="p-datatable-sm um-custom-table" [paginator]="true" [rows]="5" [rowsPerPageOptions]="[5,10,20]" dropdownAppendTo="body" responsiveLayout="scroll">
-                        <ng-template pTemplate="header">
-                            <tr>
-                                <th pSortableColumn="poNumber">
-                                    <div class="header-cell-content">
-                                        <span>PO Number</span>
-                                        <p-sortIcon field="poNumber"></p-sortIcon>
-                                    </div>
-                                </th>
-                                <th pSortableColumn="supplierName">
-                                    <div class="header-cell-content">
-                                        <span>Supplier Name</span>
-                                        <p-sortIcon field="supplierName"></p-sortIcon>
-                                    </div>
-                                </th>
-                                <th pSortableColumn="poDate">
-                                    <div class="header-cell-content">
-                                        <span>PO Date</span>
-                                        <p-sortIcon field="poDate"></p-sortIcon>
-                                    </div>
-                                </th>
-                                <th pSortableColumn="status">
-                                    <div class="header-cell-content">
-                                        <span>Status</span>
-                                        <p-sortIcon field="status"></p-sortIcon>
-                                    </div>
-                                </th>
-                                <th pSortableColumn="itemCount">
-                                    <div class="header-cell-content">
-                                        <span>Line Items</span>
-                                        <p-sortIcon field="itemCount"></p-sortIcon>
-                                    </div>
-                                </th>
-                                <th style="text-align: center;">Action</th>
-                            </tr>
-                        </ng-template>
-                        <ng-template pTemplate="body" let-po>
-                            <tr>
-                                <td>
-                                    <span class="um-badge um-badge-po">
-                                        {{ po.poNumber }}
-                                    </span>
-                                </td>
-                                <td>{{ po.supplierName }}</td>
-                                <td>{{ po.poDate }}</td>
-                                <td>
-                                    <span class="um-badge um-badge-desc">
-                                        {{ po.status }}
-                                    </span>
-                                </td>
-                                <td>{{ po.itemCount }}</td>
-                                <td style="text-align: center;">
-                                    <button
-                                        pButton
-                                        type="button"
-                                        icon="pi pi-list"
-                                        label="View Line Items"
-                                        class="p-button-sm create-emp-btn"
-                                        (click)="openLineItems(po)">
-                                    </button>
-                                </td>
-                            </tr>
-                        </ng-template>
-                        <ng-template pTemplate="emptymessage">
-                            <tr>
-                                <td colspan="6" class="text-center" style="padding: 24px !important; color: #64748b;">
-                                    <i class="pi pi-qrcode" style="font-size: 24px; margin-bottom: 8px; display: block; opacity: 0.5;"></i>
-                                    No matching records found.
-                                </td>
-                            </tr>
-                        </ng-template>
-                    </p-table>
-
-                </div>
-
-            </div>
-
-        </main>
-
-    </div>
-
-    <!-- Create PO Modal -->
-    <div class="app-poqr-modal-overlay" *ngIf="showCreatePOModal" (click)="closeCreatePOModal()">
-        <form class="app-poqr-modal-box" [formGroup]="poForm" (ngSubmit)="saveNewPO()" (click)="$event.stopPropagation()">
-            <div class="app-poqr-modal-header">
-                <h3><i class="pi pi-file-edit" style="margin-right: 8px; color: #3b82f6;"></i>Create New PO</h3>
-                <button type="button" class="app-poqr-modal-close" (click)="closeCreatePOModal()">&times;</button>
-            </div>
-
-            <div class="app-poqr-modal-body app-poqr-form-grid">
-                <div class="app-poqr-form-group">
-                    <label for="poNumber">PO Number</label>
-                    <input
-                        id="poNumber"
-                        type="text"
-                        class="app-poqr-form-input"
-                        placeholder="Enter PO Number"
-                        formControlName="poNumber">
-                    <small style="color: #ef4444; font-size: 12px; margin-top: 4px; display: block;" *ngIf="poForm.get('poNumber')?.invalid && poForm.get('poNumber')?.touched">
-                        PO Number is required
-                    </small>
-                </div>
-
-                <div class="app-poqr-form-group">
-                    <label for="supplierName">Supplier Name</label>
-                    <input
-                        id="supplierName"
-                        type="text"
-                        class="app-poqr-form-input"
-                        placeholder="Enter Supplier Name"
-                        formControlName="supplierName">
-                    <small style="color: #ef4444; font-size: 12px; margin-top: 4px; display: block;" *ngIf="poForm.get('supplierName')?.invalid && poForm.get('supplierName')?.touched">
-                        Supplier Name is required
-                    </small>
-                </div>
-
-                <div class="app-poqr-form-group app-poqr-form-full-width">
-                    <label for="description">Item Description</label>
-                    <input
-                        id="description"
-                        type="text"
-                        class="app-poqr-form-input"
-                        placeholder="Enter Item Description"
-                        formControlName="description">
-                    <small style="color: #ef4444; font-size: 12px; margin-top: 4px; display: block;" *ngIf="poForm.get('description')?.invalid && poForm.get('description')?.touched">
-                        Item Description is required
-                    </small>
-                </div>
-
-                <div class="app-poqr-form-group">
-                    <label for="boxNumber">Box Number</label>
-                    <input
-                        id="boxNumber"
-                        type="text"
-                        class="app-poqr-form-input"
-                        placeholder="Enter Box Number"
-                        formControlName="boxNumber">
-                    <small style="color: #ef4444; font-size: 12px; margin-top: 4px; display: block;" *ngIf="poForm.get('boxNumber')?.invalid && poForm.get('boxNumber')?.touched">
-                        Box Number is required
-                    </small>
-                </div>
-
-                <div class="app-poqr-form-group">
-                    <label for="quantity">Expected Quantity</label>
-                    <input
-                        id="quantity"
-                        type="number"
-                        class="app-poqr-form-input"
-                        placeholder="Enter Quantity"
-                        formControlName="quantity"
-                        min="1">
-                    <small style="color: #ef4444; font-size: 12px; margin-top: 4px; display: block;" *ngIf="poForm.get('quantity')?.invalid && poForm.get('quantity')?.touched">
-                        Quantity must be at least 1
-                    </small>
-                </div>
-
-                <div class="app-poqr-form-actions app-poqr-form-full-width">
-                    <button type="button" class="app-poqr-cancel-btn" (click)="closeCreatePOModal()">Cancel</button>
-                    <button type="submit" class="app-poqr-save-btn" [disabled]="poForm.invalid">Save</button>
-                </div>
-            </div>
-        </form>
-    </div>
-
-    <!-- Line Items Modal — new: sits between the PO table and Generate QR,
-         so each PO's line items are picked from here before generating a QR -->
-    <div class="app-poqr-modal-overlay" *ngIf="showLineItemsModal" (click)="closeLineItemsModal()">
-        <div class="app-poqr-modal-box app-poqr-lineitems-modal-box" (click)="$event.stopPropagation()">
-            <div class="app-poqr-modal-header">
-                <h3><i class="pi pi-list" style="margin-right: 8px; color: #3b82f6;"></i>Line Items — PO {{ selectedPO?.poNumber }}</h3>
-                <button class="app-poqr-modal-close" (click)="closeLineItemsModal()">&times;</button>
-            </div>
-
-            <div class="app-poqr-modal-body">
-                <div class="app-poqr-lineitems-meta">
-                    <span><strong>Supplier:</strong> {{ selectedPO?.supplierName }}</span>
-                    <span><strong>Status:</strong> {{ selectedPO?.status }}</span>
-                </div>
-
-                <table class="app-poqr-lineitems-table">
-                    <thead>
-                        <tr>
-                            <th>Item Code</th>
-                            <th>Description</th>
-                            <th>Ordered Qty</th>
-                            <th style="text-align: center;">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let item of selectedPOItems">
-                            <td><span class="um-badge um-badge-desc">{{ item.boxNumber }}</span></td>
-                            <td>{{ item.description }}</td>
-                            <td>{{ item.quantity }}</td>
-                            <td style="text-align: center;">
-                                <button
-                                    pButton
-                                    type="button"
-                                    icon="pi pi-qrcode"
-                                    label="Generate QR"
-                                    class="p-button-sm create-emp-btn"
-                                    (click)="openQrModal(item)">
-                                </button>
-                            </td>
-                        </tr>
-                        <tr *ngIf="selectedPOItems.length === 0">
-                            <td colspan="4" class="text-center" style="padding: 20px; color: #64748b;">
-                                No line items on this PO.
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="app-poqr-modal-footer">
-                <button class="app-poqr-close-btn" (click)="closeLineItemsModal()">
-                    Close
-                </button>
-            </div>
+      <!-- TOP BAR -->
+      <div class="top-bar-card">
+        <div class="top-bar-left">
+          <h1 class="page-title">PO QR Generator</h1>
+          <p class="page-subtitle">Sync approved Supplier POs from VISIPAK ERP and generate WMS QR codes for incoming items.</p>
         </div>
-    </div>
+        <div class="top-bar-right">
+          <div class="sync-status-pill">
+            <span>Last Sync: {{ lastSyncTime }}</span>
+            <span class="status-success-badge">
+              <i class="pi pi-check-circle"></i> Success
+            </span>
+          </div>
+          <button 
+            type="button" 
+            class="btn-sync-erp" 
+            [disabled]="syncing" 
+            (click)="syncPOs()">
+            <i class="pi pi-sync" [class.pi-spin]="syncing"></i>
+            Sync from VISIPAK ERP
+          </button>
+        </div>
+      </div>
 
-    <!-- QR Generation Modal -->
-    <div class="app-poqr-modal-overlay" *ngIf="showQrModal" (click)="closeQrModal()">
-        <div class="app-poqr-modal-box app-poqr-qr-modal-box" (click)="$event.stopPropagation()">
-            <div class="app-poqr-modal-header">
-                <h3><i class="pi pi-qrcode" style="margin-right: 8px; color: #10b981;"></i>Generate QR - PO {{ selectedItem?.poNumber }}</h3>
-                <button class="app-poqr-modal-close" (click)="closeQrModal()">&times;</button>
+      <!-- WORKFLOW STEPPER BAR -->
+      <div class="workflow-stepper-card">
+        <div class="step-item active">
+          <div class="step-number">1</div>
+          <div class="step-label">Sync Approved POs <span>from VISIPAK ERP</span></div>
+        </div>
+        <div class="step-chevron"><i class="pi pi-chevron-right"></i></div>
+
+        <div class="step-item" [class.active]="selectedPO !== null">
+          <div class="step-number">2</div>
+          <div class="step-label">View Line Items <span>for selected PO</span></div>
+        </div>
+        <div class="step-chevron"><i class="pi pi-chevron-right"></i></div>
+
+        <div class="step-item" [class.active]="selectedItem !== null">
+          <div class="step-number">3</div>
+          <div class="step-label">Generate QR <span>for each item</span></div>
+        </div>
+        <div class="step-chevron"><i class="pi pi-chevron-right"></i></div>
+
+        <div class="step-item" [class.active]="qrDataUrl !== null">
+          <div class="step-number">4</div>
+          <div class="step-label">Print / Download <span>and attach to box</span></div>
+        </div>
+      </div>
+
+      <!-- WORKFLOW STATS CARDS (5 Cards) -->
+      <div class="stats-cards-grid">
+        <!-- Card 1: Total POs -->
+        <div class="stat-card">
+          <div class="stat-icon-wrapper blue">
+            <i class="pi pi-file-edit"></i>
+          </div>
+          <div class="stat-info">
+            <span class="stat-title">Total POs</span>
+            <span class="stat-value dark">{{ totalPOsCount }}</span>
+          </div>
+        </div>
+
+        <!-- Card 2: Approved -->
+        <div class="stat-card">
+          <div class="stat-icon-wrapper green">
+            <i class="pi pi-check-circle"></i>
+          </div>
+          <div class="stat-info">
+            <span class="stat-title">Approved</span>
+            <span class="stat-value green">{{ approvedCount }}</span>
+          </div>
+        </div>
+
+        <!-- Card 3: Pending Approval -->
+        <div class="stat-card">
+          <div class="stat-icon-wrapper orange">
+            <i class="pi pi-clock"></i>
+          </div>
+          <div class="stat-info">
+            <span class="stat-title">Pending Approval</span>
+            <span class="stat-value orange">{{ pendingCount }}</span>
+          </div>
+        </div>
+
+        <!-- Card 4: Partially Received -->
+        <div class="stat-card">
+          <div class="stat-icon-wrapper purple">
+            <i class="pi pi-box"></i>
+          </div>
+          <div class="stat-info">
+            <span class="stat-title">Partially Received</span>
+            <span class="stat-value purple">{{ partiallyReceivedCount }}</span>
+          </div>
+        </div>
+
+        <!-- Card 5: Completed -->
+        <div class="stat-card">
+          <div class="stat-icon-wrapper gray">
+            <i class="pi pi-check-square"></i>
+          </div>
+          <div class="stat-info">
+            <span class="stat-title">Completed</span>
+            <span class="stat-value gray">{{ completedCount }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- FILTERS TOOLBAR -->
+      <div class="filters-toolbar-card">
+        <div class="filter-group">
+          <label>Supplier</label>
+          <select class="filter-select" [(ngModel)]="selectedSupplier">
+            <option *ngFor="let s of suppliersList" [value]="s">{{ s }}</option>
+          </select>
+        </div>
+
+        <div class="filter-group search-group">
+          <label>PO Number / Item Code</label>
+          <div class="search-input-wrap">
+            <i class="pi pi-search search-icon"></i>
+            <input 
+              type="text" 
+              class="filter-input" 
+              placeholder="Search PO number, item code or description..." 
+              [(ngModel)]="searchTerm" />
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <label>Status</label>
+          <select class="filter-select" [(ngModel)]="selectedStatus">
+            <option *ngFor="let st of statusOptions" [value]="st">{{ st }}</option>
+          </select>
+        </div>
+
+        <div class="filter-group date-group">
+          <label>PO Date</label>
+          <div class="date-range-wrap">
+            <input type="date" class="date-input" [(ngModel)]="fromDate" placeholder="From" />
+            <span class="date-sep">-</span>
+            <input type="date" class="date-input" [(ngModel)]="toDate" placeholder="To" />
+          </div>
+        </div>
+
+        <div class="filter-actions">
+          <button class="btn-filter-search"><i class="pi pi-search"></i> Search</button>
+          <button class="btn-filter-reset" (click)="resetFilters()">Reset</button>
+        </div>
+      </div>
+
+      <!-- MAIN POs TABLE (FULL WIDTH PAGE TABLE) -->
+      <div class="card-box po-table-card full-width-card">
+        <div class="card-header">
+          <h2 class="card-title">Approved Purchase Orders (from VISIPAK ERP)</h2>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="custom-data-table">
+              <thead>
+                <tr>
+                  <th>PO NUMBER</th>
+                  <th>SUPPLIER</th>
+                  <th>PO DATE</th>
+                  <th>DELIVERY DATE</th>
+                  <th>LINE ITEMS</th>
+                  <th>STATUS</th>
+                  <th class="text-center">ACTION</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr 
+                  *ngFor="let po of filteredData" 
+                  [class.row-selected]="selectedPO?.poId === po.poId">
+                  <td>
+                    <span class="po-link" (click)="openLineItems(po)">{{ po.poNumber }}</span>
+                  </td>
+                  <td>{{ po.supplierName }}</td>
+                  <td>{{ po.poDate }}</td>
+                  <td>{{ po.deliveryDate || '2026-09-30' }}</td>
+                  <td>{{ po.itemCount }}</td>
+                  <td>
+                    <span class="badge-status badge-approved">
+                      <i class="pi pi-check"></i> {{ po.status }}
+                    </span>
+                  </td>
+                  <td class="text-center">
+                    <button 
+                      type="button" 
+                      class="btn-action-view" 
+                      (click)="openLineItems(po)">
+                      View Items &rarr;
+                    </button>
+                  </td>
+                </tr>
+                <tr *ngIf="filteredData.length === 0">
+                  <td colspan="7" class="empty-cell">
+                    No purchase orders found matching the filter criteria.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pagination Footer -->
+          <div class="table-pagination-footer">
+            <div class="pagination-buttons">
+              <button class="btn-page-arrow" disabled>&lt;</button>
+              <button class="btn-page-number active">1</button>
+              <button class="btn-page-number">2</button>
+              <button class="btn-page-number">3</button>
+              <button class="btn-page-arrow">&gt;</button>
+            </div>
+            <div class="pagination-info">
+              Showing 1 - {{ filteredData.length }} of {{ totalPOsCount }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+  </div>
+
+  <!-- ==================== LINE ITEMS MODAL POPUP ==================== -->
+  <div class="modal-overlay" *ngIf="showLineItemsModal" (click)="closeLineItemsModal()">
+    <div class="modal-container line-items-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2 class="modal-title">
+          LINE ITEMS &mdash; {{ selectedPO?.poNumber }} 
+          <span class="supplier-subtitle">({{ selectedPO?.supplierName | uppercase }})</span>
+        </h2>
+        <div class="modal-header-right">
+          <span class="items-count-badge">{{ selectedPOItems.length }} Items</span>
+          <button class="btn-modal-close" (click)="closeLineItemsModal()">&times;</button>
+        </div>
+      </div>
+      <div class="modal-body p-0">
+        <div class="table-responsive">
+          <table class="custom-data-table modal-table">
+            <thead>
+              <tr>
+                <th style="width: 40px;" class="text-center">
+                  <input type="checkbox" checked />
+                </th>
+                <th>ITEM CODE</th>
+                <th>DESCRIPTION</th>
+                <th>ORDERED QTY</th>
+                <th>UOM</th>
+                <th>QR GENERATED</th>
+                <th class="text-center">ACTION</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr 
+                *ngFor="let item of selectedPOItems" 
+                [class.row-selected]="item.selected">
+                <td class="text-center">
+                  <input 
+                    type="checkbox" 
+                    [checked]="item.selected" 
+                    (change)="selectLineItemForQR(item)" />
+                </td>
+                <td>
+                  <strong class="item-code-text">{{ item.boxNumber }}</strong>
+                </td>
+                <td>{{ item.description }}</td>
+                <td>{{ item.quantity | number }}</td>
+                <td>{{ item.uom || 'Rolls' }}</td>
+                <td>
+                  <span class="badge-status" [ngClass]="item.qrStatus === 'Generated' ? 'badge-generated' : 'badge-pending'">
+                    <i class="pi" [ngClass]="item.qrStatus === 'Generated' ? 'pi-check' : 'pi-clock'"></i>
+                    {{ item.qrStatus || 'Pending' }}
+                  </span>
+                </td>
+                <td class="text-center">
+                  <button 
+                    type="button" 
+                    class="btn-action-qr" 
+                    (click)="openQrModal(item)">
+                    <i class="pi pi-qrcode"></i> Generate QR
+                  </button>
+                </td>
+              </tr>
+              <tr *ngIf="selectedPOItems.length === 0">
+                <td colspan="7" class="empty-cell">No line items for this purchase order.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-modal-cancel" (click)="closeLineItemsModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== GENERATE QR MODAL POPUP ==================== -->
+  <div class="modal-overlay" *ngIf="showQrModal" (click)="closeQrModal()">
+    <div class="modal-container generate-qr-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2 class="modal-title">Generate QR &mdash; {{ selectedItem?.poNumber }}</h2>
+        <button class="btn-modal-close" (click)="closeQrModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        
+        <div class="qr-modal-grid" *ngIf="selectedItem">
+          <!-- Left Column: Details & Inputs -->
+          <div class="qr-details-table">
+            <div class="detail-row">
+              <span class="detail-label">PO Number</span>
+              <span class="detail-val bold">{{ selectedItem.poNumber }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Supplier</span>
+              <span class="detail-val bold">{{ selectedItem.supplierName }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Item Code</span>
+              <span class="detail-val bold blue">{{ selectedItem.boxNumber }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Description</span>
+              <span class="detail-val">{{ selectedItem.description }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Ordered Quantity</span>
+              <span class="detail-val bold">{{ selectedItem.quantity | number }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">UOM</span>
+              <span class="detail-val">{{ selectedItem.uom || 'Rolls' }}</span>
+            </div>
+            
+            <div class="detail-row field-row">
+              <span class="detail-label">Box / Reel Number</span>
+              <div class="box-number-input-wrap">
+                <input type="text" class="form-input-sm" [(ngModel)]="boxReelNumber" />
+                <button type="button" class="btn-input-refresh" (click)="refreshBoxReelNumber()" title="Regenerate Box No">
+                  <i class="pi pi-refresh"></i>
+                </button>
+              </div>
             </div>
 
-            <div class="app-poqr-modal-body app-poqr-qr-modal-body">
-                <!-- PO Details -->
-                <div class="app-poqr-details-card">
-                    <div class="app-poqr-detail-row">
-                        <span class="app-poqr-detail-label">PO Number:</span>
-                        <span class="app-poqr-detail-value">{{ selectedItem?.poNumber }}</span>
-                    </div>
-                    <div class="app-poqr-detail-row">
-                        <span class="app-poqr-detail-label">Supplier:</span>
-                        <span class="app-poqr-detail-value">{{ selectedItem?.supplierName }}</span>
-                    </div>
-                    <div class="app-poqr-detail-row">
-                        <span class="app-poqr-detail-label">Description:</span>
-                        <span class="app-poqr-detail-value">{{ selectedItem?.description }}</span>
-                    </div>
-                    <div class="app-poqr-detail-row">
-                        <span class="app-poqr-detail-label">Box Number:</span>
-                        <span class="app-poqr-detail-value">{{ selectedItem?.boxNumber }}</span>
-                    </div>
-                    <div class="app-poqr-detail-row">
-                        <span class="app-poqr-detail-label">Expected Quantity:</span>
-                        <span class="app-poqr-detail-value">{{ selectedItem?.quantity }}</span>
-                    </div>
-                </div>
+            <div class="detail-row field-row">
+              <span class="detail-label">Location</span>
+              <div class="box-number-input-wrap">
+                <input type="text" class="form-input-sm" [(ngModel)]="itemLocation" placeholder="Rack A-12" />
+              </div>
+            </div>
 
-                <!-- Right Column for QR Code & Actions -->
-                <div class="app-poqr-qr-right-column">
-                    <!-- QR Code Display -->
-                    <div class="app-poqr-qr-display-section">
-                        <div class="app-poqr-qr-image-container" *ngIf="qrDataUrl">
-                            <img [src]="qrDataUrl" alt="QR Code" class="app-poqr-qr-display-image" />
-                        </div>
-                        <div class="app-poqr-qr-placeholder-large" *ngIf="!qrDataUrl && !generating">
-                            <span>Click "Generate QR" to create QR code</span>
-                        </div>
-                        <div class="app-poqr-qr-placeholder-large" *ngIf="generating">
-                            <span>Generating QR Code...</span>
-                        </div>
-                    </div>
+            <div class="detail-row field-row">
+              <span class="detail-label">Weight (kg)</span>
+              <div class="box-number-input-wrap">
+                <input type="number" class="form-input-sm" [(ngModel)]="itemWeight" placeholder="25.5" />
+              </div>
+            </div>
+
+            <div class="detail-row">
+              <span class="detail-label">Expected Qty <small>(per box)</small></span>
+              <span class="detail-val bold">{{ expectedQtyPerBox | number }}</span>
+            </div>
+          </div>
+
+          <!-- Right Column: QR Display & Stack Actions -->
+          <div class="qr-display-column">
+            <div class="qr-code-box">
+              <!-- When QR is generated -->
+              <div class="qr-image-wrapper" *ngIf="qrDataUrl">
+                <img [src]="qrDataUrl" alt="QR Code" />
+              </div>
+              
+              <!-- Placeholder when no QR generated yet -->
+              <div class="qr-placeholder-large" *ngIf="!qrDataUrl && !generating">
+                <i class="pi pi-qrcode placeholder-qr-icon"></i>
+                <span>Click "Generate QR" to create QR code</span>
+              </div>
+
+              <!-- Loading state -->
+              <div class="qr-loading-placeholder" *ngIf="generating">
+                <i class="pi pi-spin pi-spinner"></i>
+                <span style="font-size: 12px; margin-top: 8px;">Generating QR Code...</span>
+              </div>
+
+              <div class="qr-code-label" *ngIf="qrDataUrl">
+                {{ qrCodeText || ('WHQR-' + selectedItem.poNumber + '-001') }}
+              </div>
+            </div>
 
                     <!-- QR Actions -->
                     <div class="app-poqr-qr-actions-section">
@@ -335,22 +421,28 @@
                             [disabled]="!qrDataUrl">
                             Print
                         </button>
-                        <button 
-                            class="app-poqr-print-btn" 
-                            (click)="goToMainMenu()" 
-                            [disabled]="!qrDataUrl">
-                            Go to Main Menu
-                        </button>
                     </div>
                 </div>
             </div>
 
-            <div class="app-poqr-modal-footer">
-                <button class="app-poqr-close-btn" (click)="closeQrModal()">
-                    Close
-                </button>
+          <!-- QR SUCCESS ALERT BANNER -->
+          <div class="qr-success-alert" *ngIf="showQrSuccessAlert">
+            <div class="alert-icon">
+              <i class="pi pi-check-circle"></i>
             </div>
+            <div class="alert-content">
+              <strong>QR Code Generated Successfully!</strong>
+              <p>You can download or print and attach to the incoming box/reel.</p>
+            </div>
+          </div>
         </div>
+
+      </div>
+      <div class="modal-footer">
+        <button class="btn-modal-cancel" (click)="closeQrModal()">Close</button>
+      </div>
     </div>
+  </div>
 
 </div>
+

@@ -1,5 +1,4 @@
 <div class="app-dashboard-layout">
-
     <!-- Header -->
     <app-header></app-header>
 
@@ -11,34 +10,264 @@
 
         <!-- Content Area -->
         <main class="app-dashboard-content">
-
-            <div class="app-dashboard-welcome-section">
-
-                <h1>Welcome to Smart Warehouse Automation System</h1>
-
-                <!-- <p>
-                    Simplify warehouse operations with intelligent automation, real-time inventory visibility,
-                    efficient purchase order management, QR-enabled receiving, and seamless stock tracking—all
-                    from one centralized dashboard.
-                </p> -->
-
+            
+            <!-- Hero Banner -->
+            <div class="hero-banner">
+                <div class="hero-content">
+                    <h1>Good Morning, Raju!</h1>
+                    <p>Here's what's happening in your warehouse today.</p>
+                </div>
             </div>
 
-            <!-- Stats Grid -->
-            <div class="dashboard-stats-grid">
-                <div class="dashboard-stat-card" *ngFor="let stat of stats">
-                    <div class="dashboard-stat-icon-wrapper" [style.background-color]="stat.color + '15'">
-                        <i [class]="stat.icon" [style.color]="stat.color"></i>
+            <!-- Main Action Cards -->
+            <div class="main-cards-row">
+                <div class="main-card {{card.colorClass}}" *ngFor="let card of mainCards" (click)="onCardClick(card.id)">
+                    <div class="card-icon-circle">
+                        <!-- Use placeholder icons for now; using inline SVG based on class -->
+                        <ng-container [ngSwitch]="card.id">
+                            <svg *ngSwitchCase="'po'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10 9 9 9 8 9"></polyline>
+                            </svg>
+                            <svg *ngSwitchCase="'receive'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <rect x="7" y="7" width="3" height="3"></rect>
+                                <rect x="14" y="7" width="3" height="3"></rect>
+                                <rect x="7" y="14" width="3" height="3"></rect>
+                                <rect x="14" y="14" width="3" height="3"></rect>
+                            </svg>
+                            <svg *ngSwitchCase="'issue'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="9" cy="21" r="1"></circle>
+                                <circle cx="20" cy="21" r="1"></circle>
+                                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                            </svg>
+                            <svg *ngSwitchCase="'approval'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                                <polyline points="9 12 11 14 15 10"></polyline>
+                            </svg>
+                        </ng-container>
                     </div>
-                    <div class="dashboard-stat-info">
-                        <span class="dashboard-stat-label">{{ stat.label }}</span>
-                        <h3 class="dashboard-stat-value" [style.color]="stat.color">{{ stat.value }}</h3>
+                    <div class="card-text">
+                        <h3>{{card.title}}</h3>
+                        <p>{{card.desc}}</p>
+                    </div>
+                    <div class="card-arrow">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
                     </div>
                 </div>
             </div>
 
+            <!-- Stats Row -->
+            <div class="stats-row">
+                <div class="stat-card" *ngFor="let stat of stats">
+                    <div class="stat-icon-wrapper {{stat.colorClass}}">
+                        <!-- Icon Placeholder -->
+                        <ng-container [ngSwitch]="stat.title">
+                            <i *ngSwitchCase="'POs Expected Today'" class="pi pi-file"></i>
+                            <i *ngSwitchCase="'Received Today'" class="pi pi-box"></i>
+                            <i *ngSwitchCase="'Awaiting QC'" class="pi pi-clock"></i>
+                            <i *ngSwitchCase="'Pending Approval'" class="pi pi-check-circle"></i>
+                            <i *ngSwitchCase="'Available Stock'" class="pi pi-server"></i>
+                        </ng-container>
+                    </div>
+                    <div class="stat-content">
+                        <span class="stat-title">{{stat.title}}</span>
+                        <span class="stat-value {{stat.colorClass}}-text">{{stat.value}}</span>
+                        <div class="stat-subs">
+                            <span>{{stat.sub1}}</span> | <span>{{stat.sub2}}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Main Grid Layout -->
+            <div class="dashboard-main-grid">
+                
+                <!-- Left Column -->
+                <div class="dashboard-left-col">
+                    <!-- Warehouse Process Flow -->
+                    <div class="panel flow-panel">
+                        <h3>Warehouse Process Flow</h3>
+                        <div class="process-flow">
+                            <ng-container *ngFor="let step of processSteps; let isLast = last">
+                                <div class="step">
+                                    <div class="step-icon-wrapper" [ngClass]="'step-' + step.id">
+                                        <ng-container [ngSwitch]="step.id">
+                                            <!-- Step 1: PO (Document) -->
+                                            <svg *ngSwitchCase="1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-po">
+                                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                                <polyline points="14 2 14 8 20 8"></polyline>
+                                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                                <polyline points="10 9 9 9 8 9"></polyline>
+                                            </svg>
+                                            <!-- Step 2: QR Label -->
+                                            <svg *ngSwitchCase="2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-qr">
+                                                <rect x="3" y="3" width="7" height="7"></rect>
+                                                <rect x="14" y="3" width="7" height="7"></rect>
+                                                <rect x="14" y="14" width="7" height="7"></rect>
+                                                <rect x="3" y="14" width="7" height="7"></rect>
+                                                <line x1="9" y1="9" x2="15" y2="15"></line>
+                                                <line x1="15" y1="9" x2="9" y2="15"></line>
+                                            </svg>
+                                            <!-- Step 3: Receive (Box) -->
+                                            <svg *ngSwitchCase="3" viewBox="0 0 24 24" fill="currentColor" stroke="none" class="icon-receive">
+                                                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                                                <polyline points="3.27 6.96 12 12.01 20.73 6.96" stroke="white" stroke-width="1.5" fill="none"></polyline>
+                                                <line x1="12" y1="22.08" x2="12" y2="12" stroke="white" stroke-width="1.5"></line>
+                                            </svg>
+                                            <!-- Step 4: Verify (Document Check) -->
+                                            <svg *ngSwitchCase="4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-verify">
+                                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                                <polyline points="14 2 14 8 20 8"></polyline>
+                                                <polyline points="9 15 11 17 15 12"></polyline>
+                                            </svg>
+                                            <!-- Step 5: QC (Magnifying Glass) -->
+                                            <svg *ngSwitchCase="5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="icon-qc">
+                                                <circle cx="11" cy="11" r="8"></circle>
+                                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                            </svg>
+                                            <!-- Step 6: Approval (Check circle) -->
+                                            <div *ngSwitchCase="6" class="icon-approval-inner">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                                </svg>
+                                            </div>
+                                            <!-- Step 7: Stock (Box) -->
+                                            <svg *ngSwitchCase="7" viewBox="0 0 24 24" fill="currentColor" stroke="none" class="icon-stock">
+                                                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                                                <polyline points="3.27 6.96 12 12.01 20.73 6.96" stroke="white" stroke-width="1.5" fill="none"></polyline>
+                                                <line x1="12" y1="22.08" x2="12" y2="12" stroke="white" stroke-width="1.5"></line>
+                                            </svg>
+                                        </ng-container>
+                                    </div>
+                                    <div class="step-text">
+                                        <h4>{{step.title}}</h4>
+                                        <p>{{step.desc}}</p>
+                                    </div>
+                                </div>
+                                <div class="step-arrow" *ngIf="!isLast">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                                        <polyline points="12 5 19 12 12 19"></polyline>
+                                    </svg>
+                                </div>
+                            </ng-container>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Split: Table & Attention -->
+                    <div class="bottom-split">
+                        <div class="panel table-panel">
+                            <div class="panel-header">
+                                <h3>Recent Transactions</h3>
+                                <a href="#" class="view-all">View All <i class="pi pi-arrow-right"></i></a>
+                            </div>
+                            
+                            <p-table [value]="recentTransactions" [responsive]="true" styleClass="p-datatable-sm custom-ng-table">
+                                <ng-template pTemplate="header">
+                                    <tr>
+                                        <th>Time</th>
+                                        <th>Type</th>
+                                        <th>Reference</th>
+                                        <th>Item</th>
+                                        <th>Qty</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="body" let-txn>
+                                    <tr>
+                                        <td>{{txn.time}}</td>
+                                        <td>{{txn.type}}</td>
+                                        <td>{{txn.reference}}</td>
+                                        <td>{{txn.item}}</td>
+                                        <td>{{txn.qty}}</td>
+                                        <td>
+                                            <span class="status-badge" [ngClass]="txn.status.toLowerCase().replace(' ', '-')">
+                                                {{txn.status}}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </ng-template>
+                            </p-table>
+                        </div>
+
+                        <!-- <div class="panel attention-panel">
+                            <div class="panel-header">
+                                <h3>Attention Required</h3>
+                                <a href="#" class="view-all">View All <i class="pi pi-arrow-right"></i></a>
+                            </div>
+                            
+                            <div class="attention-list">
+                                <div class="attention-item" *ngFor="let item of attentionRequired">
+                                    <div class="attention-icon" [ngClass]="item.type">
+                                        <i class="pi pi-exclamation-triangle"></i>
+                                    </div>
+                                    <div class="attention-details">
+                                        <h4>{{item.title}}</h4>
+                                        <p>{{item.desc}}</p>
+                                    </div>
+                                    <div class="attention-time">
+                                        {{item.time}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>-->
+                    </div>
+                </div> 
+
+                <!-- Right Column -->
+                <div class="dashboard-right-col">
+                    <!-- Quick Actions -->
+                    <div class="panel quick-actions-panel">
+                        <h3>Quick Actions</h3>
+                        <div class="actions-list">
+                            <button *ngFor="let action of quickActions" 
+                                    class="action-btn" 
+                                    [ngClass]="{'danger-btn': action.isDanger}"
+                                    (click)="onQuickActionClick(action.route)">
+                                <i [class]="action.icon"></i>
+                                <span>{{action.label}}</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Promo Panel -->
+                    <div class="promo-panel">
+                        <div class="promo-content">
+                            <h3><strong>StockSync Pro</strong></h3>
+                            <p>The Smart Link Between Your Warehouse Floor and ERP.</p>
+                            
+                            <div class="promo-features">
+                                <div class="feature">
+                                    <div class="f-icon"><i class="pi pi-sync"></i></div>
+                                    <span>Faster Operations</span>
+                                </div>
+                                <div class="feature">
+                                    <div class="f-icon"><i class="pi pi-chart-bar"></i></div>
+                                    <span>Real-time Visibility</span>
+                                </div>
+                                <div class="feature">
+                                    <div class="f-icon"><i class="pi pi-dollar"></i></div>
+                                    <span>Lower Costs</span>
+                                </div>
+                                <div class="feature">
+                                    <div class="f-icon"><i class="pi pi-briefcase"></i></div>
+                                    <span>Built for MSME</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
         </main>
-
     </div>
-
 </div>
