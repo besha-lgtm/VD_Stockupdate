@@ -56,6 +56,16 @@ export class RscanComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private startCamera(): void {
+    this.errorMessage = null;
+
+    // getUserMedia needs a secure context (https, or literally "localhost").
+    // On http://<lan-ip> etc. the browser blocks camera access outright —
+    // catch that up front instead of letting getCameras() hang/reject cryptically.
+    if (!window.isSecureContext) {
+      this.errorMessage = 'Camera access requires HTTPS (or localhost). Open this page over a secure connection and try again.';
+      return;
+    }
+
     this.html5Qr = new Html5Qrcode(this.SCANNER_ELEMENT_ID);
     Html5Qrcode.getCameras()
       .then((cameras) => {
@@ -119,7 +129,17 @@ export class RscanComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onScanError(error: any): void {
     console.error('Scan error:', error);
-    this.errorMessage = 'Failed to access camera. Please check permissions.';
+    const name = error?.name || '';
+
+    if (name === 'NotAllowedError' || /permission/i.test(String(error))) {
+      this.errorMessage = 'Camera permission denied. Allow camera access for this site in your browser settings, then tap "Try Again".';
+    } else if (name === 'NotFoundError' || name === 'OverconstrainedError') {
+      this.errorMessage = 'No usable camera found on this device.';
+    } else if (name === 'NotReadableError') {
+      this.errorMessage = 'Camera is already in use by another app. Close it and try again.';
+    } else {
+      this.errorMessage = 'Failed to access camera. Please check permissions and try again.';
+    }
   }
 
   // "Accept" — creates the real Receiving Verification record (Step 4),

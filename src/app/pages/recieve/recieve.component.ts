@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { ReceivingService, ReceivingDto } from '../../services/receiving.service';
@@ -49,7 +50,8 @@ export class RecieveComponent implements OnInit {
   }
 
   constructor(
-    private receivingService: ReceivingService
+    private receivingService: ReceivingService,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -189,7 +191,9 @@ export class RecieveComponent implements OnInit {
   // "Confirm" — WMS marks the receiving VERIFIED and automatically submits it
   // for approval (see receiving.service.js confirmReceiving on the backend).
   acceptItem(item: ReceivingItem) {
-    if (!item.documentsUploaded || item.accepted) return;
+    // Document upload is optional — staff can Confirm with or without
+    // attaching delivery note / PO / etc., so only block on already-accepted.
+    if (item.accepted) return;
 
     this.receivingService.confirm(item.receivingNumber).subscribe({
       next: () => {
@@ -198,6 +202,8 @@ export class RecieveComponent implements OnInit {
         // incorrectly marked every other line item on the same PO as
         // accepted too.
         item.accepted = true;
+        alert(`✅ Confirmed — PO ${item.poNumber} submitted for approval.`);
+        this.router.navigate(['/approval']);
       },
       error: (err) => {
         alert(err?.error?.message || 'Failed to confirm receiving');

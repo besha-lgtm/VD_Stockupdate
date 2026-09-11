@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import * as QRCode from 'qrcode';
 import { PurchaseOrderService, PurchaseOrderDto } from '../../services/purchase-order.service';
@@ -68,7 +69,8 @@ export class POQRComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private poService: PurchaseOrderService,
-    private qrService: QrService
+    private qrService: QrService,
+    private router: Router
   ) {
     this.poForm = this.fb.group({
       poNumber: ['', Validators.required],
@@ -231,6 +233,15 @@ export class POQRComponent implements OnInit {
     link.href = this.qrDataUrl;
     link.download = `${this.selectedItem?.poNumber}_${this.selectedItem?.serialNumber}.png`;
     link.click();
+  }
+
+  // "Go to Main Menu" — after generating (and optionally printing/downloading)
+  // the QR, take the user back to the main menu instead of leaving them stuck
+  // in this modal with no way out except the small "Close" (which had no
+  // navigation wired to it at all).
+  goToMainMenu(): void {
+    this.closeQrModal();
+    this.router.navigate(['/main-menu']);
   }
 
   printQr() {
