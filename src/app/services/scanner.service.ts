@@ -16,6 +16,7 @@ export class ScannerService {
       qrCode: string; poNumber: string; poId: number; status: string;
       supplierName: string; poItemId: number | null; itemCode: string | null;
       itemName: string | null; orderedQty: number | null;
+      location: string | null; receivedQtyPerBox: string | null;
     };
   }> {
     return this.http.post<any>(AppSettings.API.scan, { code });

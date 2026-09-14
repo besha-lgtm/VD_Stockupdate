@@ -12,96 +12,140 @@
         <!-- Main Content -->
         <main class="app-porecieve-content">
 
-            <div class="um-table-section">
+            <div class="sw-wrap">
 
-                <div class="um-section-header">
-                    <div class="um-header-row">
-                        <div class="um-section-text">
-                            <h3 class="um-section-title">Stock Management</h3>
-                            <p class="um-section-desc" *ngIf="receivingData.length > 0">
-                                Total Items: {{ receivingData.length }} &nbsp;|&nbsp; Last Updated: {{ getFormattedDate(currentDate) }}
-                            </p>
-                            <p class="um-section-desc" *ngIf="receivingData.length === 0">
-                                View inventory stock levels and updates
-                            </p>
+                <!-- Page Header -->
+                <div class="sw-page-header">
+                    <div>
+                        <h1 class="sw-page-title"><i class="pi pi-box"></i> Stock Update</h1>
+                        <p class="sw-page-sub">Approved receivings only — a supervisor decision moves material in or out of this view.</p>
+                    </div>
+                    <div class="sw-page-stats">
+                        <div class="sw-stat">
+                            <span class="sw-stat-value">{{ receivingData.length }}</span>
+                            <span class="sw-stat-label">Stock Lines</span>
+                        </div>
+                        <div class="sw-stat">
+                            <span class="sw-stat-value">{{ uniquePoCount }}</span>
+                            <span class="sw-stat-label">Purchase Orders</span>
+                        </div>
+                        <div class="sw-stat sw-stat-accent">
+                            <span class="sw-stat-value">{{ getTotalStock() | number:'1.0-3' }}</span>
+                            <span class="sw-stat-label">Total Units</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="um-table-wrapper">
+                <!-- Main Card -->
+                <section class="sw-card">
 
-                    <p-table #dt [value]="receivingData" styleClass="p-datatable-sm um-custom-table" [paginator]="true" [rows]="5" [rowsPerPageOptions]="[5,10,20]" dropdownAppendTo="body" responsiveLayout="scroll">
-                        <ng-template pTemplate="header">
-                            <tr>
-                                <th>S.No</th>
-                                <th pSortableColumn="poNumber">
-                                    <div class="header-cell-content">
-                                        <span>PO Number</span>
-                                        <p-sortIcon field="poNumber"></p-sortIcon>
-                                    </div>
-                                </th>
-                                <th pSortableColumn="description">
-                                    <div class="header-cell-content">
-                                        <span>Item Description</span>
-                                        <p-sortIcon field="description"></p-sortIcon>
-                                    </div>
-                                </th>
-                                <th pSortableColumn="lastUpdated">
-                                    <div class="header-cell-content">
-                                        <span>Stock Last Updated On</span>
-                                        <p-sortIcon field="lastUpdated"></p-sortIcon>
-                                    </div>
-                                </th>
-                                <th pSortableColumn="totalStock">
-                                    <div class="header-cell-content">
-                                        <span>Total Stock</span>
-                                        <p-sortIcon field="totalStock"></p-sortIcon>
-                                    </div>
-                                </th>
-                            </tr>
-                        </ng-template>
-                        <ng-template pTemplate="body" let-item let-i="rowIndex">
-                            <tr>
-                                <td>{{ item.sno || (dt.first + i + 1) }}</td>
-                                <td>
-                                    <span class="um-badge um-badge-po">
-                                        {{ item.poNumber }}
-                                    </span>
-                                </td>
-                                <td>
-                                    <span class="um-badge um-badge-desc">
-                                        {{ item.description }}
-                                    </span>
-                                </td>
-                                <td>{{ getFormattedDate(item.lastUpdated) }}</td>
-                                <td>
-                                    <span class="um-badge um-badge-active" style="padding: 4px 12px; font-size: 13px;">{{ item.totalStock }}</span>
-                                </td>
-                            </tr>
-                        </ng-template>
-                        <ng-template pTemplate="emptymessage">
-                            <tr>
-                                <td colspan="5" class="text-center" style="padding: 24px !important; color: #64748b;">
-                                    <i class="pi pi-refresh" style="font-size: 24px; margin-bottom: 8px; display: block; opacity: 0.5;"></i>
-                                    No stock items found.
-                                </td>
-                            </tr>
-                        </ng-template>
-                    </p-table>
-
-                </div>
-
-                <!-- Stock Summary Footer -->
-                <div class="app-porecieve-table-footer" *ngIf="receivingData.length > 0">
-                    <div class="app-porecieve-summary-item">
-                        <span class="app-porecieve-summary-label">Total Stock Items:</span>
-                        <span class="app-porecieve-summary-value">{{ receivingData.length }}</span>
+                    <div class="sw-card-header">
+                        <div>
+                            <h3><i class="pi pi-check-circle" style="color:#10b981; margin-right:6px;"></i>Approved Stock</h3>
+                            <p>Last refreshed {{ getFormattedDate(currentDate) }}</p>
+                        </div>
+                        <div class="sw-header-actions">
+                            <div class="sw-search-wrap">
+                                <i class="pi pi-search"></i>
+                                <input type="text" placeholder="Search PO or item..." [(ngModel)]="searchTerm" name="searchTerm" autocomplete="off" />
+                            </div>
+                            <button type="button" class="sw-refresh-btn" (click)="refreshCurrentDate()" [disabled]="loading">
+                                <i class="pi pi-refresh" [class.pi-spin]="loading"></i> Refresh
+                            </button>
+                        </div>
                     </div>
-                    <div class="app-porecieve-summary-item">
-                        <span class="app-porecieve-summary-label">Total Units in Stock:</span>
-                        <span class="app-porecieve-summary-value">{{ getTotalStock() }}</span>
+
+                    <!-- Loading -->
+                    <div class="sw-loading" *ngIf="loading">
+                        <i class="pi pi-spin pi-spinner"></i> Loading stock data...
                     </div>
-                </div>
+
+                    <!-- Error -->
+                    <div class="sw-load-error" *ngIf="loadError && !loading">
+                        <i class="pi pi-exclamation-triangle"></i> {{ loadError }}
+                    </div>
+
+                    <!-- Empty state -->
+                    <div class="sw-empty-state" *ngIf="!loading && !loadError && receivingData.length === 0">
+                        <i class="pi pi-inbox"></i>
+                        <h4>No approved stock yet</h4>
+                        <p>Receivings only land here once a supervisor approves them in Receive &amp; Approve.<br>Anything still "In Progress" or "Pending Approval" won't show up.</p>
+                    </div>
+
+                    <!-- Table -->
+                    <div class="sw-table-wrapper" *ngIf="!loading && !loadError && receivingData.length > 0">
+                        <p-table #dt [value]="filteredData" styleClass="p-datatable-sm sw-custom-table" [paginator]="true" [rows]="5" [rowsPerPageOptions]="[5,10,20]" dropdownAppendTo="body" responsiveLayout="scroll">
+                            <ng-template pTemplate="header">
+                                <tr>
+                                    <th style="width:60px;">S.No</th>
+                                    <th pSortableColumn="poNumber">
+                                        <div class="header-cell-content">
+                                            <span>PO Number</span>
+                                            <p-sortIcon field="poNumber"></p-sortIcon>
+                                        </div>
+                                    </th>
+                                    <th pSortableColumn="description">
+                                        <div class="header-cell-content">
+                                            <span>Item Description</span>
+                                            <p-sortIcon field="description"></p-sortIcon>
+                                        </div>
+                                    </th>
+                                    <th pSortableColumn="lastUpdated">
+                                        <div class="header-cell-content">
+                                            <span>Stock Last Updated On</span>
+                                            <p-sortIcon field="lastUpdated"></p-sortIcon>
+                                        </div>
+                                    </th>
+                                    <th pSortableColumn="totalStock" style="text-align:right;">
+                                        <div class="header-cell-content" style="justify-content:flex-end;">
+                                            <span>Total Stock</span>
+                                            <p-sortIcon field="totalStock"></p-sortIcon>
+                                        </div>
+                                    </th>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-item let-i="rowIndex">
+                                <tr>
+                                    <td class="sw-sno">{{ dt.first + i + 1 }}</td>
+                                    <td>
+                                        <span class="sw-chip sw-chip-blue">{{ item.poNumber }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="sw-chip sw-chip-gray">{{ item.description }}</span>
+                                    </td>
+                                    <td class="sw-date-cell">
+                                        <i class="pi pi-clock"></i> {{ getFormattedDate(item.lastUpdated) }}
+                                    </td>
+                                    <td style="text-align:right;">
+                                        <span class="sw-qty-badge">
+                                            <i class="pi pi-circle-fill"></i> {{ item.totalStock | number:'1.0-3' }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="emptymessage">
+                                <tr>
+                                    <td colspan="5" class="sw-empty-row">
+                                        <i class="pi pi-search"></i> No stock matches "{{ searchTerm }}".
+                                    </td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                    </div>
+
+                    <!-- Summary Footer -->
+                    <div class="sw-summary-footer" *ngIf="!loading && !loadError && filteredData.length > 0">
+                        <div class="sw-summary-item">
+                            <span class="sw-summary-label">Showing</span>
+                            <span class="sw-summary-value">{{ filteredData.length }} of {{ receivingData.length }} lines</span>
+                        </div>
+                        <div class="sw-summary-item">
+                            <span class="sw-summary-label">Total Units (filtered)</span>
+                            <span class="sw-summary-value sw-summary-accent">{{ getTotalStock() | number:'1.0-3' }}</span>
+                        </div>
+                    </div>
+
+                </section>
 
             </div>
 

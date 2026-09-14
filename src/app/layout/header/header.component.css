@@ -230,6 +230,26 @@
   margin-top: 2px;
 }
 
+/* Shown when the backend has never completed a VISIPACK sync yet
+   (erpConnected = false) — amber instead of green, so it's visually
+   distinct from the healthy state rather than always looking "connected". */
+.status-pill-disconnected {
+  background-color: #fffbeb;
+  border-color: #fde68a;
+}
+
+.status-pill-disconnected:hover {
+  border-color: #fcd34d;
+}
+
+.status-pill-disconnected .status-icon {
+  color: #b45309;
+}
+
+.status-pill-disconnected .status-title {
+  color: #b45309;
+}
+
 /* NOTIFICATION BELL */
 .notification-btn {
   position: relative;

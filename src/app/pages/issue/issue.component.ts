@@ -1,16 +1,6 @@
-import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
 import * as QRCode from 'qrcode';
-
-interface IssueItem {
-  id: number;
-  requestNumber: string;
-  department: string;
-  item: string;
-  required: number;
-  status: string;
-  qrDataUrl: string | null;
-}
+import { IssueService, DepartmentDto, ItemWithStockDto, IssueRequestDto } from '../../services/issue.service';
 
 @Component({
   selector: 'app-issue',
@@ -18,302 +8,196 @@ interface IssueItem {
   templateUrl: './issue.component.html',
   styleUrl: './issue.component.css'
 })
-export class IssueComponent {
+export class IssueComponent implements OnInit {
 
-  // ---- Show Issue Form ----
-  showIssueForm = false;
-  issueForm: FormGroup;
-  
-  // ---- Stock Check Message ----
-  stockMessage: string | null = null;
-  stockChecked = false;
+  // ===================== Lookups =====================
+  departments: DepartmentDto[] = [];
+  items: ItemWithStockDto[] = [];
+  loadingLookups = false;
+  lookupError = '';
 
-  // ---- Issue Data ----
-  issuingData: IssueItem[] = [
-    {
-      id: 1,
-      requestNumber: 'REQ-001',
-      department: 'Production',
-      item: 'KIT MAINTENANCE FOR GA55',
-      required: 1,
-      status: 'ISSUED',
-      qrDataUrl: null
-    },
-    {
-      id: 2,
-      requestNumber: 'REQ-002',
-      department: 'Maintenance',
-      item: 'Hydraulic Hose',
-      required: 2,
-      status: 'ISSUED',
-      qrDataUrl: null
-    },
-    {
-      id: 3,
-      requestNumber: 'REQ-003',
-      department: 'Quality',
-      item: 'Brake Pipe',
-      required: 4,
-      status: 'ISSUED',
-      qrDataUrl: null
-    }
-  ];
+  // ===================== Step 1: Select item =====================
+  itemSearchTerm = '';
+  selectedItem: ItemWithStockDto | null = null;
 
-  // ---- Counter for ID ----
-  private issueCounter = 4;
-
-  // ---- QR Modal ----
-  showQrModal = false;
-  selectedItem: IssueItem | null = null;
-  generating = false;
-
-  constructor(private fb: FormBuilder) {
-    this.issueForm = this.fb.group({
-      requestNumber: ['', Validators.required],
-      department: ['', Validators.required],
-      item: ['', Validators.required],
-      required: [1, [Validators.required, Validators.min(1)]]
-    });
+  get filteredItems(): ItemWithStockDto[] {
+    const term = this.itemSearchTerm.trim().toLowerCase();
+    if (!term) return this.items;
+    return this.items.filter(i =>
+      i.itemCode.toLowerCase().includes(term) || i.itemName.toLowerCase().includes(term)
+    );
   }
 
-  // ---- Open Issue Form ----
-  openIssueForm() {
-    this.showIssueForm = true;
-    this.issueForm.reset({
-      requestNumber: '',
-      department: '',
-      item: '',
-      required: 1
-    });
-    this.stockMessage = null;
-    this.stockChecked = false;
-  }
-
-  // ---- Close Issue Form ----
-  closeIssueForm() {
-    this.showIssueForm = false;
-    this.stockMessage = null;
-    this.stockChecked = false;
-  }
-
-  // ---- Check Stock ----
-  checkStock() {
-    if (this.issueForm.invalid) {
-      this.issueForm.markAllAsTouched();
-      return;
-    }
-
-    const { department, item, required } = this.issueForm.value;
-
-    this.stockChecked = true;
-    this.stockMessage = `Yes, we have stock available! ${required} units of "${item}" are available for ${department}.`;
-  }
-
-  // ---- Save Issue (after stock check) ----
-  saveIssue() {
-    if (!this.stockChecked) {
-      alert('Please check stock availability first');
-      return;
-    }
-
-    if (this.issueForm.invalid) {
-      this.issueForm.markAllAsTouched();
-      return;
-    }
-
-    const { requestNumber, department, item, required } = this.issueForm.value;
-
-    const newItem: IssueItem = {
-      id: this.issueCounter++,
-      requestNumber: requestNumber,
-      department: department,
-      item: item,
-      required: required,
-      status: 'ISSUED',
-      qrDataUrl: null
-    };
-
-    // Add new item at the beginning
-    this.issuingData.unshift(newItem);
-    
-    // Show success message
-    alert(`\u2705 Items have been issued successfully!\n\nRequest: ${newItem.requestNumber}\nDepartment: ${newItem.department}\nItem: ${newItem.item}\nQuantity: ${newItem.required}`);
-    
-    this.closeIssueForm();
-  }
-
-  // ---- Generate QR for Issue ----
-  openQrModal(item: IssueItem) {
+  selectItem(item: ItemWithStockDto): void {
     this.selectedItem = item;
+    this.issueQty = 0;
+    this.departmentId = null;
+    this.referenceNo = '';
+    this.remarks = '';
+    this.actionError = '';
+  }
+
+  clearSelectedItem(): void {
+    this.selectedItem = null;
+  }
+
+  // ===================== Step 2-3: Issue details =====================
+  issueQty = 0;
+  departmentId: number | null = null;
+  referenceNo = '';
+  remarks = '';
+  submitting = false;
+  actionError = '';
+
+  get overStock(): boolean {
+    return !!this.selectedItem && this.issueQty > this.selectedItem.availableQty;
+  }
+
+  // ===================== Recent issue transactions =====================
+  issuingData: IssueRequestDto[] = [];
+  loading = false;
+  loadError = '';
+
+  // ===================== QR modal (kept — same download/print UX as before) =====================
+  showQrModal = false;
+  qrDataUrl: string | null = null;
+  generating = false;
+  qrSelected: IssueRequestDto | null = null;
+
+  constructor(private issueService: IssueService) { }
+
+  ngOnInit(): void {
+    this.loadLookups();
+    this.loadRecent();
+  }
+
+  loadLookups(): void {
+    this.loadingLookups = true;
+    this.lookupError = '';
+    this.issueService.listDepartments().subscribe({
+      next: (res) => { this.departments = res.data || []; },
+      error: (err) => { this.lookupError = err?.error?.message || 'Failed to load departments'; }
+    });
+    this.issueService.listItems().subscribe({
+      next: (res) => { this.items = res.data || []; this.loadingLookups = false; },
+      error: (err) => { this.lookupError = err?.error?.message || 'Failed to load items'; this.loadingLookups = false; }
+    });
+  }
+
+  loadRecent(): void {
+    this.loading = true;
+    this.loadError = '';
+    this.issueService.list().subscribe({
+      next: (res) => { this.issuingData = res.data || []; this.loading = false; },
+      error: (err) => { this.loadError = err?.error?.message || 'Failed to load issue transactions'; this.loading = false; }
+    });
+  }
+
+  getTotalIssued(): number {
+    return this.issuingData.reduce((sum, r) => sum + r.items.reduce((s, i) => s + (i.issuedQty || 0), 0), 0);
+  }
+
+  totalIssuedFor(req: IssueRequestDto): number {
+    return req.items.reduce((s, i) => s + (i.issuedQty || 0), 0);
+  }
+
+  // "Issue & Update Stock" — one button, matching the screenshot: creates the
+  // issue request and immediately issues/decrements stock against it in the
+  // same action (no separate supervisor approval step in this flow).
+  issueAndUpdateStock(): void {
+    if (!this.selectedItem || !this.departmentId || !this.issueQty || this.issueQty <= 0) {
+      this.actionError = 'Select an item, department and a valid quantity.';
+      return;
+    }
+    if (this.overStock) {
+      this.actionError = `Only ${this.selectedItem.availableQty} ${this.selectedItem.uomCode} available.`;
+      return;
+    }
+
+    this.submitting = true;
+    this.actionError = '';
+
+    // Purely a free-text cross-reference for humans (e.g. a batch or job
+    // number) — never validated against VISIPAK, never synced anywhere.
+    // See the Issue Verification design discussion: WMS stock stays
+    // WMS-internal; this is just a breadcrumb for someone tracing it later.
+    const combinedRemarks = [
+      this.referenceNo ? `Ref: ${this.referenceNo}` : '',
+      this.remarks
+    ].filter(Boolean).join(' — ') || undefined;
+
+    this.issueService.create({
+      departmentId: this.departmentId,
+      items: [{ itemId: this.selectedItem.itemId, requestedQty: this.issueQty }],
+      remarks: combinedRemarks
+    }).subscribe({
+      next: (createRes) => {
+        const req = createRes.data;
+        const reqItem = req.items[0];
+        this.issueService.issueAndUpdateStock(req.issueRequestNumber, [
+          { issueRequestItemId: reqItem.issueRequestItemId, issuedQty: this.issueQty }
+        ]).subscribe({
+          next: () => {
+            this.submitting = false;
+            this.selectedItem = null;
+            this.issueQty = 0;
+            this.departmentId = null;
+            this.referenceNo = '';
+            this.remarks = '';
+            this.loadLookups(); // refresh available stock
+            this.loadRecent();
+          },
+          error: (err) => {
+            this.submitting = false;
+            this.actionError = err?.error?.message || 'Failed to issue and update stock.';
+          }
+        });
+      },
+      error: (err) => {
+        this.submitting = false;
+        this.actionError = err?.error?.message || 'Failed to create issue request.';
+      }
+    });
+  }
+
+  // ===================== QR modal (unchanged behaviour) =====================
+
+  openQrModal(item: IssueRequestDto): void {
+    this.qrSelected = item;
     this.qrDataUrl = null;
-    this.generating = false;
     this.showQrModal = true;
-    
-    // Auto-generate QR when modal opens
     this.generateQr();
   }
 
-  closeQrModal() {
-    this.showQrModal = false;
-    this.selectedItem = null;
-    this.qrDataUrl = null;
-    this.generating = false;
-  }
-
-  qrDataUrl: string | null = null;
-
-  async generateQr() {
-    if (!this.selectedItem) return;
-    
+  async generateQr(): Promise<void> {
+    if (!this.qrSelected) return;
     this.generating = true;
-
     try {
-      const payload = {
-        requestNumber: this.selectedItem.requestNumber,
-        department: this.selectedItem.department,
-        item: this.selectedItem.item,
-        required: this.selectedItem.required,
-        status: this.selectedItem.status
-      };
-
-      this.qrDataUrl = await QRCode.toDataURL(JSON.stringify(payload), {
-        width: 300,
-        margin: 2
-      });
-      
-      // Store QR in the item
-      this.selectedItem.qrDataUrl = this.qrDataUrl;
-      
-    } catch (err) {
-      console.error('QR generation failed', err);
-      alert('Failed to generate QR code');
+      this.qrDataUrl = await QRCode.toDataURL(this.qrSelected.issueRequestNumber, { width: 280, margin: 2 });
     } finally {
       this.generating = false;
     }
   }
 
-  downloadQr() {
-    if (!this.qrDataUrl) {
-      return;
-    }
+  closeQrModal(): void {
+    this.showQrModal = false;
+    this.qrSelected = null;
+    this.qrDataUrl = null;
+  }
 
+  downloadQr(): void {
+    if (!this.qrDataUrl) return;
     const link = document.createElement('a');
     link.href = this.qrDataUrl;
-    link.download = `${this.selectedItem?.requestNumber}_${this.selectedItem?.item}.png`;
+    link.download = `${this.qrSelected?.issueRequestNumber || 'issue'}.png`;
     link.click();
   }
 
-  printQr() {
-    if (!this.qrDataUrl || !this.selectedItem) {
-      return;
-    }
-
-    const printWindow = window.open('', '_blank', 'width=600,height=600');
-    if (!printWindow) {
-      alert('Please allow popups for this site');
-      return;
-    }
-
-    const item = this.selectedItem;
-
-    printWindow.document.write(`
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <title>QR Code - ${item.requestNumber}</title>
-          <style>
-            body {
-              display: flex;
-              flex-direction: column;
-              align-items: center;
-              justify-content: center;
-              height: 100vh;
-              margin: 0;
-              font-family: Arial, sans-serif;
-              background: #f5f7fa;
-            }
-            .qr-container {
-              text-align: center;
-              padding: 40px;
-              background: white;
-              border-radius: 12px;
-              box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-              max-width: 500px;
-            }
-            .qr-image {
-              max-width: 300px;
-              height: auto;
-              margin-bottom: 20px;
-            }
-            .qr-details {
-              margin-top: 20px;
-              font-size: 14px;
-              color: #374151;
-              text-align: left;
-              padding: 0 20px;
-            }
-            .qr-details p {
-              margin: 8px 0;
-              padding: 5px 0;
-              border-bottom: 1px solid #f0f0f0;
-            }
-            .qr-details p:last-child {
-              border-bottom: none;
-            }
-            .qr-details strong {
-              color: #1f2937;
-              display: inline-block;
-              width: 140px;
-            }
-            .title {
-              font-size: 20px;
-              font-weight: 600;
-              color: #0f766e;
-              margin-bottom: 20px;
-            }
-            .status-badge {
-              display: inline-block;
-              padding: 4px 12px;
-              border-radius: 20px;
-              font-size: 12px;
-              font-weight: 600;
-              background: #d1fae5;
-              color: #065f46;
-            }
-            @media print {
-              .no-print {
-                display: none;
-              }
-              .qr-container {
-                box-shadow: none;
-                border: 1px solid #e5e7eb;
-              }
-            }
-          </style>
-        </head>
-        <body>
-          <div class="qr-container">
-            <div class="title">Issue QR Code</div>
-            <img src="${this.qrDataUrl}" alt="QR Code" class="qr-image" />
-            <div class="qr-details">
-              <p><strong>Request Number:</strong> ${item.requestNumber}</p>
-              <p><strong>Department:</strong> ${item.department}</p>
-              <p><strong>Item:</strong> ${item.item}</p>
-              <p><strong>Required Quantity:</strong> ${item.required}</p>
-              <p><strong>Status:</strong> <span class="status-badge">${item.status}</span></p>
-            </div>
-            <button onclick="window.print()" class="no-print" style="margin-top: 25px; padding: 12px 30px; background: #0f766e; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500;">
-              \ud83d\udda8\ufe0f Print QR Code
-            </button>
-          </div>
-        </body>
-      </html>
-    `);
+  printQr(): void {
+    if (!this.qrDataUrl) return;
+    const printWindow = window.open('', '_blank', 'width=500,height=500');
+    if (!printWindow) return;
+    printWindow.document.write(`<img src="${this.qrDataUrl}" onload="window.print()" />`);
     printWindow.document.close();
-  }
-
-  // ---- Get Total Issued ----
-  getTotalIssued(): number {
-    return this.issuingData.reduce((total, item) => total + item.required, 0);
   }
 }

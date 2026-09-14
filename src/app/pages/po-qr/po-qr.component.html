@@ -20,7 +20,7 @@
         </div>
         <div class="top-bar-right">
           <div class="sync-status-pill">
-            <span>Last Sync: {{ lastSyncTime }}</span>
+            <span>Last Sync: {{ lastSyncTime || 'Not synced yet this session' }}</span>
             <span class="status-success-badge">
               <i class="pi pi-check-circle"></i> Success
             </span>
@@ -124,7 +124,7 @@
       <div class="filters-toolbar-card">
         <div class="filter-group">
           <label>Supplier</label>
-          <select class="filter-select" [(ngModel)]="selectedSupplier">
+          <select class="filter-select" [(ngModel)]="selectedSupplier" (ngModelChange)="onFilterChange()">
             <option *ngFor="let s of suppliersList" [value]="s">{{ s }}</option>
           </select>
         </div>
@@ -137,28 +137,29 @@
               type="text" 
               class="filter-input" 
               placeholder="Search PO number, item code or description..." 
-              [(ngModel)]="searchTerm" />
+              [(ngModel)]="searchTerm"
+              (ngModelChange)="onFilterChange()" />
           </div>
         </div>
 
         <div class="filter-group">
           <label>Status</label>
-          <select class="filter-select" [(ngModel)]="selectedStatus">
-            <option *ngFor="let st of statusOptions" [value]="st">{{ st }}</option>
+          <select class="filter-select" [(ngModel)]="selectedStatus" (ngModelChange)="onFilterChange()">
+            <option *ngFor="let st of statusOptions" [value]="st">{{ statusLabel(st) }}</option>
           </select>
         </div>
 
         <div class="filter-group date-group">
           <label>PO Date</label>
           <div class="date-range-wrap">
-            <input type="date" class="date-input" [(ngModel)]="fromDate" placeholder="From" />
+            <input type="date" class="date-input" [(ngModel)]="fromDate" [max]="toDate || null" (ngModelChange)="onFilterChange()" placeholder="From" />
             <span class="date-sep">-</span>
-            <input type="date" class="date-input" [(ngModel)]="toDate" placeholder="To" />
+            <input type="date" class="date-input" [(ngModel)]="toDate" [min]="fromDate || null" (ngModelChange)="onFilterChange()" placeholder="To" />
           </div>
         </div>
 
         <div class="filter-actions">
-          <button class="btn-filter-search"><i class="pi pi-search"></i> Search</button>
+          <button class="btn-filter-search" (click)="onFilterChange()"><i class="pi pi-search"></i> Search</button>
           <button class="btn-filter-reset" (click)="resetFilters()">Reset</button>
         </div>
       </div>
@@ -184,18 +185,18 @@
               </thead>
               <tbody>
                 <tr 
-                  *ngFor="let po of filteredData" 
+                  *ngFor="let po of paginatedPoList" 
                   [class.row-selected]="selectedPO?.poId === po.poId">
                   <td>
                     <span class="po-link" (click)="openLineItems(po)">{{ po.poNumber }}</span>
                   </td>
                   <td>{{ po.supplierName }}</td>
                   <td>{{ po.poDate }}</td>
-                  <td>{{ po.deliveryDate || '2026-09-30' }}</td>
+                  <td>{{ po.deliveryDate || '-' }}</td>
                   <td>{{ po.itemCount }}</td>
                   <td>
-                    <span class="badge-status badge-approved">
-                      <i class="pi pi-check"></i> {{ po.status }}
+                    <span class="badge-status" [ngClass]="statusBadgeClass(po.status)">
+                      <i class="pi" [ngClass]="statusIcon(po.status)"></i> {{ statusLabel(po.status) }}
                     </span>
                   </td>
                   <td class="text-center">
@@ -219,14 +220,16 @@
           <!-- Pagination Footer -->
           <div class="table-pagination-footer">
             <div class="pagination-buttons">
-              <button class="btn-page-arrow" disabled>&lt;</button>
-              <button class="btn-page-number active">1</button>
-              <button class="btn-page-number">2</button>
-              <button class="btn-page-number">3</button>
-              <button class="btn-page-arrow">&gt;</button>
+              <button class="btn-page-arrow" [disabled]="poPage === 1" (click)="prevPoPage()">&lt;</button>
+              <button 
+                *ngFor="let p of poPageArray" 
+                class="btn-page-number" 
+                [class.active]="p === poPage"
+                (click)="setPoPage(p)">{{ p }}</button>
+              <button class="btn-page-arrow" [disabled]="poPage === totalPoPages" (click)="nextPoPage()">&gt;</button>
             </div>
             <div class="pagination-info">
-              Showing 1 - {{ filteredData.length }} of {{ totalPOsCount }}
+              Showing {{ poPageRangeLabel }} of {{ filteredData.length }}
             </div>
           </div>
         </div>
@@ -267,7 +270,7 @@
             </thead>
             <tbody>
               <tr 
-                *ngFor="let item of selectedPOItems" 
+                *ngFor="let item of paginatedLineItems" 
                 [class.row-selected]="item.selected">
                 <td class="text-center">
                   <input 
@@ -304,6 +307,11 @@
         </div>
       </div>
       <div class="modal-footer">
+        <div class="recent-qr-pagination" *ngIf="totalLineItemsPages > 1" style="margin-right:auto;">
+          <button type="button" [disabled]="lineItemsPage === 1" (click)="lineItemsPage = lineItemsPage - 1"><i class="pi pi-angle-left"></i></button>
+          <span *ngFor="let p of lineItemsPageArray" [class.active]="p === lineItemsPage" (click)="lineItemsPage = p">{{ p }}</span>
+          <button type="button" [disabled]="lineItemsPage === totalLineItemsPages" (click)="lineItemsPage = lineItemsPage + 1"><i class="pi pi-angle-right"></i></button>
+        </div>
         <button class="btn-modal-cancel" (click)="closeLineItemsModal()">Close</button>
       </div>
     </div>
@@ -356,23 +364,23 @@
               </div>
             </div>
 
-            <div class="detail-row field-row">
-              <span class="detail-label">Location</span>
-              <div class="box-number-input-wrap">
-                <input type="text" class="form-input-sm" [(ngModel)]="itemLocation" placeholder="Rack A-12" />
-              </div>
-            </div>
-
-            <div class="detail-row field-row">
-              <span class="detail-label">Weight (kg)</span>
-              <div class="box-number-input-wrap">
-                <input type="number" class="form-input-sm" [(ngModel)]="itemWeight" placeholder="25.5" />
-              </div>
-            </div>
-
             <div class="detail-row">
               <span class="detail-label">Expected Qty <small>(per box)</small></span>
               <span class="detail-val bold">{{ expectedQtyPerBox | number }}</span>
+            </div>
+
+            <div class="detail-row field-row">
+              <span class="detail-label">Received Qty <small>/ box</small></span>
+              <div class="box-number-input-wrap">
+                <input type="text" class="form-input-sm" [(ngModel)]="receivedQtyPerBox" placeholder="e.g. 14.8 (optional)" />
+              </div>
+            </div>
+
+            <div class="detail-row field-row">
+              <span class="detail-label">Location</span>
+              <div class="box-number-input-wrap">
+                <input type="text" class="form-input-sm" [(ngModel)]="location" placeholder="e.g. Rack A-12 (optional)" />
+              </div>
             </div>
           </div>
 
@@ -435,14 +443,56 @@
               <p>You can download or print and attach to the incoming box/reel.</p>
             </div>
           </div>
+
+          <!-- RECENT QR CODES FOR THIS PO -->
+          <div class="recent-qr-section">
+            <div class="recent-qr-header">
+              <h3>Recent QR Codes for this PO</h3>
+            </div>
+            <div class="recent-qr-loading" *ngIf="recentQrLoading">
+              <i class="pi pi-spin pi-spinner"></i> Loading...
+            </div>
+            <table class="recent-qr-table" *ngIf="!recentQrLoading">
+              <thead>
+                <tr>
+                  <th>Box / Reel No</th>
+                  <th>QR Code</th>
+                  <th>Received Qty/Box</th>
+                  <th>Location</th>
+                  <th>Generated On</th>
+                  <th style="text-align:center;">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let row of paginatedRecentQrList">
+                  <td>{{ row.boxNo }}</td>
+                  <td>{{ row.qrCode }}</td>
+                  <td>{{ row.receivedQtyPerBox || '-' }}</td>
+                  <td>{{ row.location || '-' }}</td>
+                  <td>{{ row.generatedOn }}</td>
+                  <td style="text-align:center;">
+                    <button type="button" class="recent-qr-print-btn" title="Print" (click)="printRecentQr(row)">
+                      <i class="pi pi-print"></i>
+                    </button>
+                  </td>
+                </tr>
+                <tr *ngIf="recentQrList.length === 0">
+                  <td colspan="6" class="empty-cell">No QR codes generated for this PO yet.</td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="recent-qr-pagination" *ngIf="!recentQrLoading && totalRecentQrPages > 1">
+              <button type="button" [disabled]="recentQrPage === 1" (click)="recentQrPage = recentQrPage - 1"><i class="pi pi-angle-left"></i></button>
+              <span *ngFor="let p of recentQrPageArray" [class.active]="p === recentQrPage" (click)="recentQrPage = p">{{ p }}</span>
+              <button type="button" [disabled]="recentQrPage === totalRecentQrPages" (click)="recentQrPage = recentQrPage + 1"><i class="pi pi-angle-right"></i></button>
+            </div>
+          </div>
         </div>
 
       </div>
-      <div class="modal-footer">
+      <!-- <div class="modal-footer">
         <button class="btn-modal-cancel" (click)="closeQrModal()">Close</button>
-      </div>
+      </div> -->
     </div>
   </div>
-
-</div>
 

@@ -12,179 +12,396 @@
         <!-- Main Content -->
         <main class="app-recieve-content">
 
-            <div class="um-table-section">
+            <div class="rw-wrap">
 
-                <div class="um-section-header">
-                    <div class="um-header-row">
-                        <div class="um-section-text">
-                            <h3 class="um-section-title">Receiving Verification</h3>
-                            <p class="um-section-desc">Verify inbound shipments and upload required documents</p>
+                <!-- Page Header -->
+                <div class="rw-page-header">
+                    <div>
+                        <h1 class="rw-page-title"><i class="pi pi-check-square"></i> Receive &amp; Approve</h1>
+                        <p class="rw-page-sub">Scan QR, verify stock, upload documents, confirm and approve — all in one place.</p>
+                    </div>
+                    <div class="rw-page-stats">
+                        <div class="rw-stat">
+                            <span class="rw-stat-value">{{ inProgressList.length }}</span>
+                            <span class="rw-stat-label">In Progress</span>
                         </div>
-                        <div class="right">
-                            <div class="cust-search-wrap" style="display: inline-block; vertical-align: middle;">
-                                <i class="pi pi-search cust-search-icon"></i>
-                                <input
-                                    type="text"
-                                    class="cust-search-input"
-                                    placeholder="Search PO or Item..."
-                                    [(ngModel)]="searchTerm"
-                                    name="searchTerm"
-                                    autocomplete="off" />
-                            </div>
+                        <div class="rw-stat">
+                            <span class="rw-stat-value">{{ pendingApprovalList.length }}</span>
+                            <span class="rw-stat-label">Pending Approval</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="um-table-wrapper">
-
-                    <p-table #dt [value]="filteredData" styleClass="p-datatable-sm um-custom-table" [paginator]="true" [rows]="5" [rowsPerPageOptions]="[5,10,20]" dropdownAppendTo="body" responsiveLayout="scroll">
-                        <ng-template pTemplate="header">
-                            <tr>
-                                <th>S.No</th>
-                                <th pSortableColumn="poNumber">
-                                    <div class="header-cell-content">
-                                        <span>PO Number</span>
-                                        <p-sortIcon field="poNumber"></p-sortIcon>
-                                    </div>
-                                </th>
-                                <th pSortableColumn="description">
-                                    <div class="header-cell-content">
-                                        <span>Item Description</span>
-                                        <p-sortIcon field="description"></p-sortIcon>
-                                    </div>
-                                </th>
-                                <th pSortableColumn="orderedQty">
-                                    <div class="header-cell-content">
-                                        <span>Ordered Qty</span>
-                                        <p-sortIcon field="orderedQty"></p-sortIcon>
-                                    </div>
-                                </th>
-                                <th pSortableColumn="receivedQty">
-                                    <div class="header-cell-content">
-                                        <span>Received Qty</span>
-                                        <p-sortIcon field="receivedQty"></p-sortIcon>
-                                    </div>
-                                </th>
-                                <th>Documents</th>
-                                <th style="text-align: center;">Action</th>
-                            </tr>
-                        </ng-template>
-                        <ng-template pTemplate="body" let-item let-i="rowIndex">
-                            <tr>
-                                <td>{{ dt.first + i + 1 }}</td>
-                                <td>
-                                    <span class="um-badge um-badge-po">
-                                        {{ item.poNumber }}
-                                    </span>
-                                </td>
-                                <td>
-                                    <span class="um-badge um-badge-desc">
-                                        {{ item.description }}
-                                    </span>
-                                </td>
-                                <td>{{ item.orderedQty }}</td>
-                                <td>{{ item.receivedQty }}</td>
-                                <td>
-                                    <div style="display: flex; align-items: center; gap: 8px;">
-                                        <button
-                                            pButton
-                                            type="button"
-                                            icon="pi pi-paperclip"
-                                            [label]="item.documentsUploaded ? 'Re-upload' : 'Upload'"
-                                            class="p-button-sm p-button-outlined"
-                                            (click)="openUploadPopup(item)">
-                                        </button>
-                                        <span class="um-badge um-badge-active" *ngIf="item.documentsUploaded">Uploaded</span>
-                                    </div>
-                                </td>
-                                <td style="text-align: center;">
-                                    <button
-                                        pButton
-                                        type="button"
-                                        [icon]="item.accepted ? 'pi pi-check-circle' : 'pi pi-check'"
-                                        [label]="item.accepted ? 'Request Approval' : 'Confirm'"
-                                        class="p-button-sm create-emp-btn"
-                                        [class.p-button-success]="item.accepted"
-                                        [disabled]="item.accepted"
-                                        (click)="acceptItem(item)">
-                                    </button>
-                                </td>
-                            </tr>
-                        </ng-template>
-                        <ng-template pTemplate="emptymessage">
-                            <tr>
-                                <td colspan="7" class="text-center" style="padding: 24px !important; color: #64748b;">
-                                    <i class="pi pi-check-square" style="font-size: 24px; margin-bottom: 8px; display: block; opacity: 0.5;"></i>
-                                    No records found.
-                                </td>
-                            </tr>
-                        </ng-template>
-                    </p-table>
-
+                <!-- Step Tracker -->
+                <div class="rw-steps">
+                    <div class="rw-step" [class.rw-step-active]="step === 1" [class.rw-step-done]="step > 1">
+                        <div class="rw-step-num"><i class="pi pi-check" *ngIf="step > 1"></i><ng-container *ngIf="step === 1">1</ng-container></div>
+                        <div class="rw-step-text">
+                            <div class="rw-step-title">Scan / Select</div>
+                            <div class="rw-step-sub">Scan the PO QR code</div>
+                        </div>
+                    </div>
+                    <i class="pi pi-angle-right rw-step-arrow"></i>
+                    <div class="rw-step" [class.rw-step-active]="step === 2" [class.rw-step-done]="step > 2">
+                        <div class="rw-step-num"><i class="pi pi-check" *ngIf="step > 2"></i><ng-container *ngIf="step <= 2">2</ng-container></div>
+                        <div class="rw-step-text">
+                            <div class="rw-step-title">Receive Details</div>
+                            <div class="rw-step-sub">Confirm qty &amp; record</div>
+                        </div>
+                    </div>
+                    <i class="pi pi-angle-right rw-step-arrow"></i>
+                    <div class="rw-step" [class.rw-step-active]="step === 3" [class.rw-step-done]="step > 3">
+                        <div class="rw-step-num"><i class="pi pi-check" *ngIf="step > 3"></i><ng-container *ngIf="step <= 3">3</ng-container></div>
+                        <div class="rw-step-text">
+                            <div class="rw-step-title">Verify &amp; Upload</div>
+                            <div class="rw-step-sub">Attach documents, confirm</div>
+                        </div>
+                    </div>
+                    <i class="pi pi-angle-right rw-step-arrow"></i>
+                    <div class="rw-step" [class.rw-step-active]="step === 4">
+                        <div class="rw-step-num">4</div>
+                        <div class="rw-step-text">
+                            <div class="rw-step-title">Approval</div>
+                            <div class="rw-step-sub">Supervisor decision</div>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Upload Documents Popup -->
-                <div class="app-recieve-modal-overlay" *ngIf="showUploadPopup">
+                <div class="rw-grid">
 
-                    <div class="app-recieve-upload-modal">
+                    <!-- ===================== MAIN FLOW CARD ===================== -->
+                    <section class="rw-card rw-card-main">
 
-                        <div class="app-recieve-modal-header">
-                            <h3><i class="pi pi-paperclip" style="margin-right: 8px; color: #00a5cf;"></i>Attachments {{ selectedItem ? '- PO ' + selectedItem.poNumber : '' }}</h3>
-                        </div>
+                        <!-- STEP 1: Scan -->
+                        <ng-container *ngIf="step === 1">
+                            <div class="rw-card-header">
+                                <span class="rw-card-num rw-num-blue">1</span>
+                                <div>
+                                    <h3>Scan QR Code</h3>
+                                    <p>Position the PO QR code in the camera frame</p>
+                                </div>
+                            </div>
 
-                        <div class="app-recieve-modal-body">
+                            <!-- Gate: camera only turns on once "Start Scanning" is tapped -->
+                            <div class="rw-scan-area" *ngIf="showStartScan">
+                                <div class="rw-scan-frame-wrap rw-scan-idle">
+                                    <i class="pi pi-qrcode rw-scan-idle-icon"></i>
+                                </div>
+                                <p class="rw-scan-hint">Camera is off — tap below to begin scanning</p>
 
-                            <p class="app-recieve-required-note">
-                                Upload supporting documents for this receiving verification (optional).
+                                <button type="button" class="rw-btn-confirm rw-start-scan-btn" (click)="beginScanning()">
+                                    <i class="pi pi-camera"></i> Start Scanning
+                                </button>
+
+                                <button type="button" class="rw-btn-outline-sm rw-manual-toggle" (click)="toggleManualEntry()">
+                                    <i class="pi pi-pencil"></i> {{ showManualEntry ? 'Hide manual entry' : 'Enter QR Code Manually' }}
+                                </button>
+
+                                <div class="rw-manual-entry" *ngIf="showManualEntry">
+                                    <input type="text" placeholder="e.g. WHQR-XXXXXXXXXXXX" [(ngModel)]="manualCode" name="manualCode" />
+                                    <button type="button" class="rw-btn-confirm" [disabled]="!manualCode.trim() || scanLoading" (click)="submitManualCode()">
+                                        Look Up
+                                    </button>
+                                </div>
+
+                                <div class="rw-cam-badges">
+                                    <span class="rw-cam-badge"><i class="pi pi-circle-fill" style="color:#94a3b8; font-size:8px;"></i> Camera Off</span>
+                                    <span class="rw-cam-badge"><i class="pi pi-mobile"></i> MC9400 Compatible</span>
+                                </div>
+                            </div>
+
+                            <!-- Live camera view, once started -->
+                            <div class="rw-scan-area" *ngIf="!showStartScan">
+                                <div class="rw-scan-frame-wrap">
+                                    <div [id]="SCANNER_ELEMENT_ID" class="rw-scan-video"></div>
+                                    <div class="rw-scan-overlay" *ngIf="!scanLoading">
+                                        <div class="rw-scan-frame"></div>
+                                    </div>
+                                    <div class="rw-scan-loading" *ngIf="scanLoading">
+                                        <i class="pi pi-spin pi-spinner"></i> Validating QR code...
+                                    </div>
+                                </div>
+                                <p class="rw-scan-hint">Position the QR code in the center</p>
+
+                                <div class="rw-scan-error" *ngIf="scanError">
+                                    <i class="pi pi-exclamation-triangle"></i> {{ scanError }}
+                                </div>
+
+                                <button type="button" class="rw-btn-outline-sm rw-manual-toggle" (click)="toggleManualEntry()">
+                                    <i class="pi pi-pencil"></i> {{ showManualEntry ? 'Hide manual entry' : 'Enter QR Code Manually' }}
+                                </button>
+
+                                <div class="rw-manual-entry" *ngIf="showManualEntry">
+                                    <input type="text" placeholder="e.g. WHQR-XXXXXXXXXXXX" [(ngModel)]="manualCode" name="manualCode" />
+                                    <button type="button" class="rw-btn-confirm" [disabled]="!manualCode.trim() || scanLoading" (click)="submitManualCode()">
+                                        Look Up
+                                    </button>
+                                </div>
+
+                                <div class="rw-cam-badges">
+                                    <span class="rw-cam-badge"><i class="pi pi-circle-fill" style="color:#10b981; font-size:8px;"></i> Camera Ready</span>
+                                    <span class="rw-cam-badge"><i class="pi pi-mobile"></i> MC9400 Compatible</span>
+                                </div>
+                            </div>
+                        </ng-container>
+
+                        <!-- STEP 2: Receive Details (multi box/reel/serial) -->
+                        <ng-container *ngIf="step === 2 && scannedItem">
+                            <div class="rw-card-header">
+                                <span class="rw-card-num rw-num-blue">2</span>
+                                <div>
+                                    <h3>Item &amp; Receive Details</h3>
+                                    <p>Confirm each box/reel before recording</p>
+                                </div>
+                            </div>
+
+                            <div class="rw-detail-card">
+                                <div class="rw-detail-row"><span>PO Number</span><strong>{{ scannedItem.poNumber }}</strong></div>
+                                <div class="rw-detail-row"><span>Supplier</span><strong>{{ scannedItem.supplierName }}</strong></div>
+                                <div class="rw-detail-row"><span>Item Code</span><strong>{{ scannedItem.itemCode }}</strong></div>
+                                <div class="rw-detail-row"><span>Description</span><strong>{{ scannedItem.itemName }}</strong></div>
+                                <div class="rw-detail-row"><span>Ordered Qty</span><strong>{{ scannedItem.orderedQty }}</strong></div>
+                                <div class="rw-detail-row" *ngIf="scannedItem.receivedQtyPerBox != null">
+                                    <span>Expected Qty (per box)</span><strong>{{ scannedItem.receivedQtyPerBox }}</strong>
+                                </div>
+                            </div>
+
+                            <div class="rw-box-table-wrap">
+                                <table class="rw-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Box / Reel No</th>
+                                            <th>Serial No</th>
+                                            <th>Received Qty</th>
+                                            <th style="text-align:center;">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let row of boxRows">
+                                            <td>
+                                                <input *ngIf="row.editing" type="text" class="rw-inline-input" [(ngModel)]="row.boxReelNo" [name]="'box'+row.id" />
+                                                <span *ngIf="!row.editing">{{ row.boxReelNo }}</span>
+                                            </td>
+                                            <td>
+                                                <input *ngIf="row.editing" type="text" class="rw-inline-input" [(ngModel)]="row.serialNo" [name]="'serial'+row.id" />
+                                                <span *ngIf="!row.editing">{{ row.serialNo }}</span>
+                                            </td>
+                                            <td>
+                                                <input *ngIf="row.editing" type="number" class="rw-inline-input" min="0" [(ngModel)]="row.qty" [name]="'qty'+row.id" />
+                                                <span *ngIf="!row.editing">{{ row.qty }}</span>
+                                            </td>
+                                            <td style="text-align:center;">
+                                                <button type="button" class="rw-row-icon-btn" *ngIf="!row.editing" title="Edit" (click)="editBoxRow(row)"><i class="pi pi-pencil"></i></button>
+                                                <button type="button" class="rw-row-icon-btn rw-row-icon-btn-save" *ngIf="row.editing" title="Save" (click)="saveBoxRow(row)"><i class="pi pi-check"></i></button>
+                                                <button type="button" class="rw-row-icon-btn rw-row-icon-btn-delete" title="Delete" (click)="deleteBoxRow(row)"><i class="pi pi-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                        <tr *ngIf="boxRows.length === 0">
+                                            <td colspan="4" class="rw-empty-row">No boxes added yet.</td>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot *ngIf="boxRows.length > 0">
+                                        <tr>
+                                            <td colspan="2" style="text-align:right; font-weight:700; color:#0f172a;">Total Received Qty</td>
+                                            <td style="font-weight:700; color:#10b981;">{{ receiveQty }}</td>
+                                            <td></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+
+                            <button type="button" class="rw-btn-outline-sm rw-add-box-btn" (click)="addBoxRow()">
+                                <i class="pi pi-plus"></i> Add Another Box
+                            </button>
+
+                            <div class="rw-save-error" *ngIf="recordError">
+                                <i class="pi pi-exclamation-triangle"></i> {{ recordError }}
+                            </div>
+
+                            <div class="rw-step-actions">
+                                <button type="button" class="rw-cancel-btn" (click)="cancelFlow()">Cancel</button>
+                                <button type="button" class="rw-save-btn" [disabled]="recordLoading" (click)="acceptAndRecord()">
+                                    <i class="pi pi-spin pi-spinner" *ngIf="recordLoading"></i>
+                                    <i class="pi pi-check" *ngIf="!recordLoading"></i>
+                                    {{ recordLoading ? 'Recording...' : 'Accept & Record' }}
+                                </button>
+                            </div>
+                        </ng-container>
+
+
+                        <!-- STEP 3: Verify & Upload -->
+                        <ng-container *ngIf="step === 3 && activeReceiving">
+                            <div class="rw-card-header">
+                                <span class="rw-card-num rw-num-green">3</span>
+                                <div>
+                                    <h3>Verify &amp; Upload Documents</h3>
+                                    <p>PO {{ activeReceiving.poNumber }} — Ref {{ activeReceiving.receivingNumber }}</p>
+                                </div>
+                            </div>
+
+                            <p class="rw-required-note">
+                                Upload supporting documents for this receiving (optional), then confirm to submit for approval.
                             </p>
 
-                            <div class="app-recieve-form-group">
-                                <label>DELIVERY NOTE</label>
-                                <input type="file" (change)="onFileSelected($event, 'deliveryNote')">
-                                <div class="app-recieve-file-name" *ngIf="tempDocuments.deliveryNote">
-                                    Selected: {{ tempDocuments.deliveryNote.name }}
+                            <div class="rw-doc-grid">
+                                <div class="rw-doc-item">
+                                    <label><i class="pi pi-file-pdf"></i> Delivery Note</label>
+                                    <input type="file" (change)="onFileSelected($event, 'deliveryNote')">
+                                    <div class="rw-file-name" *ngIf="tempDocuments.deliveryNote">{{ tempDocuments.deliveryNote.name }}</div>
+                                </div>
+                                <div class="rw-doc-item">
+                                    <label><i class="pi pi-file"></i> Purchase Order</label>
+                                    <input type="file" (change)="onFileSelected($event, 'purchaseOrder')">
+                                    <div class="rw-file-name" *ngIf="tempDocuments.purchaseOrder">{{ tempDocuments.purchaseOrder.name }}</div>
+                                </div>
+                                <div class="rw-doc-item">
+                                    <label><i class="pi pi-file-edit"></i> Purchase Requisition</label>
+                                    <input type="file" (change)="onFileSelected($event, 'purchaseRequisition')">
+                                    <div class="rw-file-name" *ngIf="tempDocuments.purchaseRequisition">{{ tempDocuments.purchaseRequisition.name }}</div>
+                                </div>
+                                <div class="rw-doc-item">
+                                    <label><i class="pi pi-exclamation-circle"></i> Material Rejected Report</label>
+                                    <input type="file" (change)="onFileSelected($event, 'materialRejectedReport')">
+                                    <div class="rw-file-name" *ngIf="tempDocuments.materialRejectedReport">{{ tempDocuments.materialRejectedReport.name }}</div>
                                 </div>
                             </div>
 
-                            <div class="app-recieve-form-group">
-                                <label>PURCHASE ORDER</label>
-                                <input type="file" (change)="onFileSelected($event, 'purchaseOrder')">
-                                <div class="app-recieve-file-name" *ngIf="tempDocuments.purchaseOrder">
-                                    Selected: {{ tempDocuments.purchaseOrder.name }}
+                            <div class="rw-uploaded-list" *ngIf="activeReceiving.documents?.length">
+                                <span class="rw-chip rw-chip-green" *ngFor="let d of activeReceiving.documents">
+                                    <i class="pi pi-check"></i> {{ d.documentType }}
+                                </span>
+                            </div>
+
+                            <div class="rw-save-error" *ngIf="saveError">
+                                <i class="pi pi-exclamation-triangle"></i> {{ saveError }}
+                            </div>
+
+                            <div class="rw-step-actions">
+                                <button type="button" class="rw-cancel-btn" (click)="cancelFlow()">Cancel</button>
+                                <button type="button" class="rw-btn-outline-sm" style="padding:11px 16px;" [disabled]="saving || !hasAnyDocument()" (click)="saveDocuments()">
+                                    <i class="pi pi-spin pi-spinner" *ngIf="saving"></i>
+                                    <i class="pi pi-upload" *ngIf="!saving"></i>
+                                    {{ saving ? 'Uploading...' : 'Upload Documents' }}
+                                </button>
+                                <button type="button" class="rw-save-btn" [disabled]="saving" (click)="confirmActive()">
+                                    <i class="pi pi-send"></i> Confirm
+                                </button>
+                            </div>
+                        </ng-container>
+
+                        <!-- STEP 4: Approval -->
+                        <ng-container *ngIf="step === 4 && activeReceiving">
+                            <div class="rw-card-header">
+                                <span class="rw-card-num rw-num-amber">4</span>
+                                <div>
+                                    <h3>Approval (Supervisor)</h3>
+                                    <p>PO {{ activeReceiving.poNumber }} — Ref {{ activeReceiving.receivingNumber }}</p>
+                                </div>
+                                <span class="rw-badge-step">Pending</span>
+                            </div>
+
+                            <div class="rw-approval-totals">
+                                <div class="rw-approval-stat"><span>Ordered</span><strong>{{ totalOrdered() }}</strong></div>
+                                <div class="rw-approval-stat"><span>Received</span><strong>{{ totalReceived() }}</strong></div>
+                                <div class="rw-approval-stat"><span>Accepted</span><strong>{{ totalAccepted() }}</strong></div>
+                                <div class="rw-approval-stat"><span>Rejected</span><strong>{{ totalRejected() }}</strong></div>
+                                <div class="rw-approval-stat" [class.rw-variance-ok]="variance() === 0" [class.rw-variance-bad]="variance() !== 0">
+                                    <span>Variance</span><strong>{{ variance() }}</strong>
                                 </div>
                             </div>
 
-                            <div class="app-recieve-form-group">
-                                <label>PURCHASE REQUISITION</label>
-                                <input type="file" (change)="onFileSelected($event, 'purchaseRequisition')">
-                                <div class="app-recieve-file-name" *ngIf="tempDocuments.purchaseRequisition">
-                                    Selected: {{ tempDocuments.purchaseRequisition.name }}
+                            <div class="rw-approval-items">
+                                <div class="rw-approval-item" *ngFor="let item of activeReceiving.items">
+                                    <div class="rw-approval-item-head">
+                                        <span class="rw-chip rw-chip-gray">{{ item.itemName || item.itemCode }}</span>
+                                        <span class="rw-approval-item-meta">Received: {{ item.receivedQty }}</span>
+                                    </div>
+                                    <div class="rw-approval-item-fields">
+                                        <div class="iw-field">
+                                            <label>Accept Qty</label>
+                                            <input type="number" class="iw-input" min="0" [(ngModel)]="edits[item.receivingItemId].acceptedQty" [name]="'acc'+item.receivingItemId" />
+                                        </div>
+                                        <div class="iw-field">
+                                            <label>Reject Qty</label>
+                                            <input type="number" class="iw-input" min="0" [(ngModel)]="edits[item.receivingItemId].rejectedQty" [name]="'rej'+item.receivingItemId" />
+                                        </div>
+                                        <div class="iw-field">
+                                            <label>Rejection Reason</label>
+                                            <input type="text" class="iw-input" placeholder="Optional" [(ngModel)]="edits[item.receivingItemId].rejectionReason" [name]="'reason'+item.receivingItemId" />
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div class="app-recieve-form-group">
-                                <label>MATERIAL REJECTED REPORT</label>
-                                <input type="file" (change)="onFileSelected($event, 'materialRejectedReport')">
-                                <div class="app-recieve-file-name" *ngIf="tempDocuments.materialRejectedReport">
-                                    Selected: {{ tempDocuments.materialRejectedReport.name }}
-                                </div>
+                            <div class="rw-step-actions">
+                                <button type="button" class="rw-reject-btn" [disabled]="deciding" (click)="decide('REJECTED')">
+                                    <i class="pi pi-times"></i> Reject
+                                </button>
+                                <button type="button" class="rw-save-btn" [disabled]="deciding" (click)="decide('APPROVED')">
+                                    <i class="pi pi-spin pi-spinner" *ngIf="deciding"></i>
+                                    <i class="pi pi-check" *ngIf="!deciding"></i>
+                                    {{ deciding ? 'Submitting...' : 'Approve & Push to ERP' }}
+                                </button>
                             </div>
+                        </ng-container>
 
-                            <div class="app-recieve-save-error" *ngIf="saveError">
-                                {{ saveError }}
+                    </section>
+
+                    <!-- ===================== SIDE PANEL: Queues ===================== -->
+                    <aside class="rw-side">
+
+                        <section class="rw-card">
+                            <div class="rw-card-header">
+                                <span class="rw-card-num rw-num-blue"><i class="pi pi-search" style="font-size:13px;"></i></span>
+                                <div><h3>Find a Record</h3><p>Search by PO or ref number</p></div>
                             </div>
+                            <div class="rw-search-wrap" style="margin:0; width:100%;">
+                                <i class="pi pi-search"></i>
+                                <input type="text" placeholder="Search PO or Ref..." style="width:100%; min-width:0;"
+                                    [(ngModel)]="searchTerm" name="searchTerm" autocomplete="off" />
+                            </div>
+                        </section>
 
-                        </div>
+                        <section class="rw-card">
+                            <div class="rw-card-header">
+                                <span class="rw-card-num rw-num-green">•</span>
+                                <div><h3>In Progress</h3><p>Scanned, awaiting upload &amp; confirm</p></div>
+                            </div>
+                            <div class="rw-queue-loading" *ngIf="loading"><i class="pi pi-spin pi-spinner"></i></div>
+                            <div class="rw-queue-list" *ngIf="!loading">
+                                <button type="button" class="rw-queue-row" *ngFor="let r of inProgressList" (click)="resumeInProgress(r)">
+                                    <span class="rw-chip rw-chip-blue">{{ r.poNumber }}</span>
+                                    <span class="rw-queue-ref">{{ r.receivingNumber }}</span>
+                                    <i class="pi pi-angle-right"></i>
+                                </button>
+                                <div class="rw-empty-row" *ngIf="inProgressList.length === 0">Nothing waiting here.</div>
+                            </div>
+                        </section>
 
-                        <div class="app-recieve-modal-footer">
-                            <button class="app-recieve-cancel-btn" (click)="closeUploadPopup()">Cancel</button>
-                            <button class="app-recieve-save-btn" [disabled]="saving" (click)="saveDocuments()">
-                                <i class="pi pi-spin pi-spinner" *ngIf="saving" style="margin-right: 6px;"></i>
-                                {{ saving ? 'Uploading...' : 'Save' }}
-                            </button>
-                        </div>
+                        <section class="rw-card">
+                            <div class="rw-card-header">
+                                <span class="rw-card-num rw-num-amber">•</span>
+                                <div><h3>Pending Approval</h3><p>Confirmed, awaiting supervisor</p></div>
+                            </div>
+                            <div class="rw-queue-list">
+                                <button type="button" class="rw-queue-row" *ngFor="let r of pendingApprovalList" (click)="resumePendingApproval(r)">
+                                    <span class="rw-chip rw-chip-blue">{{ r.poNumber }}</span>
+                                    <span class="rw-queue-ref">{{ r.receivingNumber }}</span>
+                                    <i class="pi pi-angle-right"></i>
+                                </button>
+                                <div class="rw-empty-row" *ngIf="pendingApprovalList.length === 0">Nothing waiting here.</div>
+                            </div>
+                        </section>
 
-                    </div>
+                        <section class="rw-card rw-tip-card">
+                            <i class="pi pi-lightbulb"></i>
+                            <div>
+                                <strong>Tip</strong>
+                                <p>Upload documents before confirming to speed up supervisor approval.</p>
+                            </div>
+                        </section>
+
+                    </aside>
 
                 </div>
 

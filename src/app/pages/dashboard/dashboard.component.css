@@ -65,29 +65,33 @@
   text-decoration: underline;
 }
 
-/* Hero Banner */
+/* Hero Banner + floating Main Action Cards */
+.hero-section {
+  position: relative;
+}
+
 .hero-banner {
   background-color: #0f172a;
-  /* Placeholder dark blue */
-  background-image: linear-gradient(to right, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.4)), url('https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=2070&auto=format&fit=crop');
-  /* Placeholder warehouse image */
+  background-image: linear-gradient(to right, rgba(10, 16, 32, 0.92) 0%, rgba(10, 16, 32, 0.75) 38%, rgba(10, 16, 32, 0.25) 75%), url('/assets/smart-packaging.jpg');
   background-size: cover;
-  background-position: center;
+  background-position: center 30%;
   border-radius: 16px;
-  padding: 40px 32px;
+  padding: 40px 32px 76px 32px;
   color: white;
-  margin-bottom: 8px;
+  margin-bottom: 0;
+  box-shadow: 0 10px 30px -10px rgba(15, 23, 42, 0.35);
 }
 
 .hero-content h1 {
   font-size: 32px;
   font-weight: 800;
   margin: 0 0 8px 0;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
 }
 
 .hero-content p {
   font-size: 16px;
-  color: #cbd5e1;
+  color: #e2e8f0;
   margin: 0;
 }
 
@@ -96,6 +100,10 @@
   display: grid;
   grid-template-columns: repeat(1, 1fr);
   gap: 20px;
+  position: relative;
+  margin-top: -56px;
+  z-index: 2;
+  padding: 0 4px;
 }
 
 @media (min-width: 768px) {
@@ -120,11 +128,13 @@
   transition: transform 0.2s ease, box-shadow 0.2s;
   position: relative;
   overflow: hidden;
+  background: #ffffff;
+  box-shadow: 0 12px 24px -12px rgba(15, 23, 42, 0.18);
 }
 
 .main-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 16px 28px -10px rgba(15, 23, 42, 0.22);
 }
 
 .card-icon-circle {
@@ -254,12 +264,19 @@
 
 .stat-card {
   background: white;
-  border-radius: 10px;
-  padding: 12px 16px;
+  border-radius: 12px;
+  padding: 14px 16px;
   border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 2px 0 rgba(15, 23, 42, 0.04);
   display: flex;
   align-items: center;
   gap: 12px;
+  transition: box-shadow 0.15s, transform 0.15s;
+}
+
+.stat-card:hover {
+  box-shadow: 0 6px 16px -6px rgba(15, 23, 42, 0.15);
+  transform: translateY(-2px);
 }
 
 .stat-icon-wrapper {
@@ -522,65 +539,183 @@
 .actions-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 6px;
 }
 
 .action-btn {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  padding: 12px 16px;
+  background: transparent;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 12px;
   display: flex;
   align-items: center;
   gap: 12px;
   font-size: 14px;
   font-weight: 600;
-  color: #334155;
+  color: #1e293b;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: background 0.15s;
   text-align: left;
+  width: 100%;
 }
 
 .action-btn:hover {
   background: #f1f5f9;
-  border-color: #cbd5e1;
 }
 
-.action-btn i {
-  font-size: 16px;
-  color: #64748b;
+.action-icon-circle {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #eff6ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.action-icon-circle i {
+  font-size: 15px;
+  color: #2563eb;
 }
 
 .action-btn.danger-btn {
-  background: #fef2f2;
-  border-color: #fee2e2;
   color: #b91c1c;
 }
 
-.action-btn.danger-btn i {
+.action-btn.danger-btn .action-icon-circle {
+  background: #fef2f2;
+}
+
+.action-btn.danger-btn .action-icon-circle i {
   color: #ef4444;
 }
 
 .action-btn.danger-btn:hover {
-  background: #fee2e2;
+  background: #fef2f2;
 }
 
-/* Custom Table Styling for PrimeNG */
-:host ::ng-deep .custom-ng-table .p-datatable-thead>tr>th {
-  background-color: transparent;
+/* Recent Transactions — modern activity-feed list (replaces the old
+   cramped 6-column PrimeNG table, which forced long item names like
+   "5 Ply Shipper (455×230×135)" to wrap awkwardly in a narrow panel). */
+.txn-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.txn-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 4px;
+  border-bottom: 1px solid #f1f5f9;
+  transition: background 0.15s;
+  border-radius: 8px;
+}
+
+.txn-row:last-child {
+  border-bottom: none;
+}
+
+.txn-row:hover {
+  background: #f8fafc;
+}
+
+.txn-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.txn-icon i {
+  font-size: 15px;
+}
+
+.txn-icon-scan {
+  background: #eff6ff;
+}
+
+.txn-icon-scan i {
+  color: #2563eb;
+}
+
+.txn-icon-receiving {
+  background: #f3e8ff;
+}
+
+.txn-icon-receiving i {
+  color: #7e22ce;
+}
+
+.txn-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.txn-title {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #1e293b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.txn-sub {
+  font-size: 12px;
+  color: #94a3b8;
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.txn-ref {
   color: #64748b;
   font-weight: 600;
-  font-size: 13px;
-  border-bottom: 1px solid #e2e8f0;
-  border-top: none;
-  padding: 12px 8px;
 }
 
-:host ::ng-deep .custom-ng-table .p-datatable-tbody>tr>td {
+.txn-dot {
+  color: #cbd5e1;
+}
+
+.txn-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 5px;
+  flex-shrink: 0;
+}
+
+.txn-time {
+  font-size: 11px;
+  color: #94a3b8;
+  white-space: nowrap;
+}
+
+.txn-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 8px;
+  padding: 36px 12px;
+  color: #94a3b8;
+}
+
+.txn-empty i {
+  font-size: 22px;
+}
+
+.txn-empty p {
+  margin: 0;
   font-size: 13px;
-  color: #334155;
-  border-bottom: 1px solid #f1f5f9;
-  padding: 12px 8px;
 }
 
 .status-badge {
@@ -590,81 +725,311 @@
   border-radius: 6px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  white-space: nowrap;
 }
 
-.status-badge.received {
+/* These map 1:1 to statusClass() output in dashboard.component.ts, i.e.
+   the real values that come back from /api/dashboard/summary — not the
+   earlier hardcoded demo labels (received/issued/pending-qc/approved),
+   which never actually matched what the API returns. */
+.status-badge.completed {
   background: #dcfce7;
   color: #16a34a;
 }
 
-.status-badge.issued {
+.status-badge.in-progress {
   background: #e0e7ff;
   color: #4338ca;
 }
 
-.status-badge.pending-qc {
+.status-badge.pending {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.status-badge.pending-approval {
+  background: #f3e8ff;
+  color: #7e22ce;
+}
+
+.status-badge.awaiting-qc {
   background: #ffedd5;
-  color: #ea580c;
+  color: #c2410c;
 }
 
-.status-badge.approved {
-  background: #dcfce7;
-  color: #16a34a;
+.status-badge.qc-failed {
+  background: #fee2e2;
+  color: #b91c1c;
 }
 
-/* Attention Required */
+.status-badge.rejected {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.status-badge.expired,
+.status-badge.cancelled {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+/* Recent Transactions pagination footer */
+.table-pagination-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid #f1f5f9;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.pagination-buttons {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.btn-page-arrow,
+.btn-page-number {
+  min-width: 28px;
+  height: 28px;
+  padding: 0 6px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  border-radius: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btn-page-arrow:hover,
+.btn-page-number:hover {
+  background: #f1f5f9;
+}
+
+.btn-page-number.active {
+  background: #2563eb;
+  border-color: #2563eb;
+  color: #fff;
+}
+
+.btn-page-arrow:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.pagination-info {
+  font-size: 12.5px;
+  color: #64748b;
+}
+
+.empty-cell {
+  text-align: center;
+  color: #94a3b8;
+  font-size: 13px;
+  padding: 24px 8px !important;
+}
 .attention-list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 10px;
 }
 
-.attention-item {
+/* Each row is a clickable card with a colored left accent bar denoting
+   severity — Critical (red) vs Warning (amber) — instead of a bare list
+   row, so exceptions read at a glance and lead somewhere actionable. */
+.attention-card {
   display: flex;
-  gap: 12px;
   align-items: flex-start;
-  padding-bottom: 16px;
-  border-bottom: 1px solid #f1f5f9;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #f1f5f9;
+  border-left: 3px solid transparent;
+  text-decoration: none;
+  transition: background 0.15s, box-shadow 0.15s, transform 0.15s;
+  cursor: pointer;
 }
 
-.attention-item:last-child {
-  border-bottom: none;
-  padding-bottom: 0;
+.attention-card.danger {
+  background: #fef8f8;
+  border-left-color: #ef4444;
 }
 
-.attention-icon {
-  margin-top: 2px;
+.attention-card.warning {
+  background: #fffdf7;
+  border-left-color: #f59e0b;
 }
 
-.attention-icon.danger i {
+.attention-card:hover {
+  box-shadow: 0 4px 14px -6px rgba(15, 23, 42, 0.15);
+  transform: translateY(-1px);
+}
+
+.attention-card-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.attention-card-icon.danger {
+  background: #fee2e2;
+}
+
+.attention-card-icon.danger i {
   color: #ef4444;
-}
-
-.attention-icon.warning i {
-  color: #f59e0b;
-}
-
-.attention-details {
-  flex-grow: 1;
-}
-
-.attention-details h4 {
   font-size: 14px;
+}
+
+.attention-card-icon.warning {
+  background: #fef3c7;
+}
+
+.attention-card-icon.warning i {
+  color: #d97706;
+  font-size: 14px;
+}
+
+.attention-card-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.attention-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.attention-severity {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+
+.attention-severity.danger {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.attention-severity.warning {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.attention-card-time {
+  font-size: 11px;
+  color: #94a3b8;
+  white-space: nowrap;
+}
+
+.attention-card-body h4 {
+  font-size: 13.5px;
   font-weight: 600;
   color: #1e293b;
-  margin: 0 0 4px 0;
+  margin: 0 0 3px 0;
+  line-height: 1.3;
 }
 
-.attention-details p {
+.attention-card-body p {
   font-size: 12px;
   color: #64748b;
   margin: 0;
+  line-height: 1.4;
 }
 
-.attention-time {
-  font-size: 12px;
-  color: #94a3b8;
-  white-space: nowrap;
+.attention-chevron {
+  font-size: 11px;
+  color: #cbd5e1;
+  margin-top: 8px;
+  flex-shrink: 0;
+}
+
+.attention-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 8px;
+  padding: 28px 12px;
+  color: #64748b;
+}
+
+.attention-empty i {
+  font-size: 22px;
+  color: #22c55e;
+}
+
+.attention-empty p {
+  margin: 0;
+  font-size: 13px;
+}
+
+.stat-card-skeleton {
+  gap: 10px;
+}
+
+.skeleton-line {
+  height: 14px;
+  width: 80%;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #eef1f6 25%, #e2e8f0 37%, #eef1f6 63%);
+  background-size: 400% 100%;
+  animation: skeleton-shimmer 1.4s ease infinite;
+}
+
+.skeleton-line.short {
+  width: 45%;
+}
+
+@keyframes skeleton-shimmer {
+  0% { background-position: 100% 50%; }
+  100% { background-position: 0 50%; }
+}
+
+.dashboard-inline-error {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 13.5px;
+  margin-bottom: 20px;
+}
+
+.btn-retry {
+  margin-left: auto;
+  background: #b91c1c;
+  color: #fff;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-retry:hover {
+  background: #991b1b;
 }
 
 /* Promo Panel */
@@ -677,7 +1042,7 @@
 
 .promo-content {
   padding: 24px;
-  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.65) 0%, rgba(248, 250, 252, 0.85) 100%), url('https://images.unsplash.com/photo-1553413077-190dd305871c?q=80&w=1035&auto=format&fit=crop');
+  background-image: linear-gradient(180deg, rgba(15, 23, 42, 0.55) 0%, rgba(15, 23, 42, 0.82) 100%), url('/assets/smart-packaging.jpg');
   background-size: cover;
   background-position: center;
   height: 100%;
@@ -687,19 +1052,27 @@
 
 .promo-content h3 {
   font-size: 20px;
-  color: #0f172a;
+  color: #ffffff;
   margin: 0 0 8px 0;
 }
 
 .promo-content h3 strong {
-  color: #2563eb;
+  color: #ffffff;
 }
 
 .promo-content p {
   font-size: 14px;
-  color: #475569;
+  color: #e2e8f0;
   line-height: 1.5;
-  margin: 0 0 24px 0;
+  margin: 0;
+}
+
+.promo-divider {
+  width: 40px;
+  height: 3px;
+  border-radius: 2px;
+  background: #22c55e;
+  margin: 16px 0 24px 0;
 }
 
 .promo-features {
@@ -720,16 +1093,17 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: white;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(2px);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #2563eb;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  color: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .feature span {
   font-size: 12px;
   font-weight: 600;
-  color: #1e293b;
+  color: #ffffff;
 }

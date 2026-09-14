@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { Html5Qrcode, Html5QrcodeScannerState } from 'html5-qrcode';
+import { ScannerService } from '../../services/scanner.service';
 import { ReceivingService, ReceivingDto } from '../../services/receiving.service';
 
 interface DocumentSet {
@@ -11,16 +13,28 @@ interface DocumentSet {
   materialRejectedReport: File | null;
 }
 
-interface ReceivingItem {
-  receivingNumber: string; // hidden from template, needed to call the API
-  receivingItemId: number;
+interface ScannedItem {
   poNumber: string;
-  description: string;
+  supplierName: string;
+  itemCode: string;
+  itemName: string;
   orderedQty: number;
-  receivedQty: number;
-  documentsUploaded: boolean;
-  documents: DocumentSet;
-  accepted: boolean;
+  poItemId: number;
+  receivedQtyPerBox: number | null;
+}
+
+interface BoxRow {
+  id: number;
+  boxReelNo: string;
+  serialNo: string;
+  qty: number;
+  editing: boolean;
+}
+
+interface ApprovalEdit {
+  acceptedQty: number;
+  rejectedQty: number;
+  rejectionReason: string;
 }
 
 @Component({
@@ -29,71 +43,91 @@ interface ReceivingItem {
   templateUrl: './recieve.component.html',
   styleUrl: './recieve.component.css'
 })
-export class RecieveComponent implements OnInit {
+export class RecieveComponent implements OnInit, OnDestroy {
 
-  receivingData: ReceivingItem[] = [];
+  // ===================== Step tracker =====================
+  // 1 = Scan/Select, 2 = Receive Details, 3 = Verify & Upload, 4 = Approve
+  step: 1 | 2 | 3 | 4 = 1;
+
+  // ===================== Step 1: Scan =====================
+  scannerEnabled = true;
+  cameraStarted = false;
+  showStartScan = true; // camera only turns on once the user taps "Start Scanning"
+  scanLoading = false;
+  scanError: string | null = null;
+  manualCode = '';
+  showManualEntry = false;
+
+  private html5Qr?: Html5Qrcode;
+  readonly SCANNER_ELEMENT_ID = 'rw-scanner-video';
+
+  // ===================== Step 2: Receive Details (multi box/reel/serial) =====================
+  scannedItem: ScannedItem | null = null;
+  scannedQrCode: string | null = null;
+  boxRows: BoxRow[] = [];
+  private nextBoxRowId = 1;
+  recordLoading = false;
+  recordError: string | null = null;
+
+  get receiveQty(): number {
+    return this.boxRows.reduce((sum, r) => sum + (Number(r.qty) || 0), 0);
+  }
+
+  // ===================== Step 3/4: active record in progress =====================
+  activeReceiving: ReceivingDto | null = null;
+
+  tempDocuments: DocumentSet = this.emptyDocuments();
+  saveError = '';
+  saving = false;
+
+  edits: Record<number, ApprovalEdit> = {};
+  deciding = false;
+
+  // ===================== Queues (existing functionality, preserved) =====================
+  allReceivings: ReceivingDto[] = [];
   loading = false;
   loadError = '';
-
   searchTerm = '';
 
-  showUploadPopup = false;
-  selectedItem: ReceivingItem | null = null;
+  get inProgressList(): ReceivingDto[] {
+    return this.filterList(this.allReceivings.filter(r => r.status === 'IN_PROGRESS'));
+  }
 
-  get filteredData(): ReceivingItem[] {
+  get pendingApprovalList(): ReceivingDto[] {
+    return this.filterList(this.allReceivings.filter(r => r.approvalStatus === 'PENDING_APPROVAL'));
+  }
+
+  private filterList(list: ReceivingDto[]): ReceivingDto[] {
     const term = this.searchTerm.trim().toLowerCase();
-    if (!term) return this.receivingData;
-    return this.receivingData.filter(item =>
-      item.poNumber.toLowerCase().includes(term) ||
-      item.description.toLowerCase().includes(term)
+    if (!term) return list;
+    return list.filter(r =>
+      r.poNumber.toLowerCase().includes(term) ||
+      r.receivingNumber.toLowerCase().includes(term)
     );
   }
 
   constructor(
-    private receivingService: ReceivingService,
-    private router: Router
+    private router: Router,
+    private scannerService: ScannerService,
+    private receivingService: ReceivingService
   ) { }
 
   ngOnInit(): void {
-    this.loadReceivings();
+    this.loadAll();
+    // Camera no longer auto-starts — the user taps "Start Scanning" first.
   }
 
-  // Flatten each ReceivingDto's line items into one row per item, matching
-  // this screen's existing (pre-integration) table shape.
-  private toRows(receivings: ReceivingDto[]): ReceivingItem[] {
-    const rows: ReceivingItem[] = [];
-    for (const r of receivings) {
-      // Only show what still needs action here — VERIFIED/REJECTED move on to Approval.
-      if (r.status !== 'IN_PROGRESS') continue;
-      for (const item of r.items) {
-        rows.push({
-          receivingNumber: r.receivingNumber,
-          receivingItemId: item.receivingItemId,
-          poNumber: r.poNumber,
-          description: item.itemName,
-          orderedQty: item.orderedQty,
-          receivedQty: item.receivedQty,
-          documentsUploaded: (r.documents?.length || 0) > 0,
-          documents: this.emptyDocuments(),
-          accepted: r.status !== 'IN_PROGRESS'
-        });
-      }
-    }
-    return rows;
+  ngOnDestroy(): void {
+    this.stopCamera();
   }
 
-  loadReceivings(): void {
+  // ===================== Load queues =====================
+  loadAll(): void {
     this.loading = true;
     this.loadError = '';
     this.receivingService.list().subscribe({
       next: (res) => {
-        // Trust the backend's per-receiving-record status directly — do NOT
-        // overlay poStatusService here. It tracks "accepted" by PO number
-        // only, which is wrong now that one PO can have several line items
-        // (each its own receiving record, confirmed independently). Using
-        // it here previously caused confirming line item A to incorrectly
-        // disable the button for line item B on the same PO.
-        this.receivingData = this.toRows(res.data || []);
+        this.allReceivings = res.data || [];
         this.loading = false;
       },
       error: (err) => {
@@ -107,28 +141,268 @@ export class RecieveComponent implements OnInit {
     return { deliveryNote: null, purchaseOrder: null, purchaseRequisition: null, materialRejectedReport: null };
   }
 
-  tempDocuments: DocumentSet = this.emptyDocuments();
-  submitted = false;
-  saveError = '';
-  saving = false;
+  // ===================== Navigation between steps =====================
 
-  openUploadPopup(item: ReceivingItem) {
-    this.selectedItem = item;
-    this.tempDocuments = { ...item.documents };
-    this.saveError = '';
-    this.submitted = false;
-    this.showUploadPopup = true;
+  // Start fresh at Step 1 (used by "Scan Another" / initial load / Cancel)
+  goToScanStep(): void {
+    this.step = 1;
+    this.scannedItem = null;
+    this.scannedQrCode = null;
+    this.boxRows = [];
+    this.recordError = null;
+    this.scanError = null;
+    this.manualCode = '';
+    this.showManualEntry = false;
+    this.showStartScan = true;
+    this.stopCamera();
   }
 
-  closeUploadPopup() {
-    this.showUploadPopup = false;
-    this.selectedItem = null;
+  // "Start Scanning" — camera only activates on this explicit tap.
+  beginScanning(): void {
+    this.showStartScan = false;
+    this.scanError = null;
+    setTimeout(() => this.startCamera(), 0);
+  }
+
+  cancelFlow(): void {
+    this.stopCamera();
+    this.activeReceiving = null;
+    this.scannedItem = null;
+    this.scannedQrCode = null;
     this.tempDocuments = this.emptyDocuments();
     this.saveError = '';
-    this.submitted = false;
+    this.goToScanStep();
   }
 
-  onFileSelected(event: Event, key: keyof DocumentSet) {
+  // Resume an already-scanned record (skips straight to Verify & Upload)
+  resumeInProgress(r: ReceivingDto): void {
+    this.stopCamera();
+    this.activeReceiving = r;
+    this.tempDocuments = this.emptyDocuments();
+    this.saveError = '';
+    this.step = 3;
+  }
+
+  // Resume a record that's already waiting on a supervisor decision
+  resumePendingApproval(r: ReceivingDto): void {
+    this.stopCamera();
+    this.activeReceiving = r;
+    this.buildEdits(r);
+    this.step = 4;
+  }
+
+  private buildEdits(r: ReceivingDto): void {
+    this.edits = {};
+    for (const item of r.items) {
+      this.edits[item.receivingItemId] = {
+        acceptedQty: item.receivedQty,
+        rejectedQty: 0,
+        rejectionReason: ''
+      };
+    }
+  }
+
+  // ===================== Step 1: Camera scanning =====================
+
+  startCamera(): void {
+    this.scanError = null;
+
+    if (!window.isSecureContext) {
+      this.scanError = 'Camera access requires HTTPS (or localhost). Open this page over a secure connection, or use "Enter Code Manually" below.';
+      console.error('[rw-scan] blocked: not a secure context (window.isSecureContext === false)');
+      return;
+    }
+
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      this.scanError = 'This browser/context has no camera API available (navigator.mediaDevices is missing). Use "Enter Code Manually" below instead.';
+      console.error('[rw-scan] blocked: navigator.mediaDevices unavailable — old browser, stripped-down WebView, or an iframe without camera permission delegated.');
+      return;
+    }
+
+    // Running inside an iframe without `allow="camera"` on the parent frame is
+    // a common, silent cause of camera failures that don't map to a normal
+    // DOMException name — flag it up front so it's not confused with a
+    // hardware/permission problem.
+    if (window.self !== window.top) {
+      console.warn('[rw-scan] page is running inside an iframe — if the camera fails, check the parent frame allows: attribute includes "camera".');
+    }
+
+    const el = document.getElementById(this.SCANNER_ELEMENT_ID);
+    if (!el) {
+      // View not painted yet — try again shortly.
+      setTimeout(() => this.startCamera(), 50);
+      return;
+    }
+
+    this.html5Qr = new Html5Qrcode(this.SCANNER_ELEMENT_ID);
+    this.cameraStarted = true;
+
+    Html5Qrcode.getCameras()
+      .then((cameras) => {
+        if (!cameras || !cameras.length) {
+          this.scanError = 'No camera found on this device. Use "Enter Code Manually" below instead.';
+          console.error('[rw-scan] getCameras() resolved with an empty list — no camera detected by the browser.');
+          return;
+        }
+        this.html5Qr!.start(
+          { facingMode: 'environment' },
+          { fps: 10, qrbox: 250 },
+          (decodedText) => this.onScanSuccess(decodedText),
+          () => { /* per-frame "no QR found yet" — ignore */ }
+        ).catch((err) => this.onCameraError(err, 'start'));
+      })
+      .catch((err) => this.onCameraError(err, 'getCameras'));
+  }
+
+  private stopCamera(): void {
+    if (this.html5Qr && this.html5Qr.getState() === Html5QrcodeScannerState.SCANNING) {
+      this.html5Qr.stop().catch(() => {});
+    }
+    this.cameraStarted = false;
+  }
+
+  private onCameraError(error: any, stage: 'getCameras' | 'start'): void {
+    // Full raw error, always logged — check DevTools → Console for the exact
+    // name/message the browser threw when the on-screen summary isn't enough.
+    console.error(`[rw-scan] camera error during ${stage}():`, error?.name, '-', error?.message || error, error);
+
+    const name = error?.name || '';
+    const rawMessage = error?.message || String(error);
+
+    if (name === 'NotAllowedError' || /permission/i.test(rawMessage)) {
+      this.scanError = 'Camera permission denied. Allow camera access for this site, or use "Enter Code Manually" below.';
+    } else if (name === 'NotFoundError' || name === 'OverconstrainedError') {
+      this.scanError = 'No usable camera found. Use "Enter Code Manually" below instead.';
+    } else if (name === 'NotReadableError') {
+      this.scanError = 'Camera is already in use by another app.';
+    } else {
+      // Include the raw name/message so it's actionable without opening DevTools.
+      const detail = name || rawMessage || 'unknown error';
+      this.scanError = `Failed to access camera (${detail}). Use "Enter Code Manually" below instead.`;
+    }
+  }
+
+  toggleManualEntry(): void {
+    this.showManualEntry = !this.showManualEntry;
+  }
+
+  submitManualCode(): void {
+    const code = this.manualCode.trim();
+    if (!code) return;
+    this.lookupCode(code);
+  }
+
+  onScanSuccess(qrCode: string): void {
+    if (!this.scannerEnabled) return;
+    this.scannerEnabled = false;
+    this.stopCamera();
+    this.lookupCode(qrCode);
+  }
+
+  private lookupCode(qrCode: string): void {
+    this.scanLoading = true;
+    this.scanError = null;
+
+    this.scannerService.scan(qrCode).subscribe({
+      next: (res) => {
+        this.scanLoading = false;
+        if (res.data.poItemId == null) {
+          this.scanError = 'This QR code has no line item attached — cannot receive against it.';
+          this.scannerEnabled = true;
+          if (!this.showStartScan) this.startCamera();
+          return;
+        }
+        this.scannedQrCode = qrCode;
+        this.scannedItem = {
+          poNumber: res.data.poNumber,
+          supplierName: res.data.supplierName,
+          itemCode: res.data.itemCode || '',
+          itemName: res.data.itemName || '',
+          orderedQty: res.data.orderedQty || 0,
+          poItemId: res.data.poItemId,
+          receivedQtyPerBox: res.data.receivedQtyPerBox != null ? Number(res.data.receivedQtyPerBox) : null
+        };
+        // Seed one box/reel row so staff can adjust it, split it into more
+        // boxes, or delete/re-add before recording — matches the multi-box
+        // "Receiving Verification" table from the reference screens.
+        // Prefer the "Expected Qty (per box)" set back in PO QR Generator;
+        // fall back to the full ordered qty only if none was set there.
+        const seedQty = this.scannedItem.receivedQtyPerBox ?? res.data.orderedQty ?? 0;
+        this.boxRows = [this.makeBoxRow(seedQty)];
+        this.step = 2;
+      },
+      error: (err) => {
+        this.scanLoading = false;
+        this.scanError = err?.error?.message || 'Invalid QR code or scan failed.';
+        this.scannerEnabled = true;
+        if (!this.showStartScan) setTimeout(() => this.startCamera(), 1500);
+      }
+    });
+  }
+
+  // ===================== Step 2: Multi box/reel rows =====================
+
+  private makeBoxRow(qty: number): BoxRow {
+    const n = this.boxRows.length + 1;
+    const boxReelNo = this.scannedItem ? `${this.scannedItem.itemCode}-${String(n).padStart(3, '0')}` : `BOX-${n}`;
+    const serialNo = this.scannedItem ? `${this.scannedItem.poNumber}-${boxReelNo}` : boxReelNo;
+    return { id: this.nextBoxRowId++, boxReelNo, serialNo, qty, editing: false };
+  }
+
+  addBoxRow(): void {
+    this.boxRows.push(this.makeBoxRow(0));
+  }
+
+  editBoxRow(row: BoxRow): void {
+    row.editing = true;
+  }
+
+  saveBoxRow(row: BoxRow): void {
+    row.editing = false;
+  }
+
+  deleteBoxRow(row: BoxRow): void {
+    this.boxRows = this.boxRows.filter(r => r.id !== row.id);
+  }
+
+  // ===================== Step 2: Accept & Record =====================
+
+  acceptAndRecord(): void {
+    if (!this.scannedItem || !this.scannedQrCode) return;
+    if (this.boxRows.length === 0 || this.receiveQty <= 0) {
+      this.recordError = 'Add at least one box/reel with a valid quantity.';
+      return;
+    }
+
+    this.recordLoading = true;
+    this.recordError = null;
+
+    // The backend records one total received qty per PO line item — the
+    // individual box/reel/serial breakdown above is a receiving worksheet
+    // for staff to get the count right; only the summed total is posted.
+    this.receivingService.create({
+      qrCode: this.scannedQrCode,
+      items: [{ poItemId: this.scannedItem.poItemId, receivedQty: this.receiveQty }]
+    }).subscribe({
+      next: (res) => {
+        this.recordLoading = false;
+        this.activeReceiving = res.data;
+        this.tempDocuments = this.emptyDocuments();
+        this.saveError = '';
+        this.step = 3;
+        this.loadAll();
+      },
+      error: (err) => {
+        this.recordLoading = false;
+        this.recordError = err?.error?.message || 'Failed to create receiving record.';
+      }
+    });
+  }
+
+
+  // ===================== Step 3: Documents + Confirm =====================
+
+  onFileSelected(event: Event, key: keyof DocumentSet): void {
     const input = event.target as HTMLInputElement;
     this.tempDocuments[key] = input.files && input.files.length ? input.files[0] : null;
     this.saveError = '';
@@ -138,15 +412,10 @@ export class RecieveComponent implements OnInit {
     return Object.values(this.tempDocuments).some(file => file !== null);
   }
 
-  // "Bills and documents upload" — uploads selected files to WMS
-  // (POST /receiving-verifications/{no}/documents), one call per selected file.
-  saveDocuments() {
-    this.submitted = true;
-    if (!this.selectedItem) {
-      return;
-    }
+  saveDocuments(): void {
+    if (!this.activeReceiving) return;
 
-    const receivingNumber = this.selectedItem.receivingNumber;
+    const receivingNumber = this.activeReceiving.receivingNumber;
     const allDocConfigs: { type: string; file: File | null }[] = [
       { type: 'DELIVERY_NOTE', file: this.tempDocuments.deliveryNote },
       { type: 'PURCHASE_ORDER', file: this.tempDocuments.purchaseOrder },
@@ -155,17 +424,10 @@ export class RecieveComponent implements OnInit {
     ];
 
     const uploads = allDocConfigs.filter(u => u.file !== null) as { type: string; file: File }[];
-
-    // If no files were selected, simply close modal and keep state
-    if (uploads.length === 0) {
-      this.showUploadPopup = false;
-      this.selectedItem = null;
-      this.tempDocuments = this.emptyDocuments();
-      this.saveError = '';
-      return;
-    }
+    if (uploads.length === 0) return;
 
     this.saving = true;
+    this.saveError = '';
 
     forkJoin(
       uploads.map(u =>
@@ -177,36 +439,96 @@ export class RecieveComponent implements OnInit {
         this.saveError = 'One or more documents failed to upload — please try again.';
         return;
       }
-      if (this.selectedItem) {
-        this.selectedItem.documents = { ...this.tempDocuments };
-        this.selectedItem.documentsUploaded = true;
-      }
-      this.showUploadPopup = false;
-      this.selectedItem = null;
       this.tempDocuments = this.emptyDocuments();
-      this.saveError = '';
+      // Refresh the active record so the "Uploaded" state reflects the new documents.
+      if (this.activeReceiving) {
+        this.receivingService.get(this.activeReceiving.receivingNumber).subscribe({
+          next: (res) => { this.activeReceiving = res.data; }
+        });
+      }
+      this.loadAll();
     });
   }
 
-  // "Confirm" — WMS marks the receiving VERIFIED and automatically submits it
-  // for approval (see receiving.service.js confirmReceiving on the backend).
-  acceptItem(item: ReceivingItem) {
-    // Document upload is optional — staff can Confirm with or without
-    // attaching delivery note / PO / etc., so only block on already-accepted.
-    if (item.accepted) return;
+  confirmActive(): void {
+    if (!this.activeReceiving) return;
 
-    this.receivingService.confirm(item.receivingNumber).subscribe({
+    this.saving = true;
+    this.receivingService.confirm(this.activeReceiving.receivingNumber).subscribe({
       next: () => {
-        // Only flip this specific row's local state — no longer touching
-        // poStatusService, which was keyed by PO number and would have
-        // incorrectly marked every other line item on the same PO as
-        // accepted too.
-        item.accepted = true;
-        alert(`✅ Confirmed — PO ${item.poNumber} submitted for approval.`);
-        this.router.navigate(['/approval']);
+        this.saving = false;
+        if (!this.activeReceiving) return;
+        const receivingNumber = this.activeReceiving.receivingNumber;
+        // Refresh to pick up VERIFIED / PENDING_APPROVAL status before moving to Step 4.
+        this.receivingService.get(receivingNumber).subscribe({
+          next: (res) => {
+            this.activeReceiving = res.data;
+            this.buildEdits(res.data);
+            this.step = 4;
+            this.loadAll();
+          }
+        });
       },
       error: (err) => {
-        alert(err?.error?.message || 'Failed to confirm receiving');
+        this.saving = false;
+        this.saveError = err?.error?.message || 'Failed to confirm receiving.';
+      }
+    });
+  }
+
+  // ===================== Step 4: Approval decision =====================
+
+  totalOrdered(): number {
+    if (!this.activeReceiving) return 0;
+    return this.activeReceiving.items.reduce((sum, i) => sum + (i.orderedQty || 0), 0);
+  }
+
+  totalReceived(): number {
+    if (!this.activeReceiving) return 0;
+    return this.activeReceiving.items.reduce((sum, i) => sum + (i.receivedQty || 0), 0);
+  }
+
+  totalAccepted(): number {
+    if (!this.activeReceiving) return 0;
+    return this.activeReceiving.items.reduce((sum, i) => sum + (this.edits[i.receivingItemId]?.acceptedQty ?? 0), 0);
+  }
+
+  totalRejected(): number {
+    if (!this.activeReceiving) return 0;
+    return this.activeReceiving.items.reduce((sum, i) => sum + (this.edits[i.receivingItemId]?.rejectedQty ?? 0), 0);
+  }
+
+  variance(): number {
+    return this.totalReceived() - this.totalAccepted() - this.totalRejected();
+  }
+
+  decide(decision: 'APPROVED' | 'REJECTED'): void {
+    if (!this.activeReceiving) return;
+    const r = this.activeReceiving;
+
+    const itemDecisions = r.items.map(item => ({
+      receivingItemId: item.receivingItemId,
+      acceptedQty: decision === 'APPROVED' ? (this.edits[item.receivingItemId]?.acceptedQty ?? item.receivedQty) : 0,
+      rejectedQty: decision === 'APPROVED' ? (this.edits[item.receivingItemId]?.rejectedQty ?? 0) : item.receivedQty,
+      rejectionReason: this.edits[item.receivingItemId]?.rejectionReason || undefined
+    }));
+
+    this.deciding = true;
+    this.receivingService.decideApproval(r.receivingNumber, decision, itemDecisions).subscribe({
+      next: () => {
+        this.deciding = false;
+        alert(
+          decision === 'APPROVED'
+            ? `✅ ${r.receivingNumber} approved and pushed to VISIPACK as an incoming receipt for QC.`
+            : `❌ ${r.receivingNumber} rejected.`
+        );
+        this.activeReceiving = null;
+        this.loadAll();
+        this.goToScanStep();
+      },
+      error: (err) => {
+        this.deciding = false;
+        alert(err?.error?.message || `Failed to ${decision === 'APPROVED' ? 'approve' : 'reject'}.`);
       }
     });
   }

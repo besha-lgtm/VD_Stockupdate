@@ -12,112 +12,205 @@
         <!-- Main Content -->
         <main class="app-issue-content">
 
-            <div class="um-table-section">
+            <div class="iw-wrap">
 
-                <div class="um-section-header">
-                    <div class="um-header-row">
-                        <div class="um-section-text">
-                            <h3 class="um-section-title">Issue Verification</h3>
-                            <p class="um-section-desc" *ngIf="issuingData.length > 0">
-                                Total Items: {{ issuingData.length }} &nbsp;|&nbsp; Total Quantity: {{ getTotalIssued() }}
-                            </p>
-                            <p class="um-section-desc" *ngIf="issuingData.length === 0">
-                                Verify and generate QR codes for issued stock items
-                            </p>
+                <!-- Page Header -->
+                <div class="iw-page-header">
+                    <div>
+                        <h1 class="iw-page-title"><i class="pi pi-box"></i> Issue Items</h1>
+                        <p class="iw-page-sub">Search stock, issue items to a department, and update inventory in real time.</p>
+                    </div>
+                    <div class="iw-page-stats">
+                        <div class="iw-stat">
+                            <span class="iw-stat-value">{{ issuingData.length }}</span>
+                            <span class="iw-stat-label">Requests</span>
                         </div>
-                        <div class="right">
-                            <button
-                                pButton
-                                type="button"
-                                icon="pi pi-plus"
-                                label="Issue Items"
-                                class="p-button-sm create-emp-btn"
-                                (click)="openIssueForm()">
-                            </button>
+                        <div class="iw-stat">
+                            <span class="iw-stat-value">{{ getTotalIssued() }}</span>
+                            <span class="iw-stat-label">Total Issued</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="um-table-wrapper">
+                <!-- Step Tracker -->
+                <div class="iw-steps">
+                    <div class="iw-step" [class.iw-step-active]="!selectedItem" [class.iw-step-done]="!!selectedItem">
+                        <div class="iw-step-num"><i class="pi pi-check" *ngIf="selectedItem"></i><ng-container *ngIf="!selectedItem">1</ng-container></div>
+                        <div class="iw-step-text">
+                            <div class="iw-step-title">Select Item</div>
+                            <div class="iw-step-sub">Search item / stock</div>
+                        </div>
+                    </div>
+                    <i class="pi pi-angle-right iw-step-arrow"></i>
+                    <div class="iw-step" [class.iw-step-active]="!!selectedItem">
+                        <div class="iw-step-num">2</div>
+                        <div class="iw-step-text">
+                            <div class="iw-step-title">Issue Details</div>
+                            <div class="iw-step-sub">Qty &amp; department</div>
+                        </div>
+                    </div>
+                    <i class="pi pi-angle-right iw-step-arrow"></i>
+                    <div class="iw-step">
+                        <div class="iw-step-num">3</div>
+                        <div class="iw-step-text">
+                            <div class="iw-step-title">Confirm</div>
+                            <div class="iw-step-sub">Issue &amp; update stock</div>
+                        </div>
+                    </div>
+                </div>
 
-                    <p-table #dt [value]="issuingData" styleClass="p-datatable-sm um-custom-table" [paginator]="true" [rows]="5" [rowsPerPageOptions]="[5,10,20]" dropdownAppendTo="body" responsiveLayout="scroll">
-                        <ng-template pTemplate="header">
-                            <tr>
-                                <th>S.No</th>
-                                <th pSortableColumn="requestNumber">
-                                    <div class="header-cell-content">
-                                        <span>Request No</span>
-                                        <p-sortIcon field="requestNumber"></p-sortIcon>
-                                    </div>
-                                </th>
-                                <th pSortableColumn="department">
-                                    <div class="header-cell-content">
-                                        <span>Department</span>
-                                        <p-sortIcon field="department"></p-sortIcon>
-                                    </div>
-                                </th>
-                                <th pSortableColumn="item">
-                                    <div class="header-cell-content">
-                                        <span>Item Description</span>
-                                        <p-sortIcon field="item"></p-sortIcon>
-                                    </div>
-                                </th>
-                                <th pSortableColumn="required">
-                                    <div class="header-cell-content">
-                                        <span>Required</span>
-                                        <p-sortIcon field="required"></p-sortIcon>
-                                    </div>
-                                </th>
-                                <th pSortableColumn="status">
-                                    <div class="header-cell-content">
-                                        <span>Status</span>
-                                        <p-sortIcon field="status"></p-sortIcon>
-                                    </div>
-                                </th>
-                                <th style="text-align: center;">Generate QR</th>
-                            </tr>
-                        </ng-template>
-                        <ng-template pTemplate="body" let-item let-i="rowIndex">
-                            <tr>
-                                <td>{{ dt.first + i + 1 }}</td>
-                                <td>
-                                    <span class="um-badge um-badge-po">
-                                        {{ item.requestNumber }}
-                                    </span>
-                                </td>
-                                <td>{{ item.department }}</td>
-                                <td>
-                                    <span class="um-badge um-badge-desc">
-                                        {{ item.item }}
-                                    </span>
-                                </td>
-                                <td>{{ item.required }}</td>
-                                <td>
-                                    <span class="um-badge um-badge-active">
-                                        {{ item.status }}
-                                    </span>
-                                </td>
-                                <td style="text-align: center;">
-                                    <button
-                                        pButton
-                                        type="button"
-                                        icon="pi pi-qrcode"
-                                        label="Generate QR"
-                                        class="p-button-sm create-emp-btn"
-                                        (click)="openQrModal(item)">
-                                    </button>
-                                </td>
-                            </tr>
-                        </ng-template>
-                        <ng-template pTemplate="emptymessage">
-                            <tr>
-                                <td colspan="7" class="text-center" style="padding: 24px !important; color: #64748b;">
-                                    <i class="pi pi-box" style="font-size: 24px; margin-bottom: 8px; display: block; opacity: 0.5;"></i>
-                                    No issue records found.
-                                </td>
-                            </tr>
-                        </ng-template>
-                    </p-table>
+                <div class="iw-grid">
+
+                    <!-- Card 1: Select Item -->
+                    <section class="iw-card">
+                        <div class="iw-card-header">
+                            <span class="iw-card-num iw-num-blue">1</span>
+                            <div>
+                                <h3>Select Item</h3>
+                                <p>Search by item code or name</p>
+                            </div>
+                        </div>
+
+                        <div class="iw-field">
+                            <input type="text" class="iw-input" placeholder="e.g. REELSEP09 or 10ply"
+                                [(ngModel)]="itemSearchTerm" name="itemSearchTerm" [disabled]="!!selectedItem" />
+                        </div>
+
+                        <div class="iw-item-picker" *ngIf="!selectedItem">
+                            <button type="button" class="iw-item-row" *ngFor="let it of filteredItems" (click)="selectItem(it)">
+                                <div>
+                                    <span class="iw-chip iw-chip-blue">{{ it.itemCode }}</span>
+                                    <span class="iw-item-name">{{ it.itemName }}</span>
+                                </div>
+                                <span class="iw-item-stock" [class.iw-stock-low]="it.availableQty <= 0">{{ it.availableQty }} {{ it.uomCode }}</span>
+                            </button>
+                            <div class="iw-empty-row" *ngIf="!loadingLookups && filteredItems.length === 0">No items match.</div>
+                            <div class="iw-empty-row" *ngIf="loadingLookups"><i class="pi pi-spin pi-spinner"></i> Loading items...</div>
+                        </div>
+
+                        <div class="iw-selected-item" *ngIf="selectedItem">
+                            <div class="rw-detail-row"><span>Item Code</span><strong>{{ selectedItem.itemCode }}</strong></div>
+                            <div class="rw-detail-row"><span>Description</span><strong>{{ selectedItem.itemName }}</strong></div>
+                            <div class="rw-detail-row"><span>UOM</span><strong>{{ selectedItem.uomCode }}</strong></div>
+                            <button type="button" class="rw-btn-outline-sm" style="width:100%; margin-top:12px; justify-content:center; padding:10px;" (click)="clearSelectedItem()">
+                                <i class="pi pi-refresh"></i> Choose a different item
+                            </button>
+                        </div>
+
+                        <div class="iw-cam-badges">
+                            <span class="iw-cam-badge"><i class="pi pi-circle-fill" style="color:#10b981; font-size:8px;"></i> Camera Ready</span>
+                            <span class="iw-cam-badge"><i class="pi pi-mobile"></i> MC9400 Compatible</span>
+                        </div>
+                    </section>
+
+                    <!-- Card 2: Stock + Issue Details -->
+                    <section class="iw-card">
+                        <div class="iw-card-header">
+                            <span class="iw-card-num iw-num-green">2</span>
+                            <div>
+                                <h3>Item &amp; Stock Details</h3>
+                                <p>Live stock, issue qty &amp; destination</p>
+                            </div>
+                        </div>
+
+                        <div class="iw-empty" *ngIf="!selectedItem">
+                            <i class="pi pi-info-circle"></i>
+                            Select an item on the left to see live stock and enter issue details.
+                        </div>
+
+                        <ng-container *ngIf="selectedItem">
+                            <div class="rw-detail-row"><span>Available Stock</span><strong class="iw-stock-ok-text">{{ selectedItem.availableQty }} {{ selectedItem.uomCode }}</strong></div>
+                            <div class="rw-detail-row"><span>Reserved</span><strong>{{ selectedItem.reservedQty }} {{ selectedItem.uomCode }}</strong></div>
+                            <div class="rw-detail-row"><span>Total in Stock</span><strong>{{ selectedItem.stockQty }} {{ selectedItem.uomCode }}</strong></div>
+
+                            <div class="iw-field" style="margin-top:14px;">
+                                <label>Issue Quantity <span class="req">*</span></label>
+                                <input type="number" class="iw-input" min="1" [(ngModel)]="issueQty" name="issueQty" />
+                                <small class="iw-error" *ngIf="overStock">Exceeds available stock ({{ selectedItem.availableQty }} {{ selectedItem.uomCode }}).</small>
+                            </div>
+
+                            <div class="iw-field">
+                                <label>Issue To (Department) <span class="req">*</span></label>
+                                <select class="iw-input" [(ngModel)]="departmentId" name="departmentId">
+                                    <option [ngValue]="null">Select department...</option>
+                                    <option *ngFor="let d of departments" [ngValue]="d.departmentId">{{ d.departmentName }}</option>
+                                </select>
+                            </div>
+
+                            <div class="iw-field">
+                                <label>Batch / Job Reference (Optional)</label>
+                                <input type="text" class="iw-input" placeholder="e.g. BCH-9075186-01 — for your own tracing" [(ngModel)]="referenceNo" name="referenceNo" />
+                                <small class="iw-hint">Free text only — not synced to VISIPAK, just a breadcrumb for later.</small>
+                            </div>
+
+                            <div class="iw-field">
+                                <label>Remarks (Optional)</label>
+                                <input type="text" class="iw-input" placeholder="Enter remarks..." [(ngModel)]="remarks" name="remarks" />
+                            </div>
+
+                            <div class="rw-save-error" *ngIf="actionError">
+                                <i class="pi pi-exclamation-triangle"></i> {{ actionError }}
+                            </div>
+
+                            <button type="button" class="iw-btn iw-btn-success" [disabled]="submitting || overStock" (click)="issueAndUpdateStock()">
+                                <i class="pi pi-spin pi-spinner" *ngIf="submitting"></i>
+                                <i class="pi pi-send" *ngIf="!submitting"></i>
+                                {{ submitting ? 'Issuing...' : 'Issue & Update Stock' }}
+                            </button>
+                        </ng-container>
+                    </section>
+
+                    <!-- Card 3: Recent Issue Transactions -->
+                    <section class="iw-card iw-card-wide">
+                        <div class="iw-card-header">
+                            <span class="iw-card-num iw-num-amber">3</span>
+                            <div>
+                                <h3>Recent Issue Transactions</h3>
+                                <p>Issue requests and their status</p>
+                            </div>
+                        </div>
+
+                        <div class="iw-table-wrap">
+                            <table class="iw-table">
+                                <thead>
+                                    <tr>
+                                        <th>Issue No</th>
+                                        <th>Department</th>
+                                        <th>Item(s)</th>
+                                        <th>Issued Qty</th>
+                                        <th>Status</th>
+                                        <th>Reference</th>
+                                        <th style="text-align:center;">QR</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let req of issuingData">
+                                        <td><span class="iw-chip iw-chip-blue">{{ req.issueRequestNumber }}</span></td>
+                                        <td>{{ req.departmentName }}</td>
+                                        <td>
+                                            <span class="iw-chip iw-chip-gray" *ngFor="let it of req.items">{{ it.itemName }} ({{ it.requestedQty }})</span>
+                                        </td>
+                                        <td>{{ totalIssuedFor(req) }}</td>
+                                        <td><span class="iw-chip iw-chip-green">{{ req.status }}</span></td>
+                                        <td class="iw-ref-cell">{{ req.remarks || '—' }}</td>
+                                        <td style="text-align:center;">
+                                            <button type="button" class="iw-icon-btn" title="Generate QR" (click)="openQrModal(req)">
+                                                <i class="pi pi-qrcode"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr *ngIf="!loading && issuingData.length === 0">
+                                        <td colspan="7" class="iw-empty-row">
+                                            <i class="pi pi-box"></i> No issue records found.
+                                        </td>
+                                    </tr>
+                                    <tr *ngIf="loading">
+                                        <td colspan="7" class="iw-empty-row"><i class="pi pi-spin pi-spinner"></i> Loading...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
 
                 </div>
 
@@ -127,162 +220,32 @@
 
     </div>
 
-    <!-- Issue Form Modal -->
-    <div class="app-issue-modal-overlay" *ngIf="showIssueForm" (click)="closeIssueForm()">
-        <form class="app-issue-modal-box" [formGroup]="issueForm" (click)="$event.stopPropagation()">
-            <div class="app-issue-modal-header">
-                <h3><i class="pi pi-box" style="margin-right: 8px; color: #f59e0b;"></i>Issue Items</h3>
-                <button type="button" class="app-issue-modal-close" (click)="closeIssueForm()">&times;</button>
-            </div>
-
-            <div class="app-issue-modal-body">
-                <div class="app-issue-form-group">
-                    <label for="requestNumber">Request Number</label>
-                    <input
-                        id="requestNumber"
-                        type="text"
-                        class="app-issue-form-input"
-                        placeholder="Enter Request Number"
-                        formControlName="requestNumber">
-                    <small style="color: #ef4444; font-size: 12px; margin-top: 4px; display: block;" *ngIf="issueForm.get('requestNumber')?.invalid && issueForm.get('requestNumber')?.touched">
-                        Request Number is required
-                    </small>
-                </div>
-
-                <div class="app-issue-form-group">
-                    <label for="department">Department</label>
-                    <input
-                        id="department"
-                        type="text"
-                        class="app-issue-form-input"
-                        placeholder="Enter Department"
-                        formControlName="department">
-                    <small style="color: #ef4444; font-size: 12px; margin-top: 4px; display: block;" *ngIf="issueForm.get('department')?.invalid && issueForm.get('department')?.touched">
-                        Department is required
-                    </small>
-                </div>
-
-                <div class="app-issue-form-group">
-                    <label for="item">Item Description</label>
-                    <input
-                        id="item"
-                        type="text"
-                        class="app-issue-form-input"
-                        placeholder="Enter Item Description"
-                        formControlName="item">
-                    <small style="color: #ef4444; font-size: 12px; margin-top: 4px; display: block;" *ngIf="issueForm.get('item')?.invalid && issueForm.get('item')?.touched">
-                        Item Description is required
-                    </small>
-                </div>
-
-                <div class="app-issue-form-group">
-                    <label for="required">Required Quantity</label>
-                    <input
-                        id="required"
-                        type="number"
-                        class="app-issue-form-input"
-                        placeholder="Enter Quantity"
-                        formControlName="required"
-                        min="1">
-                    <small style="color: #ef4444; font-size: 12px; margin-top: 4px; display: block;" *ngIf="issueForm.get('required')?.invalid && issueForm.get('required')?.touched">
-                        Required quantity must be at least 1
-                    </small>
-                </div>
-
-                <!-- Check Stock Button -->
-                <div class="app-issue-stock-check-section">
-                    <button type="button" class="app-issue-check-stock-btn" (click)="checkStock()" [disabled]="issueForm.invalid">
-                        Check Stock
-                    </button>
-                </div>
-
-                <!-- Stock Check Message -->
-                <div class="app-issue-stock-message" *ngIf="stockMessage">
-                    <div class="app-issue-message-content">
-                        <span class="app-issue-message-icon">✅</span>
-                        <span class="app-issue-message-text">{{ stockMessage }}</span>
-                    </div>
-                </div>
-
-                <div class="app-issue-form-actions">
-                    <button type="button" class="app-issue-cancel-btn" (click)="closeIssueForm()">Cancel</button>
-                    <button type="button" class="app-issue-save-btn" (click)="saveIssue()" [disabled]="!stockChecked || issueForm.invalid">
-                        Issue Items
-                    </button>
-                </div>
-            </div>
-        </form>
-    </div>
-
     <!-- QR Modal -->
     <div class="app-issue-modal-overlay" *ngIf="showQrModal" (click)="closeQrModal()">
         <div class="app-issue-modal-box app-issue-qr-modal-box" (click)="$event.stopPropagation()">
             <div class="app-issue-modal-header">
-                <h3><i class="pi pi-qrcode" style="margin-right: 8px; color: #10b981;"></i>QR - Req {{ selectedItem?.requestNumber }}</h3>
+                <h3><i class="pi pi-qrcode" style="margin-right: 8px; color: #10b981;"></i>QR - {{ qrSelected?.issueRequestNumber }}</h3>
                 <button class="app-issue-modal-close" (click)="closeQrModal()">&times;</button>
             </div>
 
             <div class="app-issue-modal-body app-issue-qr-modal-body">
-                <!-- Issue Details -->
-                <div class="app-issue-details-card" *ngIf="selectedItem">
-                    <div class="app-issue-detail-row">
-                        <span class="app-issue-detail-label">Request Number:</span>
-                        <span class="app-issue-detail-value">{{ selectedItem.requestNumber }}</span>
-                    </div>
-                    <div class="app-issue-detail-row">
-                        <span class="app-issue-detail-label">Department:</span>
-                        <span class="app-issue-detail-value">{{ selectedItem.department }}</span>
-                    </div>
-                    <div class="app-issue-detail-row">
-                        <span class="app-issue-detail-label">Item:</span>
-                        <span class="app-issue-detail-value">{{ selectedItem.item }}</span>
-                    </div>
-                    <div class="app-issue-detail-row">
-                        <span class="app-issue-detail-label">Required Quantity:</span>
-                        <span class="app-issue-detail-value">{{ selectedItem.required }}</span>
-                    </div>
-                    <div class="app-issue-detail-row">
-                        <span class="app-issue-detail-label">Status:</span>
-                        <span class="app-issue-detail-value">
-                            <span class="app-issue-status app-issue-status-issued">{{ selectedItem.status }}</span>
-                        </span>
-                    </div>
-                </div>
-
-                <!-- QR Code Display -->
                 <div class="app-issue-qr-display-section">
                     <div class="app-issue-qr-image-container" *ngIf="qrDataUrl">
                         <img [src]="qrDataUrl" alt="QR Code" class="app-issue-qr-display-image" />
-                    </div>
-                    <div class="app-issue-qr-placeholder-large" *ngIf="!qrDataUrl && !generating">
-                        <span>Generating QR Code...</span>
                     </div>
                     <div class="app-issue-qr-placeholder-large" *ngIf="generating">
                         <span>Generating QR Code...</span>
                     </div>
                 </div>
 
-                <!-- QR Actions -->
                 <div class="app-issue-qr-actions-section">
-                    <button 
-                        class="app-issue-download-btn" 
-                        (click)="downloadQr()" 
-                        [disabled]="!qrDataUrl">
-                        Download
-                    </button>
-                    <button 
-                        class="app-issue-print-btn" 
-                        (click)="printQr()" 
-                        [disabled]="!qrDataUrl">
-                        Print
-                    </button>
+                    <button class="app-issue-download-btn" (click)="downloadQr()" [disabled]="!qrDataUrl">Download</button>
+                    <button class="app-issue-print-btn" (click)="printQr()" [disabled]="!qrDataUrl">Print</button>
                 </div>
             </div>
 
             <div class="app-issue-modal-footer">
-                <button class="app-issue-close-btn" (click)="closeQrModal()">
-                    Close
-                </button>
+                <button class="app-issue-close-btn" (click)="closeQrModal()">Close</button>
             </div>
         </div>
     </div>

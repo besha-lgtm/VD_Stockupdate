@@ -11,70 +11,65 @@
         <!-- Content Area -->
         <main class="app-dashboard-content">
             
-            <!-- Hero Banner -->
-            <div class="hero-banner">
-                <div class="hero-content">
-                    <h1>Good Morning, Raju!</h1>
-                    <p>Here's what's happening in your warehouse today.</p>
+            <!-- Hero Banner + Main Action Cards (cards float over the hero image) -->
+            <div class="hero-section">
+                <div class="hero-banner">
+                    <div class="hero-content">
+                        <h1>{{ greeting }}, {{ userFullName }}!</h1>
+                        <p>Here's what's happening in your warehouse today.</p>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Main Action Cards -->
-            <div class="main-cards-row">
-                <div class="main-card {{card.colorClass}}" *ngFor="let card of mainCards" (click)="onCardClick(card.id)">
-                    <div class="card-icon-circle">
-                        <!-- Use placeholder icons for now; using inline SVG based on class -->
-                        <ng-container [ngSwitch]="card.id">
-                            <svg *ngSwitchCase="'po'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                                <polyline points="14 2 14 8 20 8"></polyline>
-                                <line x1="16" y1="13" x2="8" y2="13"></line>
-                                <line x1="16" y1="17" x2="8" y2="17"></line>
-                                <polyline points="10 9 9 9 8 9"></polyline>
+                <!-- Main Action Cards -->
+                <div class="main-cards-row">
+                    <div class="main-card {{card.colorClass}}" *ngFor="let card of mainCards" (click)="onCardClick(card.id)">
+                        <div class="card-icon-circle">
+                            <!-- Use placeholder icons for now; using inline SVG based on class -->
+                            <ng-container [ngSwitch]="card.id">
+                                <svg *ngSwitchCase="'po'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                                    <polyline points="10 9 9 9 8 9"></polyline>
+                                </svg>
+                                <svg *ngSwitchCase="'receive'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                    <rect x="7" y="7" width="3" height="3"></rect>
+                                    <rect x="14" y="7" width="3" height="3"></rect>
+                                    <rect x="7" y="14" width="3" height="3"></rect>
+                                    <rect x="14" y="14" width="3" height="3"></rect>
+                                </svg>
+                                <svg *ngSwitchCase="'issue'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="9" cy="21" r="1"></circle>
+                                    <circle cx="20" cy="21" r="1"></circle>
+                                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                                </svg>
+                                <svg *ngSwitchCase="'approval'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                                    <polyline points="9 12 11 14 15 10"></polyline>
+                                </svg>
+                            </ng-container>
+                        </div>
+                        <div class="card-text">
+                            <h3>{{card.title}}</h3>
+                            <p>{{card.desc}}</p>
+                        </div>
+                        <div class="card-arrow">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
                             </svg>
-                            <svg *ngSwitchCase="'receive'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                                <rect x="7" y="7" width="3" height="3"></rect>
-                                <rect x="14" y="7" width="3" height="3"></rect>
-                                <rect x="7" y="14" width="3" height="3"></rect>
-                                <rect x="14" y="14" width="3" height="3"></rect>
-                            </svg>
-                            <svg *ngSwitchCase="'issue'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="9" cy="21" r="1"></circle>
-                                <circle cx="20" cy="21" r="1"></circle>
-                                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                            </svg>
-                            <svg *ngSwitchCase="'approval'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                                <polyline points="9 12 11 14 15 10"></polyline>
-                            </svg>
-                        </ng-container>
-                    </div>
-                    <div class="card-text">
-                        <h3>{{card.title}}</h3>
-                        <p>{{card.desc}}</p>
-                    </div>
-                    <div class="card-arrow">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="5" y1="12" x2="19" y2="12"></line>
-                            <polyline points="12 5 19 12 12 19"></polyline>
-                        </svg>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Stats Row -->
-            <div class="stats-row">
+            <div class="stats-row" *ngIf="!statsLoading && !statsError">
                 <div class="stat-card" *ngFor="let stat of stats">
                     <div class="stat-icon-wrapper {{stat.colorClass}}">
-                        <!-- Icon Placeholder -->
-                        <ng-container [ngSwitch]="stat.title">
-                            <i *ngSwitchCase="'POs Expected Today'" class="pi pi-file"></i>
-                            <i *ngSwitchCase="'Received Today'" class="pi pi-box"></i>
-                            <i *ngSwitchCase="'Awaiting QC'" class="pi pi-clock"></i>
-                            <i *ngSwitchCase="'Pending Approval'" class="pi pi-check-circle"></i>
-                            <i *ngSwitchCase="'Available Stock'" class="pi pi-server"></i>
-                        </ng-container>
+                        <i [class]="statIcon(stat.title)"></i>
                     </div>
                     <div class="stat-content">
                         <span class="stat-title">{{stat.title}}</span>
@@ -84,6 +79,16 @@
                         </div>
                     </div>
                 </div>
+            </div>
+            <div class="stats-row" *ngIf="statsLoading">
+                <div class="stat-card stat-card-skeleton" *ngFor="let i of [1,2,3,4,5]">
+                    <div class="skeleton-line"></div>
+                    <div class="skeleton-line short"></div>
+                </div>
+            </div>
+            <div class="dashboard-inline-error" *ngIf="statsError">
+                <i class="pi pi-exclamation-triangle"></i> {{ statsError }}
+                <button class="btn-retry" (click)="loadDashboard()">Retry</button>
             </div>
 
             <!-- Dashboard Main Grid Layout -->
@@ -167,58 +172,103 @@
                         <div class="panel table-panel">
                             <div class="panel-header">
                                 <h3>Recent Transactions</h3>
-                                <a routerLink="/poqr" class="view-all">View All <i class="pi pi-arrow-right"></i></a>
+                                <a routerLink="/recieve" class="view-all">View All <i class="pi pi-arrow-right"></i></a>
                             </div>
                             
-                            <p-table [value]="recentTransactions" [responsive]="true" styleClass="p-datatable-sm custom-ng-table">
-                                <ng-template pTemplate="header">
-                                    <tr>
-                                        <th>Time</th>
-                                        <th>Type</th>
-                                        <th>Reference</th>
-                                        <th>Item</th>
-                                        <th>Qty</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </ng-template>
-                                <ng-template pTemplate="body" let-txn>
-                                    <tr>
-                                        <td>{{txn.time}}</td>
-                                        <td>{{txn.type}}</td>
-                                        <td>{{txn.reference}}</td>
-                                        <td>{{txn.item}}</td>
-                                        <td>{{txn.qty}}</td>
-                                        <td>
-                                            <span class="status-badge" [ngClass]="txn.status.toLowerCase().replace(' ', '-')">
-                                                {{txn.status}}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                </ng-template>
-                            </p-table>
-                        </div>
-
-                        <!-- <div class="panel attention-panel">
-                            <div class="panel-header">
-                                <h3>Attention Required</h3>
-                                <a href="#" class="view-all">View All <i class="pi pi-arrow-right"></i></a>
-                            </div>
-                            
-                            <div class="attention-list">
-                                <div class="attention-item" *ngFor="let item of attentionRequired">
-                                    <div class="attention-icon" [ngClass]="item.type">
-                                        <i class="pi pi-exclamation-triangle"></i>
+                            <div class="txn-list" *ngIf="paginatedRecentTransactions.length; else noTxns">
+                                <div class="txn-row" *ngFor="let txn of paginatedRecentTransactions">
+                                    <div class="txn-icon" [ngClass]="txn.type === 'Scan' ? 'txn-icon-scan' : 'txn-icon-receiving'">
+                                        <i class="pi" [ngClass]="txn.type === 'Scan' ? 'pi-qrcode' : 'pi-inbox'"></i>
                                     </div>
-                                    <div class="attention-details">
-                                        <h4>{{item.title}}</h4>
-                                        <p>{{item.desc}}</p>
+                                    <div class="txn-main">
+                                        <div class="txn-title">{{ txn.item }}</div>
+                                        <div class="txn-sub">
+                                            <span class="txn-ref">{{ txn.reference }}</span>
+                                            <span class="txn-dot">&middot;</span>
+                                            <span>{{ txn.type }}</span>
+                                            <span class="txn-dot">&middot;</span>
+                                            <span>Qty {{ txn.qty }}</span>
+                                        </div>
                                     </div>
-                                    <div class="attention-time">
-                                        {{item.time}}
+                                    <div class="txn-meta">
+                                        <span class="status-badge" [ngClass]="statusClass(txn.status)">
+                                            {{ txn.status }}
+                                        </span>
+                                        <span class="txn-time">{{ txn.time }}</span>
                                     </div>
                                 </div>
                             </div>
-                        </div>-->
+                            <ng-template #noTxns>
+                                <div class="txn-empty">
+                                    <i class="pi pi-inbox"></i>
+                                    <p>{{ statsLoading ? 'Loading recent activity…' : 'No recent transactions yet.' }}</p>
+                                </div>
+                            </ng-template>
+
+                            <!-- Pagination Footer -->
+                            <div class="table-pagination-footer" *ngIf="recentTransactions.length">
+                                <div class="pagination-buttons">
+                                    <button class="btn-page-arrow" [disabled]="recentTxnPage === 1" (click)="prevRecentTxnPage()">&lt;</button>
+                                    <button 
+                                        *ngFor="let p of recentTxnPageArray" 
+                                        class="btn-page-number" 
+                                        [class.active]="p === recentTxnPage"
+                                        (click)="setRecentTxnPage(p)">{{ p }}</button>
+                                    <button class="btn-page-arrow" [disabled]="recentTxnPage === totalRecentTxnPages" (click)="nextRecentTxnPage()">&gt;</button>
+                                </div>
+                                <div class="pagination-info">
+                                    Showing {{ recentTxnRangeLabel }} of {{ recentTransactions.length }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="panel attention-panel">
+                            <div class="panel-header">
+                                <h3>Attention Required</h3>
+                                <a routerLink="/recieve" class="view-all">View All <i class="pi pi-arrow-right"></i></a>
+                            </div>
+
+                            <div class="attention-list" *ngIf="paginatedAttentionRequired.length; else noAttention">
+                                <a routerLink="/recieve" class="attention-card" [ngClass]="item.type" *ngFor="let item of paginatedAttentionRequired">
+                                    <div class="attention-card-icon" [ngClass]="item.type">
+                                        <i class="pi" [ngClass]="item.type === 'danger' ? 'pi-times-circle' : 'pi-exclamation-triangle'"></i>
+                                    </div>
+                                    <div class="attention-card-body">
+                                        <div class="attention-card-top">
+                                            <span class="attention-severity" [ngClass]="item.type">
+                                                {{ item.type === 'danger' ? 'Critical' : 'Warning' }}
+                                            </span>
+                                            <span class="attention-card-time">{{ item.time }}</span>
+                                        </div>
+                                        <h4>{{ item.title }}</h4>
+                                        <p>{{ item.desc }}</p>
+                                    </div>
+                                    <i class="pi pi-chevron-right attention-chevron"></i>
+                                </a>
+                            </div>
+                            <ng-template #noAttention>
+                                <div class="attention-empty">
+                                    <i class="pi pi-check-circle"></i>
+                                    <p>{{ statsLoading ? 'Checking for exceptions…' : 'Nothing needs attention right now.' }}</p>
+                                </div>
+                            </ng-template>
+
+                            <!-- Pagination Footer -->
+                            <div class="table-pagination-footer" *ngIf="attentionRequired.length">
+                                <div class="pagination-buttons">
+                                    <button class="btn-page-arrow" [disabled]="attentionPage === 1" (click)="prevAttentionPage()">&lt;</button>
+                                    <button 
+                                        *ngFor="let p of attentionPageArray" 
+                                        class="btn-page-number" 
+                                        [class.active]="p === attentionPage"
+                                        (click)="setAttentionPage(p)">{{ p }}</button>
+                                    <button class="btn-page-arrow" [disabled]="attentionPage === totalAttentionPages" (click)="nextAttentionPage()">&gt;</button>
+                                </div>
+                                <div class="pagination-info">
+                                    Showing {{ attentionRangeLabel }} of {{ attentionRequired.length }}
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div> 
 
@@ -232,7 +282,9 @@
                                     class="action-btn" 
                                     [ngClass]="{'danger-btn': action.isDanger}"
                                     (click)="onQuickActionClick(action.route)">
-                                <i [class]="action.icon"></i>
+                                <span class="action-icon-circle">
+                                    <i [class]="action.icon"></i>
+                                </span>
                                 <span>{{action.label}}</span>
                             </button>
                         </div>
@@ -243,7 +295,8 @@
                         <div class="promo-content">
                             <h3><strong>StockSync Pro</strong></h3>
                             <p>The Smart Link Between Your Warehouse Floor and ERP.</p>
-                            
+                            <div class="promo-divider"></div>
+
                             <div class="promo-features">
                                 <div class="feature">
                                     <div class="f-icon"><i class="pi pi-sync"></i></div>

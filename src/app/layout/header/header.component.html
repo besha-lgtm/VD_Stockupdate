@@ -92,12 +92,12 @@
     </div>
 
     <!-- ERP STATUS BADGE -->
-    <div class="pill-btn status-pill">
+    <div class="pill-btn status-pill" [ngClass]="{ 'status-pill-disconnected': !erpConnected }">
       <div class="status-icon">
-        <i class="pi pi-check-circle"></i>
+        <i class="pi" [ngClass]="erpConnected ? 'pi-check-circle' : 'pi-exclamation-circle'"></i>
       </div>
       <div class="pill-text">
-        <div class="status-title">ERP Connected</div>
+        <div class="status-title">{{ erpConnected ? 'ERP Connected' : 'ERP Not Synced' }}</div>
         <div class="status-sub">Last Sync: {{ lastSyncTime }}</div>
       </div>
     </div>
@@ -111,21 +111,21 @@
     <!-- USER PROFILE SECTION -->
     <div class="user-profile-wrapper">
       <div class="user-profile-btn" (click)="toggleUserMenu()">
-        <div class="user-avatar">R</div>
+        <div class="user-avatar">{{ userInitial }}</div>
         <div class="user-info">
           <div class="user-name">
-            Raju
+            {{ userFullName }}
             <!-- <i class="pi pi-chevron-down user-chevron"></i> -->
           </div>
-          <div class="user-role">Warehouse Manager</div>
+          <div class="user-role">{{ userRole }}</div>
         </div>
       </div>
 
       <!-- User Menu Dropdown -->
       <div class="dropdown-menu user-dropdown" *ngIf="isUserMenuOpen">
         <div class="user-menu-header">
-          <strong>Raju</strong>
-          <span>Warehouse Manager</span>
+          <strong>{{ userFullName }}</strong>
+          <span>{{ userRole }}</span>
         </div>
         <div class="dropdown-divider"></div>
         <div class="dropdown-item danger" (click)="logout()">
@@ -143,4 +143,3 @@
   </div>
 
 </header>
-

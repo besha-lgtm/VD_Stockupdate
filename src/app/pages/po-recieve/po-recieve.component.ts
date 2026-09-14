@@ -22,6 +22,7 @@ export class PORecieveComponent implements OnInit, OnDestroy {
   receivingData: POReceivingItem[] = [];
   loading = false;
   loadError = '';
+  searchTerm = '';
 
   currentDate: Date = new Date();
 
@@ -31,6 +32,19 @@ export class PORecieveComponent implements OnInit, OnDestroy {
     private poStatusService: PoStatusService,
     private receivingService: ReceivingService
   ) {}
+
+  get filteredData(): POReceivingItem[] {
+    const term = this.searchTerm.trim().toLowerCase();
+    if (!term) return this.receivingData;
+    return this.receivingData.filter(r =>
+      r.poNumber.toLowerCase().includes(term) ||
+      r.description.toLowerCase().includes(term)
+    );
+  }
+
+  get uniquePoCount(): number {
+    return new Set(this.receivingData.map(r => r.poNumber)).size;
+  }
 
   ngOnInit(): void {
     this.loadReceivings();
@@ -51,7 +65,11 @@ export class PORecieveComponent implements OnInit, OnDestroy {
       next: (res) => {
         let sno = 1;
         const rows: POReceivingItem[] = [];
-        for (const r of res.data || []) {
+        // "Stock" only counts material a supervisor has actually approved —
+        // receivings still In Progress or sitting in Pending Approval aren't
+        // committed inventory yet, so they're excluded here.
+        const approvedOnly = (res.data || []).filter(r => r.approvalStatus === 'APPROVED');
+        for (const r of approvedOnly) {
           for (const item of r.items) {
             // Once QC has passed, acceptedQty is the real usable stock figure;
             // before that, receivedQty (what physically arrived) is the best we know.
@@ -82,7 +100,7 @@ export class PORecieveComponent implements OnInit, OnDestroy {
   }
 
   getTotalStock(): number {
-    return this.receivingData.reduce((total, item) => total + item.totalStock, 0);
+    return this.filteredData.reduce((total, item) => total + (Number(item.totalStock) || 0), 0);
   }
 
   refreshCurrentDate(): void {

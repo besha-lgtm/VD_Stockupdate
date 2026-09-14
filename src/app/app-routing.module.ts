@@ -25,9 +25,9 @@ const routes: Routes = [
   { path: 'porecieve', component: PORecieveComponent },
   { path: 'issue', component: IssueComponent },
   { path: 'recieve', component: RecieveComponent },
-  { path: 'iscan', component: IscanComponent },
-  { path: 'rscan', component: RscanComponent },
-  { path: 'approval', component: ApprovalComponent },
+  // { path: 'iscan', component: IscanComponent },
+  // { path: 'rscan', component: RscanComponent },
+  // { path: 'approval', component: ApprovalComponent },
 
   { path: 'sidebar', component: SidebarComponent }
 ];
