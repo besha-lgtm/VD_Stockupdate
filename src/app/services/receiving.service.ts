@@ -25,7 +25,7 @@ export interface ReceivingDto {
   approvedBy: string | null;
   approvedAt: string | null;
   visipackGrnNo: string | null;
-  qcStatus: string | null; // PENDING | PASSED | FAILED
+  qcStatus: string | null; // PENDING | PASSED | FAILED | PUSH_FAILED
   remarks: string | null;
   items: ReceivingItemDto[];
   documents: { documentId: number; documentType: string; documentName: string; documentUrl: string }[];
@@ -69,5 +69,20 @@ export class ReceivingService {
     itemDecisions: { receivingItemId: number; acceptedQty: number; rejectedQty: number; rejectionReason?: string }[]
   ): Observable<{ success: boolean; data: ReceivingDto }> {
     return this.http.put<any>(`${AppSettings.API.receivingVerifications}/${receivingNumber}/approval`, { decision, itemDecisions });
+  }
+
+  // Retry a failed VISIPACK push (qcStatus = PUSH_FAILED after approval)
+  retryPush(receivingNumber: string): Observable<{ success: boolean; data: ReceivingDto }> {
+    return this.http.put<any>(`${AppSettings.API.receivingVerifications}/${receivingNumber}/retry-push`, {});
+  }
+
+  // Reopen a rejected receiving for correction — sends it back to
+  // IN_PROGRESS so it can be re-confirmed and resubmitted for approval.
+  // Optional per-item received-qty corrections in the same call.
+  reopenRejected(
+    receivingNumber: string,
+    itemCorrections?: { receivingItemId: number; receivedQty: number }[]
+  ): Observable<{ success: boolean; data: ReceivingDto }> {
+    return this.http.put<any>(`${AppSettings.API.receivingVerifications}/${receivingNumber}/reopen`, { itemCorrections });
   }
 }

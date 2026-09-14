@@ -22,16 +22,25 @@
                     </div>
                     <div class="sw-page-stats">
                         <div class="sw-stat">
-                            <span class="sw-stat-value">{{ receivingData.length }}</span>
-                            <span class="sw-stat-label">Stock Lines</span>
+                            <div class="sw-stat-icon"><i class="pi pi-list"></i></div>
+                            <div class="sw-stat-text">
+                                <span class="sw-stat-value">{{ receivingData.length }}</span>
+                                <span class="sw-stat-label">Stock Lines</span>
+                            </div>
                         </div>
                         <div class="sw-stat">
-                            <span class="sw-stat-value">{{ uniquePoCount }}</span>
-                            <span class="sw-stat-label">Purchase Orders</span>
+                            <div class="sw-stat-icon"><i class="pi pi-file"></i></div>
+                            <div class="sw-stat-text">
+                                <span class="sw-stat-value">{{ uniquePoCount }}</span>
+                                <span class="sw-stat-label">Purchase Orders</span>
+                            </div>
                         </div>
                         <div class="sw-stat sw-stat-accent">
-                            <span class="sw-stat-value">{{ getTotalStock() | number:'1.0-3' }}</span>
-                            <span class="sw-stat-label">Total Units</span>
+                            <div class="sw-stat-icon sw-stat-icon-accent"><i class="pi pi-box"></i></div>
+                            <div class="sw-stat-text">
+                                <span class="sw-stat-value">{{ getTotalStock() | number:'1.0-3' }}</span>
+                                <span class="sw-stat-label">Total Units</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -56,13 +65,21 @@
                     </div>
 
                     <!-- Loading -->
-                    <div class="sw-loading" *ngIf="loading">
-                        <i class="pi pi-spin pi-spinner"></i> Loading stock data...
+                    <div class="sw-skeleton-wrap" *ngIf="loading">
+                        <div class="sw-skeleton-row" *ngFor="let i of [1,2,3,4,5]">
+                            <div class="sw-skel sw-skel-sno"></div>
+                            <div class="sw-skel sw-skel-chip"></div>
+                            <div class="sw-skel sw-skel-desc"></div>
+                            <div class="sw-skel sw-skel-date"></div>
+                            <div class="sw-skel sw-skel-qty"></div>
+                        </div>
                     </div>
 
                     <!-- Error -->
                     <div class="sw-load-error" *ngIf="loadError && !loading">
-                        <i class="pi pi-exclamation-triangle"></i> {{ loadError }}
+                        <i class="pi pi-exclamation-triangle"></i>
+                        <span>{{ loadError }}</span>
+                        <button type="button" class="sw-retry-btn" (click)="loadReceivings()">Retry</button>
                     </div>
 
                     <!-- Empty state -->
@@ -111,7 +128,7 @@
                                         <span class="sw-chip sw-chip-blue">{{ item.poNumber }}</span>
                                     </td>
                                     <td>
-                                        <span class="sw-chip sw-chip-gray">{{ item.description }}</span>
+                                        <span class="sw-item-desc"><i class="pi pi-box"></i> {{ item.description }}</span>
                                     </td>
                                     <td class="sw-date-cell">
                                         <i class="pi pi-clock"></i> {{ getFormattedDate(item.lastUpdated) }}

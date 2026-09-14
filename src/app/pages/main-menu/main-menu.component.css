@@ -119,6 +119,16 @@
   margin-right: 2px;
 }
 
+/* Shown when the ERP hasn't completed a sync yet (erpConnected = false) —
+   amber dot instead of green, matching the header's disconnected state. */
+.dot-off {
+  width: 10px;
+  height: 10px;
+  background-color: #f59e0b;
+  border-radius: 50%;
+  margin-right: 2px;
+}
+
 /* Right Grid */
 .cards-grid {
   flex: 2;
@@ -264,6 +274,28 @@
   color: #ef4444;
 }
 
+.card-stats-skeleton {
+  gap: 10px;
+}
+
+.skeleton-pill {
+  height: 22px;
+  width: 55%;
+  border-radius: 8px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.4) 25%, rgba(255,255,255,0.75) 37%, rgba(255,255,255,0.4) 63%);
+  background-size: 400% 100%;
+  animation: hub-skeleton-shimmer 1.4s ease infinite;
+}
+
+.skeleton-pill.short {
+  width: 30%;
+}
+
+@keyframes hub-skeleton-shimmer {
+  0% { background-position: 100% 50%; }
+  100% { background-position: 0 50%; }
+}
+
 .card-btn {
   background-color: #0f172a;
   color: #ffffff;
@@ -300,8 +332,17 @@
   background-color: #eef2ff;
   border: 1px solid #e0e7ff;
 }
+.card-po .card-icon-wrapper {
+  background: #e0e7ff;
+}
 .card-po .card-icon-wrapper svg {
   stroke: #4f46e5;
+}
+.card-po .card-btn {
+  background-color: #4338ca;
+}
+.card-po:hover .card-btn {
+  background-color: #3730a3;
 }
 .card-po .tag .lightning-icon { color: #4f46e5; }
 .hub-info-panel .tag.tag-po { background: #eef2ff; border-color: #e0e7ff; color: #4338ca; }
@@ -311,8 +352,17 @@
   background-color: #ecfdf5;
   border: 1px solid #d1fae5;
 }
+.card-receive .card-icon-wrapper {
+  background: #d1fae5;
+}
 .card-receive .card-icon-wrapper svg {
   stroke: #10b981;
+}
+.card-receive .card-btn {
+  background-color: #059669;
+}
+.card-receive:hover .card-btn {
+  background-color: #047857;
 }
 
 /* ISSUE: Orange */
@@ -320,8 +370,17 @@
   background-color: #fff7ed;
   border: 1px solid #ffedd5;
 }
+.card-issue .card-icon-wrapper {
+  background: #ffedd5;
+}
 .card-issue .card-icon-wrapper svg {
   stroke: #f59e0b;
+}
+.card-issue .card-btn {
+  background-color: #d97706;
+}
+.card-issue:hover .card-btn {
+  background-color: #b45309;
 }
 
 /* APPROVAL: Purple */
@@ -329,6 +388,15 @@
   background-color: #f5f3ff;
   border: 1px solid #ede9fe;
 }
+.card-approval .card-icon-wrapper {
+  background: #ede9fe;
+}
 .card-approval .card-icon-wrapper svg {
   stroke: #8b5cf6;
+}
+.card-approval .card-btn {
+  background-color: #7c3aed;
+}
+.card-approval:hover .card-btn {
+  background-color: #6d28d9;
 }

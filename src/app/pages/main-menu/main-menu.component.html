@@ -9,7 +9,7 @@
     
     <h1 class="hub-title">Warehouse Operations Hub</h1>
     <p class="hub-desc">
-      Welcome back, <strong>Raju</strong>. Select an operational engine below or jump to floor optical scanning to begin your shift activities.
+      Welcome back, <strong>{{ userFullName }}</strong>. Select an operational engine below to begin your shift activities.
     </p>
 
     <div class="info-pill">
@@ -17,7 +17,7 @@
         <circle cx="12" cy="12" r="10"></circle>
         <polyline points="12 6 12 12 16 14"></polyline>
       </svg>
-      <span>Shift 01 (06:00 - 14:00)</span>
+      <span>{{ currentTime }}</span>
     </div>
 
     <div class="info-pill">
@@ -31,12 +31,12 @@
         <path d="M14 16h1"></path>
         <path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"></path>
       </svg>
-      <span>Plant-A Facility</span>
+      <span>{{ plantLabel }}</span>
     </div>
 
-    <div class="info-pill success">
-      <div class="dot"></div>
-      <span>Dock Bay 04 Active</span>
+    <div class="info-pill" [ngClass]="{ success: erpConnected }">
+      <div class="dot" [ngClass]="{ 'dot-off': !erpConnected }"></div>
+      <span>{{ erpConnected ? 'ERP Connected' : 'ERP Not Synced' }}</span>
     </div>
   </div>
 
@@ -66,15 +66,19 @@
       
       <div class="card-divider"></div>
       
-      <div class="card-stats-row">
+      <div class="card-stats-row" *ngIf="hub && !hubLoading">
         <div class="status-left">
           <div class="status-dot orange"></div>
-          <span>5 Pending QR</span>
+          <span>{{ hub.po.pendingQr }} Pending QR</span>
         </div>
         <div class="stats-right">
-          <span class="val">18 Total</span>
+          <span class="val">{{ hub.po.totalToday }} Total</span>
           <span class="lbl">Today</span>
         </div>
+      </div>
+      <div class="card-stats-row card-stats-skeleton" *ngIf="hubLoading">
+        <div class="skeleton-pill"></div>
+        <div class="skeleton-pill short"></div>
       </div>
       
       <button class="card-btn">
@@ -108,15 +112,19 @@
       
       <div class="card-divider"></div>
       
-      <div class="card-stats-row">
+      <div class="card-stats-row" *ngIf="hub && !hubLoading">
         <div class="status-left">
           <div class="status-dot green"></div>
-          <span>4 Awaiting Intake</span>
+          <span>{{ hub.receive.awaitingIntake }} Awaiting Intake</span>
         </div>
         <div class="stats-right">
-          <span class="val green" style="color: #10b981;">12</span>
+          <span class="val green" style="color: #10b981;">{{ hub.receive.cleared }}</span>
           <span class="lbl green" style="color: #10b981;">Cleared</span>
         </div>
+      </div>
+      <div class="card-stats-row card-stats-skeleton" *ngIf="hubLoading">
+        <div class="skeleton-pill"></div>
+        <div class="skeleton-pill short"></div>
       </div>
       
       <button class="card-btn">
@@ -151,15 +159,19 @@
       
       <div class="card-divider"></div>
       
-      <div class="card-stats-row">
+      <div class="card-stats-row" *ngIf="hub && !hubLoading">
         <div class="status-left">
           <div class="status-dot blue"></div>
-          <span>3 Depts Active</span>
+          <span>{{ hub.issue.deptsActive }} Depts Active</span>
         </div>
         <div class="stats-right">
-          <span class="val">7 Items</span>
+          <span class="val">{{ hub.issue.itemsStaged }} Items</span>
           <span class="lbl">Staged</span>
         </div>
+      </div>
+      <div class="card-stats-row card-stats-skeleton" *ngIf="hubLoading">
+        <div class="skeleton-pill"></div>
+        <div class="skeleton-pill short"></div>
       </div>
       
       <button class="card-btn">
@@ -192,15 +204,23 @@
       
       <div class="card-divider"></div>
       
-      <div class="card-stats-row">
+      <div class="card-stats-row" *ngIf="hub && !hubLoading">
         <div class="status-left">
           <div class="status-dot orange"></div>
-          <span>3 Pending Sign-Off</span>
+          <span>{{ hub.approval.pendingSignoff }} Pending Sign-Off</span>
         </div>
-        <div class="stats-right">
-          <span class="val red">1 Urgent</span>
+        <div class="stats-right" *ngIf="hub.approval.urgent > 0">
+          <span class="val red">{{ hub.approval.urgent }} Urgent</span>
           <span class="lbl red">Hold</span>
         </div>
+        <div class="stats-right" *ngIf="hub.approval.urgent === 0">
+          <span class="val" style="color: #10b981;">0</span>
+          <span class="lbl" style="color: #10b981;">Hold</span>
+        </div>
+      </div>
+      <div class="card-stats-row card-stats-skeleton" *ngIf="hubLoading">
+        <div class="skeleton-pill"></div>
+        <div class="skeleton-pill short"></div>
       </div>
       
       <button class="card-btn">

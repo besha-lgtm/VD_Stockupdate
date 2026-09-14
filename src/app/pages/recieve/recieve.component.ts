@@ -97,6 +97,21 @@ export class RecieveComponent implements OnInit, OnDestroy {
     return this.filterList(this.allReceivings.filter(r => r.approvalStatus === 'PENDING_APPROVAL'));
   }
 
+  // Approved locally, but the VISIPACK push failed — previously a dead end;
+  // see retryPush() below.
+  get pushFailedList(): ReceivingDto[] {
+    return this.filterList(this.allReceivings.filter(r => r.qcStatus === 'PUSH_FAILED'));
+  }
+
+  // Rejected during the approval decision — previously a dead end; see
+  // reopenForCorrection() below.
+  get rejectedList(): ReceivingDto[] {
+    return this.filterList(this.allReceivings.filter(r => r.status === 'REJECTED'));
+  }
+
+  retryingReceivingNumber: string | null = null;
+  reopeningReceivingNumber: string | null = null;
+
   private filterList(list: ReceivingDto[]): ReceivingDto[] {
     const term = this.searchTerm.trim().toLowerCase();
     if (!term) return list;
@@ -189,6 +204,49 @@ export class RecieveComponent implements OnInit, OnDestroy {
     this.activeReceiving = r;
     this.buildEdits(r);
     this.step = 4;
+  }
+
+  // "Retry Push" — for a receiving that was approved but failed to push to
+  // VISIPACK (qcStatus = PUSH_FAILED). Re-runs the exact same push the
+  // approval step attempted; on success it clears from Attention Required
+  // automatically since qcStatus moves to PENDING.
+  retryPush(r: ReceivingDto): void {
+    this.retryingReceivingNumber = r.receivingNumber;
+    this.receivingService.retryPush(r.receivingNumber).subscribe({
+      next: () => {
+        this.retryingReceivingNumber = null;
+        alert(`✅ ${r.receivingNumber} pushed to VISIPACK successfully.`);
+        this.loadAll();
+      },
+      error: (err) => {
+        this.retryingReceivingNumber = null;
+        alert(err?.error?.message || `Retry failed — VISIPACK may still be unreachable. Try again shortly.`);
+        this.loadAll();
+      }
+    });
+  }
+
+  // "Reopen for Correction" — for a rejected receiving. Sends it back to
+  // IN_PROGRESS on the backend, then drops the user straight into Step 3
+  // (Verify & Upload) to review/re-confirm and resubmit for approval,
+  // instead of leaving REJECTED as a permanent dead end.
+  reopenForCorrection(r: ReceivingDto): void {
+    this.reopeningReceivingNumber = r.receivingNumber;
+    this.receivingService.reopenRejected(r.receivingNumber).subscribe({
+      next: (res) => {
+        this.reopeningReceivingNumber = null;
+        this.stopCamera();
+        this.activeReceiving = res.data;
+        this.tempDocuments = this.emptyDocuments();
+        this.saveError = '';
+        this.step = 3;
+        this.loadAll();
+      },
+      error: (err) => {
+        this.reopeningReceivingNumber = null;
+        alert(err?.error?.message || 'Failed to reopen this receiving.');
+      }
+    });
   }
 
   private buildEdits(r: ReceivingDto): void {

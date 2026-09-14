@@ -29,6 +29,14 @@
                             <span class="rw-stat-value">{{ pendingApprovalList.length }}</span>
                             <span class="rw-stat-label">Pending Approval</span>
                         </div>
+                        <div class="rw-stat rw-stat-danger" *ngIf="pushFailedList.length">
+                            <span class="rw-stat-value">{{ pushFailedList.length }}</span>
+                            <span class="rw-stat-label">Push Failed</span>
+                        </div>
+                        <div class="rw-stat rw-stat-danger" *ngIf="rejectedList.length">
+                            <span class="rw-stat-value">{{ rejectedList.length }}</span>
+                            <span class="rw-stat-label">Rejected</span>
+                        </div>
                     </div>
                 </div>
 
@@ -390,6 +398,44 @@
                                     <i class="pi pi-angle-right"></i>
                                 </button>
                                 <div class="rw-empty-row" *ngIf="pendingApprovalList.length === 0">Nothing waiting here.</div>
+                            </div>
+                        </section>
+
+                        <section class="rw-card rw-card-danger" *ngIf="pushFailedList.length">
+                            <div class="rw-card-header">
+                                <span class="rw-card-num rw-num-red"><i class="pi pi-exclamation-triangle" style="font-size:12px;"></i></span>
+                                <div><h3>Push Failed</h3><p>Approved locally, VISIPACK push didn't go through</p></div>
+                            </div>
+                            <div class="rw-queue-list">
+                                <div class="rw-queue-row rw-queue-row-static" *ngFor="let r of pushFailedList">
+                                    <span class="rw-chip rw-chip-blue">{{ r.poNumber }}</span>
+                                    <span class="rw-queue-ref">{{ r.receivingNumber }}</span>
+                                    <button type="button" class="rw-retry-btn"
+                                            [disabled]="retryingReceivingNumber === r.receivingNumber"
+                                            (click)="retryPush(r)">
+                                        <i class="pi" [ngClass]="retryingReceivingNumber === r.receivingNumber ? 'pi-spin pi-spinner' : 'pi-refresh'"></i>
+                                        {{ retryingReceivingNumber === r.receivingNumber ? 'Retrying...' : 'Retry Push' }}
+                                    </button>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="rw-card rw-card-danger" *ngIf="rejectedList.length">
+                            <div class="rw-card-header">
+                                <span class="rw-card-num rw-num-red"><i class="pi pi-times" style="font-size:12px;"></i></span>
+                                <div><h3>Rejected</h3><p>Needs correction before it can be resubmitted</p></div>
+                            </div>
+                            <div class="rw-queue-list">
+                                <div class="rw-queue-row rw-queue-row-static" *ngFor="let r of rejectedList">
+                                    <span class="rw-chip rw-chip-blue">{{ r.poNumber }}</span>
+                                    <span class="rw-queue-ref">{{ r.receivingNumber }}</span>
+                                    <button type="button" class="rw-retry-btn"
+                                            [disabled]="reopeningReceivingNumber === r.receivingNumber"
+                                            (click)="reopenForCorrection(r)">
+                                        <i class="pi" [ngClass]="reopeningReceivingNumber === r.receivingNumber ? 'pi-spin pi-spinner' : 'pi-undo'"></i>
+                                        {{ reopeningReceivingNumber === r.receivingNumber ? 'Reopening...' : 'Reopen' }}
+                                    </button>
+                                </div>
                             </div>
                         </section>
 

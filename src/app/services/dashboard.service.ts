@@ -39,6 +39,13 @@ export interface SystemStatus {
   notificationsCount: number;
 }
 
+export interface HubSummary {
+  po: { pendingQr: number; totalToday: number };
+  receive: { awaitingIntake: number; cleared: number };
+  issue: { deptsActive: number; itemsStaged: number };
+  approval: { pendingSignoff: number; urgent: number };
+}
+
 @Injectable({ providedIn: 'root' })
 export class DashboardService {
   constructor(private http: HttpClient) {}
@@ -49,5 +56,9 @@ export class DashboardService {
 
   getSystemStatus(): Observable<{ success: boolean; data: SystemStatus }> {
     return this.http.get<any>(AppSettings.API.dashboardSystemStatus);
+  }
+
+  getHubSummary(): Observable<{ success: boolean; data: HubSummary }> {
+    return this.http.get<any>(AppSettings.API.dashboardHubSummary);
   }
 }

@@ -11,6 +11,7 @@ export class AppSettings {
     // Dashboard — live stats, recent transactions & attention required
     dashboardSummary: AppSettings.API_BASE_URL + '/dashboard/summary',
     dashboardSystemStatus: AppSettings.API_BASE_URL + '/dashboard/system-status',
+    dashboardHubSummary: AppSettings.API_BASE_URL + '/dashboard/hub-summary',
 
     // Generate QR
     qrTransactions: AppSettings.API_BASE_URL + '/qr-transactions',
