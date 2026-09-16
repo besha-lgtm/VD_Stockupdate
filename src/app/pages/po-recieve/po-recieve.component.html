@@ -1,165 +1,273 @@
-<div class="app-porecieve-layout">
+<div class="ra-layout app-porecieve-layout">
 
     <!-- Header -->
     <app-header></app-header>
 
     <!-- Body -->
-    <div class="app-porecieve-body">
+    <div class="ra-body">
 
         <!-- Sidebar -->
         <app-sidebar></app-sidebar>
 
         <!-- Main Content -->
-        <main class="app-porecieve-content">
+        <main class="ra-content">
 
-            <div class="sw-wrap">
+            <div class="ra-wrap">
 
-                <!-- Page Header -->
-                <div class="sw-page-header">
+                <!-- Page header -->
+                <div class="ra-page-header">
                     <div>
-                        <h1 class="sw-page-title"><i class="pi pi-box"></i> Receiving Approval</h1>
-                        <p class="sw-page-sub">Approved receivings only — a supervisor decision moves material in or out of this view.</p>
+                        <h1 class="ra-page-title">Receiving approval</h1>
+                        <p class="ra-page-sub">Approve confirmed receivings and follow each one through VISIPACK QC once it's pushed to ERP.</p>
                     </div>
-                    <div class="sw-page-stats">
-                        <div class="sw-stat">
-                            <div class="sw-stat-icon"><i class="pi pi-list"></i></div>
-                            <div class="sw-stat-text">
-                                <span class="sw-stat-value">{{ receivingData.length }}</span>
-                                <span class="sw-stat-label">Stock Lines</span>
-                            </div>
+                </div>
+
+                <!-- Summary stats -->
+                <div class="ra-stats">
+                    <div class="ra-stat ra-stat-amber">
+                        <span class="ra-stat-icon-wrap"><i class="pi pi-clock"></i></span>
+                        <div>
+                            <span class="ra-stat-value">{{ countFor('PENDING_APPROVAL') }}</span>
+                            <span class="ra-stat-label">Awaiting decision</span>
                         </div>
-                        <div class="sw-stat">
-                            <div class="sw-stat-icon"><i class="pi pi-file"></i></div>
-                            <div class="sw-stat-text">
-                                <span class="sw-stat-value">{{ uniquePoCount }}</span>
-                                <span class="sw-stat-label">Purchase Orders</span>
-                            </div>
+                    </div>
+                    <div class="ra-stat ra-stat-blue">
+                        <span class="ra-stat-icon-wrap"><i class="pi pi-hourglass"></i></span>
+                        <div>
+                            <span class="ra-stat-value">{{ countFor('QC_PENDING') }}</span>
+                            <span class="ra-stat-label">Pending in QC</span>
                         </div>
-                        <div class="sw-stat sw-stat-accent">
-                            <div class="sw-stat-icon sw-stat-icon-accent"><i class="pi pi-box"></i></div>
-                            <div class="sw-stat-text">
-                                <span class="sw-stat-value">{{ getTotalStock() | number:'1.0-3' }}</span>
-                                <span class="sw-stat-label">Total Units</span>
-                            </div>
+                    </div>
+                    <div class="ra-stat ra-stat-green">
+                        <span class="ra-stat-icon-wrap"><i class="pi pi-check-circle"></i></span>
+                        <div>
+                            <span class="ra-stat-value">{{ countFor('QC_APPROVED') }}</span>
+                            <span class="ra-stat-label">QC approved</span>
+                        </div>
+                    </div>
+                    <div class="ra-stat ra-stat-red">
+                        <span class="ra-stat-icon-wrap"><i class="pi pi-times-circle"></i></span>
+                        <div>
+                            <span class="ra-stat-value">{{ countFor('QC_REJECTED') + countFor('REJECTED') }}</span>
+                            <span class="ra-stat-label">Rejected</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Main Card -->
-                <section class="sw-card">
+                <!-- Main card: tabs + search + table -->
+                <section class="ra-card">
 
-                    <div class="sw-card-header">
-                        <div>
-                            <h3><i class="pi pi-check-circle" style="color:#10b981; margin-right:6px;"></i>Approved Stock</h3>
-                            <p>Last refreshed {{ getFormattedDate(currentDate) }}</p>
+                    <div class="ra-toolbar">
+                        <div class="ra-tabs">
+                            <button type="button" class="ra-tab" *ngFor="let t of tabs"
+                                    [class.ra-tab-active]="activeTab === t.key"
+                                    (click)="setTab(t.key)">
+                                {{ t.label }}
+                                <span class="ra-tab-count">{{ countFor(t.key) }}</span>
+                            </button>
                         </div>
-                        <div class="sw-header-actions">
-                            <div class="sw-search-wrap">
+
+                        <div class="ra-toolbar-actions">
+                            <div class="ra-search">
                                 <i class="pi pi-search"></i>
-                                <input type="text" placeholder="Search PO or item..." [(ngModel)]="searchTerm" name="searchTerm" autocomplete="off" />
+                                <input type="text" placeholder="Search PO, ref or supplier" [(ngModel)]="searchTerm" name="searchTerm" autocomplete="off" />
                             </div>
-                            <button type="button" class="sw-refresh-btn" (click)="refreshCurrentDate()" [disabled]="loading">
-                                <i class="pi pi-refresh" [class.pi-spin]="loading"></i> Refresh
+                            <button type="button" class="ra-refresh-btn" (click)="refresh()" [disabled]="loading">
+                                <i class="pi pi-refresh" [class.pi-spin]="loading"></i>
                             </button>
                         </div>
                     </div>
 
                     <!-- Loading -->
-                    <div class="sw-skeleton-wrap" *ngIf="loading">
-                        <div class="sw-skeleton-row" *ngFor="let i of [1,2,3,4,5]">
-                            <div class="sw-skel sw-skel-sno"></div>
-                            <div class="sw-skel sw-skel-chip"></div>
-                            <div class="sw-skel sw-skel-desc"></div>
-                            <div class="sw-skel sw-skel-date"></div>
-                            <div class="sw-skel sw-skel-qty"></div>
-                        </div>
+                    <div class="ra-state" *ngIf="loading">
+                        <i class="pi pi-spin pi-spinner"></i> Loading receivings…
                     </div>
 
                     <!-- Error -->
-                    <div class="sw-load-error" *ngIf="loadError && !loading">
+                    <div class="ra-state ra-state-error" *ngIf="loadError && !loading">
                         <i class="pi pi-exclamation-triangle"></i>
                         <span>{{ loadError }}</span>
-                        <button type="button" class="sw-retry-btn" (click)="loadReceivings()">Retry</button>
+                        <button type="button" class="ra-retry-link" (click)="loadReceivings()">Retry</button>
                     </div>
 
-                    <!-- Empty state -->
-                    <div class="sw-empty-state" *ngIf="!loading && !loadError && receivingData.length === 0">
+                    <!-- Empty -->
+                    <div class="ra-empty" *ngIf="!loading && !loadError && filteredRows.length === 0">
                         <i class="pi pi-inbox"></i>
-                        <h4>No approved stock yet</h4>
-                        <p>Receivings only land here once a supervisor approves them in Receive &amp; Approve.<br>Anything still "In Progress" or "Pending Approval" won't show up.</p>
+                        <h4>Nothing here</h4>
+                        <p>{{ searchTerm ? 'No records match your search.' : 'No receivings in this view right now.' }}</p>
                     </div>
 
                     <!-- Table -->
-                    <div class="sw-table-wrapper" *ngIf="!loading && !loadError && receivingData.length > 0">
-                        <p-table #dt [value]="filteredData" styleClass="p-datatable-sm sw-custom-table" [paginator]="true" [rows]="5" [rowsPerPageOptions]="[5,10,20]" dropdownAppendTo="body" responsiveLayout="scroll">
-                            <ng-template pTemplate="header">
+                    <div class="ra-table-wrap" *ngIf="!loading && !loadError && filteredRows.length > 0">
+                        <table class="ra-table">
+                            <thead>
                                 <tr>
-                                    <th style="width:60px;">S.No</th>
-                                    <th pSortableColumn="poNumber">
-                                        <div class="header-cell-content">
-                                            <span>PO Number</span>
-                                            <p-sortIcon field="poNumber"></p-sortIcon>
-                                        </div>
-                                    </th>
-                                    <th pSortableColumn="description">
-                                        <div class="header-cell-content">
-                                            <span>Item Description</span>
-                                            <p-sortIcon field="description"></p-sortIcon>
-                                        </div>
-                                    </th>
-                                    <th pSortableColumn="lastUpdated">
-                                        <div class="header-cell-content">
-                                            <span>Stock Last Updated On</span>
-                                            <p-sortIcon field="lastUpdated"></p-sortIcon>
-                                        </div>
-                                    </th>
-                                    <th pSortableColumn="totalStock" style="text-align:right;">
-                                        <div class="header-cell-content" style="justify-content:flex-end;">
-                                            <span>Total Stock</span>
-                                            <p-sortIcon field="totalStock"></p-sortIcon>
-                                        </div>
-                                    </th>
+                                    <th class="ra-col-chevron"></th>
+                                    <th class="ra-col-po">PO / Reference</th>
+                                    <th>Supplier</th>
+                                    <th>Item</th>
+                                    <th class="ra-num">Received</th>
+                                    <th class="ra-num">Accepted</th>
+                                    <th>Status</th>
+                                    <th>Updated</th>
+                                    <th class="ra-col-actions">Actions</th>
                                 </tr>
-                            </ng-template>
-                            <ng-template pTemplate="body" let-item let-i="rowIndex">
-                                <tr>
-                                    <td class="sw-sno">{{ dt.first + i + 1 }}</td>
-                                    <td>
-                                        <span class="sw-chip sw-chip-blue">{{ item.poNumber }}</span>
-                                    </td>
-                                    <td>
-                                        <span class="sw-item-desc"><i class="pi pi-box"></i> {{ item.description }}</span>
-                                    </td>
-                                    <td class="sw-date-cell">
-                                        <i class="pi pi-clock"></i> {{ getFormattedDate(item.lastUpdated) }}
-                                    </td>
-                                    <td style="text-align:right;">
-                                        <span class="sw-qty-badge">
-                                            <i class="pi pi-circle-fill"></i> {{ item.totalStock | number:'1.0-3' }}
-                                        </span>
-                                    </td>
-                                </tr>
-                            </ng-template>
-                            <ng-template pTemplate="emptymessage">
-                                <tr>
-                                    <td colspan="5" class="sw-empty-row">
-                                        <i class="pi pi-search"></i> No stock matches "{{ searchTerm }}".
-                                    </td>
-                                </tr>
-                            </ng-template>
-                        </p-table>
-                    </div>
+                            </thead>
+                            <tbody>
+                                <ng-container *ngFor="let r of filteredRows">
+                                    <tr class="ra-row" [class.ra-row-open]="isExpanded(r)" (click)="toggleRow(r)">
+                                        <td class="ra-col-chevron">
+                                            <span class="ra-chevron-btn">
+                                                <i class="pi" [ngClass]="isExpanded(r) ? 'pi-chevron-down' : 'pi-chevron-right'"></i>
+                                            </span>
+                                        </td>
+                                        <td class="ra-col-po">
+                                            <div class="ra-po">{{ r.poNumber }}</div>
+                                            <div class="ra-ref">{{ r.receivingNumber }}</div>
+                                        </td>
+                                        <td>{{ r.supplierName }}</td>
+                                        <td class="ra-item-summary">{{ itemSummary(r) }}</td>
+                                        <td class="ra-num">{{ totalReceivedQty(r) }}</td>
+                                        <td class="ra-num">{{ totalAcceptedQty(r) || '—' }}</td>
+                                        <td>
+                                            <span class="ra-badge" [ngClass]="'ra-badge-' + statusMeta(rowStatus(r)).cls">
+                                                <i class="pi" [ngClass]="statusMeta(rowStatus(r)).icon"></i>
+                                                {{ statusMeta(rowStatus(r)).label }}
+                                            </span>
+                                        </td>
+                                        <td class="ra-updated">{{ getFormattedDate(r.approvedAt) }}</td>
+                                        <td class="ra-col-actions" (click)="$event.stopPropagation()">
+                                            <button type="button" class="ra-quick-btn ra-quick-approve"
+                                                    *ngIf="rowStatus(r) === 'PENDING_APPROVAL'"
+                                                    [disabled]="actingOn === r.receivingNumber"
+                                                    (click)="decide(r, 'APPROVED')">
+                                                <i class="pi pi-check"></i> Approve
+                                            </button>
+                                            <!-- Reject is intentionally disabled on this screen — rejections are
+                                                 handled in a separate flow, not from Receiving Approval.
+                                            <button type="button" class="ra-quick-btn ra-quick-reject"
+                                                    *ngIf="rowStatus(r) === 'PENDING_APPROVAL'"
+                                                    [disabled]="actingOn === r.receivingNumber"
+                                                    (click)="decide(r, 'REJECTED')">
+                                                <i class="pi pi-times"></i> Reject
+                                            </button>
+                                            -->
+                                            <button type="button" class="ra-quick-btn ra-quick-retry"
+                                                    *ngIf="rowStatus(r) === 'PUSH_FAILED'"
+                                                    [disabled]="retryingOn === r.receivingNumber"
+                                                    (click)="retryPush(r)">
+                                                <i class="pi" [ngClass]="retryingOn === r.receivingNumber ? 'pi-spin pi-spinner' : 'pi-refresh'"></i>
+                                                Retry push
+                                            </button>
+                                            <button type="button" class="ra-quick-btn ra-quick-reopen"
+                                                    *ngIf="rowStatus(r) === 'REJECTED'"
+                                                    [disabled]="reopeningOn === r.receivingNumber"
+                                                    (click)="reopenForCorrection(r)">
+                                                <i class="pi" [ngClass]="reopeningOn === r.receivingNumber ? 'pi-spin pi-spinner' : 'pi-undo'"></i>
+                                                Reopen
+                                            </button>
+                                            <span class="ra-view-hint" *ngIf="rowStatus(r) === 'QC_APPROVED' || rowStatus(r) === 'QC_REJECTED' || rowStatus(r) === 'QC_PENDING'">
+                                                View details
+                                            </span>
+                                        </td>
+                                    </tr>
 
-                    <!-- Summary Footer -->
-                    <div class="sw-summary-footer" *ngIf="!loading && !loadError && filteredData.length > 0">
-                        <div class="sw-summary-item">
-                            <span class="sw-summary-label">Showing</span>
-                            <span class="sw-summary-value">{{ filteredData.length }} of {{ receivingData.length }} lines</span>
-                        </div>
-                        <div class="sw-summary-item">
-                            <span class="sw-summary-label">Total Units (filtered)</span>
-                            <span class="sw-summary-value sw-summary-accent">{{ getTotalStock() | number:'1.0-3' }}</span>
-                        </div>
+                                    <!-- Expanded detail row -->
+                                    <tr class="ra-expand-row" *ngIf="isExpanded(r)">
+                                        <td [attr.colspan]="9">
+                                            <div class="ra-expand-panel" [ngClass]="'ra-expand-panel-' + statusMeta(rowStatus(r)).cls">
+
+                                                <div class="ra-expand-grid" *ngIf="r.visipackGrnNo || r.approvedBy || r.remarks">
+                                                    <div class="ra-expand-meta">
+                                                        <div class="ra-meta-item" *ngIf="r.visipackGrnNo">
+                                                            <span>VISIPACK GRN</span>
+                                                            <strong>{{ r.visipackGrnNo }}</strong>
+                                                        </div>
+                                                        <div class="ra-meta-item" *ngIf="r.approvedBy">
+                                                            <span>Approved by</span>
+                                                            <strong>{{ r.approvedBy }}</strong>
+                                                        </div>
+                                                        <div class="ra-meta-item" *ngIf="r.remarks">
+                                                            <span>Remarks</span>
+                                                            <strong>{{ r.remarks }}</strong>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="ra-item-table-card">
+                                                <table class="ra-item-table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Item</th>
+                                                            <th class="ra-num">Ordered</th>
+                                                            <th class="ra-num">Received</th>
+                                                            <th class="ra-num" [class.ra-editable-col]="rowStatus(r) === 'PENDING_APPROVAL'">Accept qty</th>
+                                                            <th class="ra-num" [class.ra-editable-col]="rowStatus(r) === 'PENDING_APPROVAL'">Reject qty</th>
+                                                            <th>Rejection reason</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr *ngFor="let item of r.items">
+                                                            <td>
+                                                                <div class="ra-item-code">{{ item.itemCode }}</div>
+                                                                <div class="ra-item-name">{{ item.itemName }}</div>
+                                                            </td>
+                                                            <td class="ra-num">{{ item.orderedQty }}</td>
+                                                            <td class="ra-num">{{ item.receivedQty }}</td>
+                                                            <td class="ra-num">
+                                                                <input *ngIf="rowStatus(r) === 'PENDING_APPROVAL'" type="number" min="0" class="ra-qty-input ra-qty-accept"
+                                                                       [(ngModel)]="edits[item.receivingItemId].acceptedQty" [name]="'acc'+item.receivingItemId" />
+                                                                <span *ngIf="rowStatus(r) !== 'PENDING_APPROVAL'">{{ item.acceptedQty || '—' }}</span>
+                                                            </td>
+                                                            <td class="ra-num">
+                                                                <input *ngIf="rowStatus(r) === 'PENDING_APPROVAL'" type="number" min="0" class="ra-qty-input ra-qty-reject"
+                                                                       [(ngModel)]="edits[item.receivingItemId].rejectedQty" [name]="'rej'+item.receivingItemId" />
+                                                                <span *ngIf="rowStatus(r) !== 'PENDING_APPROVAL'">{{ item.rejectedQty || '—' }}</span>
+                                                            </td>
+                                                            <td>
+                                                                <input *ngIf="rowStatus(r) === 'PENDING_APPROVAL'" type="text" class="ra-reason-input"
+                                                                       placeholder="Optional"
+                                                                       [(ngModel)]="edits[item.receivingItemId].rejectionReason" [name]="'reason'+item.receivingItemId" />
+                                                                <span *ngIf="rowStatus(r) !== 'PENDING_APPROVAL'">{{ item.rejectionReason || '—' }}</span>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                                </div>
+
+                                                <div class="ra-expand-actions" *ngIf="rowStatus(r) === 'PENDING_APPROVAL'">
+                                                    <!-- Reject is intentionally disabled on this screen — rejections
+                                                         are handled in a separate flow, not from Receiving Approval.
+                                                    <button type="button" class="ra-btn ra-btn-ghost-red" [disabled]="actingOn === r.receivingNumber" (click)="decide(r, 'REJECTED')">
+                                                        <i class="pi pi-times"></i> Reject
+                                                    </button>
+                                                    -->
+                                                    <button type="button" class="ra-btn ra-btn-primary" [disabled]="actingOn === r.receivingNumber" (click)="decide(r, 'APPROVED')">
+                                                        <i class="pi" [ngClass]="actingOn === r.receivingNumber ? 'pi-spin pi-spinner' : 'pi-check'"></i>
+                                                        {{ actingOn === r.receivingNumber ? 'Submitting…' : 'Approve & push to ERP' }}
+                                                    </button>
+                                                </div>
+
+                                                <div class="ra-expand-actions" *ngIf="rowStatus(r) === 'PUSH_FAILED'">
+                                                    <button type="button" class="ra-btn ra-btn-primary" [disabled]="retryingOn === r.receivingNumber" (click)="retryPush(r)">
+                                                        <i class="pi" [ngClass]="retryingOn === r.receivingNumber ? 'pi-spin pi-spinner' : 'pi-refresh'"></i>
+                                                        {{ retryingOn === r.receivingNumber ? 'Retrying…' : 'Retry push to ERP' }}
+                                                    </button>
+                                                </div>
+
+                                                <div class="ra-expand-actions" *ngIf="rowStatus(r) === 'REJECTED'">
+                                                    <button type="button" class="ra-btn ra-btn-primary" [disabled]="reopeningOn === r.receivingNumber" (click)="reopenForCorrection(r)">
+                                                        <i class="pi" [ngClass]="reopeningOn === r.receivingNumber ? 'pi-spin pi-spinner' : 'pi-undo'"></i>
+                                                        {{ reopeningOn === r.receivingNumber ? 'Reopening…' : 'Reopen for correction' }}
+                                                    </button>
+                                                </div>
+
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </ng-container>
+                            </tbody>
+                        </table>
                     </div>
 
                 </section>

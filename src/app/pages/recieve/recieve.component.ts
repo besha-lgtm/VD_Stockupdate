@@ -31,12 +31,6 @@ interface BoxRow {
   editing: boolean;
 }
 
-interface ApprovalEdit {
-  acceptedQty: number;
-  rejectedQty: number;
-  rejectionReason: string;
-}
-
 @Component({
   selector: 'app-recieve',
   standalone: false,
@@ -46,8 +40,11 @@ interface ApprovalEdit {
 export class RecieveComponent implements OnInit, OnDestroy {
 
   // ===================== Step tracker =====================
-  // 1 = Scan/Select, 2 = Receive Details, 3 = Verify & Upload, 4 = Approve
-  step: 1 | 2 | 3 | 4 = 1;
+  // 1 = Scan/Select, 2 = Receive Details, 3 = Verify & Upload.
+  // Approval itself is a separate step that now happens on the "Receiving
+  // Approval" (porecieve) page — see confirmActive() below, which hands off
+  // there instead of showing an inline Step 4.
+  step: 1 | 2 | 3 = 1;
 
   // ===================== Step 1: Scan =====================
   scannerEnabled = true;
@@ -79,9 +76,6 @@ export class RecieveComponent implements OnInit, OnDestroy {
   tempDocuments: DocumentSet = this.emptyDocuments();
   saveError = '';
   saving = false;
-
-  edits: Record<number, ApprovalEdit> = {};
-  deciding = false;
 
   // ===================== Queues (existing functionality, preserved) =====================
   allReceivings: ReceivingDto[] = [];
@@ -198,12 +192,11 @@ export class RecieveComponent implements OnInit, OnDestroy {
     this.step = 3;
   }
 
-  // Resume a record that's already waiting on a supervisor decision
+  // A record already waiting on a supervisor decision doesn't have anything
+  // left to do here — approval itself now lives on the "Receiving Approval"
+  // (porecieve) page, so just send the user there.
   resumePendingApproval(r: ReceivingDto): void {
-    this.stopCamera();
-    this.activeReceiving = r;
-    this.buildEdits(r);
-    this.step = 4;
+    this.router.navigate(['/porecieve']);
   }
 
   // "Retry Push" — for a receiving that was approved but failed to push to
@@ -247,17 +240,6 @@ export class RecieveComponent implements OnInit, OnDestroy {
         alert(err?.error?.message || 'Failed to reopen this receiving.');
       }
     });
-  }
-
-  private buildEdits(r: ReceivingDto): void {
-    this.edits = {};
-    for (const item of r.items) {
-      this.edits[item.receivingItemId] = {
-        acceptedQty: item.receivedQty,
-        rejectedQty: 0,
-        rejectionReason: ''
-      };
-    }
   }
 
   // ===================== Step 1: Camera scanning =====================
@@ -508,85 +490,27 @@ export class RecieveComponent implements OnInit, OnDestroy {
     });
   }
 
+  // "Confirm" submits this receiving for approval (backend flips it to
+  // PENDING_APPROVAL). From here the supervisor decision itself happens on
+  // the separate "Receiving Approval" page, so we hand off there instead of
+  // showing an inline Step 4.
   confirmActive(): void {
     if (!this.activeReceiving) return;
 
     this.saving = true;
-    this.receivingService.confirm(this.activeReceiving.receivingNumber).subscribe({
+    const receivingNumber = this.activeReceiving.receivingNumber;
+    this.receivingService.confirm(receivingNumber).subscribe({
       next: () => {
         this.saving = false;
-        if (!this.activeReceiving) return;
-        const receivingNumber = this.activeReceiving.receivingNumber;
-        // Refresh to pick up VERIFIED / PENDING_APPROVAL status before moving to Step 4.
-        this.receivingService.get(receivingNumber).subscribe({
-          next: (res) => {
-            this.activeReceiving = res.data;
-            this.buildEdits(res.data);
-            this.step = 4;
-            this.loadAll();
-          }
-        });
+        this.loadAll();
+        alert(`✅ ${receivingNumber} confirmed and sent to Receiving Approval.`);
+        this.activeReceiving = null;
+        this.goToScanStep();
+        this.router.navigate(['/porecieve']);
       },
       error: (err) => {
         this.saving = false;
         this.saveError = err?.error?.message || 'Failed to confirm receiving.';
-      }
-    });
-  }
-
-  // ===================== Step 4: Approval decision =====================
-
-  totalOrdered(): number {
-    if (!this.activeReceiving) return 0;
-    return this.activeReceiving.items.reduce((sum, i) => sum + (i.orderedQty || 0), 0);
-  }
-
-  totalReceived(): number {
-    if (!this.activeReceiving) return 0;
-    return this.activeReceiving.items.reduce((sum, i) => sum + (i.receivedQty || 0), 0);
-  }
-
-  totalAccepted(): number {
-    if (!this.activeReceiving) return 0;
-    return this.activeReceiving.items.reduce((sum, i) => sum + (this.edits[i.receivingItemId]?.acceptedQty ?? 0), 0);
-  }
-
-  totalRejected(): number {
-    if (!this.activeReceiving) return 0;
-    return this.activeReceiving.items.reduce((sum, i) => sum + (this.edits[i.receivingItemId]?.rejectedQty ?? 0), 0);
-  }
-
-  variance(): number {
-    return this.totalReceived() - this.totalAccepted() - this.totalRejected();
-  }
-
-  decide(decision: 'APPROVED' | 'REJECTED'): void {
-    if (!this.activeReceiving) return;
-    const r = this.activeReceiving;
-
-    const itemDecisions = r.items.map(item => ({
-      receivingItemId: item.receivingItemId,
-      acceptedQty: decision === 'APPROVED' ? (this.edits[item.receivingItemId]?.acceptedQty ?? item.receivedQty) : 0,
-      rejectedQty: decision === 'APPROVED' ? (this.edits[item.receivingItemId]?.rejectedQty ?? 0) : item.receivedQty,
-      rejectionReason: this.edits[item.receivingItemId]?.rejectionReason || undefined
-    }));
-
-    this.deciding = true;
-    this.receivingService.decideApproval(r.receivingNumber, decision, itemDecisions).subscribe({
-      next: () => {
-        this.deciding = false;
-        alert(
-          decision === 'APPROVED'
-            ? `✅ ${r.receivingNumber} approved and pushed to VISIPACK as an incoming receipt for QC.`
-            : `❌ ${r.receivingNumber} rejected.`
-        );
-        this.activeReceiving = null;
-        this.loadAll();
-        this.goToScanStep();
-      },
-      error: (err) => {
-        this.deciding = false;
-        alert(err?.error?.message || `Failed to ${decision === 'APPROVED' ? 'approve' : 'reject'}.`);
       }
     });
   }

@@ -17,8 +17,8 @@
                 <!-- Page Header -->
                 <div class="rw-page-header">
                     <div>
-                        <h1 class="rw-page-title"><i class="pi pi-check-square"></i> Receive &amp; Approve</h1>
-                        <p class="rw-page-sub">Scan QR, verify stock, upload documents, confirm and approve — all in one place.</p>
+                        <h1 class="rw-page-title"><i class="pi pi-check-square"></i> Receiving Verification</h1>
+                        <p class="rw-page-sub">Scan QR, verify stock, upload documents, and confirm. Supervisor approval happens on the Receiving Approval page.</p>
                     </div>
                     <div class="rw-page-stats">
                         <div class="rw-stat">
@@ -63,14 +63,6 @@
                         <div class="rw-step-text">
                             <div class="rw-step-title">Verify &amp; Upload</div>
                             <div class="rw-step-sub">Attach documents, confirm</div>
-                        </div>
-                    </div>
-                    <i class="pi pi-angle-right rw-step-arrow"></i>
-                    <div class="rw-step" [class.rw-step-active]="step === 4">
-                        <div class="rw-step-num">4</div>
-                        <div class="rw-step-text">
-                            <div class="rw-step-title">Approval</div>
-                            <div class="rw-step-sub">Supervisor decision</div>
                         </div>
                     </div>
                 </div>
@@ -297,62 +289,6 @@
                             </div>
                         </ng-container>
 
-                        <!-- STEP 4: Approval -->
-                        <ng-container *ngIf="step === 4 && activeReceiving">
-                            <div class="rw-card-header">
-                                <span class="rw-card-num rw-num-amber">4</span>
-                                <div>
-                                    <h3>Approval (Supervisor)</h3>
-                                    <p>PO {{ activeReceiving.poNumber }} — Ref {{ activeReceiving.receivingNumber }}</p>
-                                </div>
-                                <span class="rw-badge-step">Pending</span>
-                            </div>
-
-                            <div class="rw-approval-totals">
-                                <div class="rw-approval-stat"><span>Ordered</span><strong>{{ totalOrdered() }}</strong></div>
-                                <div class="rw-approval-stat"><span>Received</span><strong>{{ totalReceived() }}</strong></div>
-                                <div class="rw-approval-stat"><span>Accepted</span><strong>{{ totalAccepted() }}</strong></div>
-                                <div class="rw-approval-stat"><span>Rejected</span><strong>{{ totalRejected() }}</strong></div>
-                                <div class="rw-approval-stat" [class.rw-variance-ok]="variance() === 0" [class.rw-variance-bad]="variance() !== 0">
-                                    <span>Variance</span><strong>{{ variance() }}</strong>
-                                </div>
-                            </div>
-
-                            <div class="rw-approval-items">
-                                <div class="rw-approval-item" *ngFor="let item of activeReceiving.items">
-                                    <div class="rw-approval-item-head">
-                                        <span class="rw-chip rw-chip-gray">{{ item.itemName || item.itemCode }}</span>
-                                        <span class="rw-approval-item-meta">Received: {{ item.receivedQty }}</span>
-                                    </div>
-                                    <div class="rw-approval-item-fields">
-                                        <div class="iw-field">
-                                            <label>Accept Qty</label>
-                                            <input type="number" class="iw-input" min="0" [(ngModel)]="edits[item.receivingItemId].acceptedQty" [name]="'acc'+item.receivingItemId" />
-                                        </div>
-                                        <div class="iw-field">
-                                            <label>Reject Qty</label>
-                                            <input type="number" class="iw-input" min="0" [(ngModel)]="edits[item.receivingItemId].rejectedQty" [name]="'rej'+item.receivingItemId" />
-                                        </div>
-                                        <div class="iw-field">
-                                            <label>Rejection Reason</label>
-                                            <input type="text" class="iw-input" placeholder="Optional" [(ngModel)]="edits[item.receivingItemId].rejectionReason" [name]="'reason'+item.receivingItemId" />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="rw-step-actions">
-                                <button type="button" class="rw-reject-btn" [disabled]="deciding" (click)="decide('REJECTED')">
-                                    <i class="pi pi-times"></i> Reject
-                                </button>
-                                <button type="button" class="rw-save-btn" [disabled]="deciding" (click)="decide('APPROVED')">
-                                    <i class="pi pi-spin pi-spinner" *ngIf="deciding"></i>
-                                    <i class="pi pi-check" *ngIf="!deciding"></i>
-                                    {{ deciding ? 'Submitting...' : 'Approve & Push to ERP' }}
-                                </button>
-                            </div>
-                        </ng-container>
-
                     </section>
 
                     <!-- ===================== SIDE PANEL: Queues ===================== -->
@@ -389,7 +325,7 @@
                         <section class="rw-card">
                             <div class="rw-card-header">
                                 <span class="rw-card-num rw-num-amber">•</span>
-                                <div><h3>Pending Approval</h3><p>Confirmed, awaiting supervisor</p></div>
+                                <div><h3>Pending Approval</h3><p>Confirmed — decide in Receiving Approval</p></div>
                             </div>
                             <div class="rw-queue-list">
                                 <button type="button" class="rw-queue-row" *ngFor="let r of pendingApprovalList" (click)="resumePendingApproval(r)">
