@@ -34,6 +34,10 @@ export class PORecieveComponent implements OnInit {
   activeTab: RowStatus | 'ALL' = 'ALL';
   expandedReceivingNumber: string | null = null;
 
+  // ===================== Pagination =====================
+  readonly pageSize = 5;
+  currentPage = 1;
+
   edits: Record<number, ApprovalEdit> = {};
   actingOn: string | null = null;
   retryingOn: string | null = null;
@@ -105,6 +109,45 @@ export class PORecieveComponent implements OnInit {
     });
   }
 
+  // ===================== Pagination =====================
+
+  get totalPages(): number {
+    return Math.max(1, Math.ceil(this.filteredRows.length / this.pageSize));
+  }
+
+  get pageNumbers(): number[] {
+    return Array.from({ length: this.totalPages }, (_, i) => i + 1);
+  }
+
+  // Slice of filteredRows for the current page. Clamps currentPage first so
+  // switching tabs/searching to a shorter list never leaves you on a blank
+  // "page 4 of 2".
+  get pagedRows(): ReceivingDto[] {
+    if (this.currentPage > this.totalPages) this.currentPage = this.totalPages;
+    const start = (this.currentPage - 1) * this.pageSize;
+    return this.filteredRows.slice(start, start + this.pageSize);
+  }
+
+  get pageRangeLabel(): string {
+    const total = this.filteredRows.length;
+    if (!total) return '0 of 0';
+    const start = (this.currentPage - 1) * this.pageSize + 1;
+    const end = Math.min(this.currentPage * this.pageSize, total);
+    return `${start}–${end} of ${total}`;
+  }
+
+  goToPage(page: number): void {
+    this.currentPage = Math.min(Math.max(page, 1), this.totalPages);
+    this.expandedReceivingNumber = null;
+  }
+
+  prevPage(): void { this.goToPage(this.currentPage - 1); }
+  nextPage(): void { this.goToPage(this.currentPage + 1); }
+
+  onSearchChange(): void {
+    this.currentPage = 1;
+  }
+
   countFor(tab: RowStatus | 'ALL'): number {
     return this.all.filter(r => this.tabMatches(this.rowStatus(r), tab)).length;
   }
@@ -112,6 +155,7 @@ export class PORecieveComponent implements OnInit {
   setTab(tab: RowStatus | 'ALL'): void {
     this.activeTab = tab;
     this.expandedReceivingNumber = null;
+    this.currentPage = 1;
   }
 
   // ===================== Load =====================
@@ -143,6 +187,7 @@ export class PORecieveComponent implements OnInit {
 
   refresh(): void {
     this.currentDate = new Date();
+    this.currentPage = 1;
     this.loadReceivings();
   }
 

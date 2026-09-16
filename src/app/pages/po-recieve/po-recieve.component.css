@@ -211,9 +211,10 @@
   border-bottom: 1px solid var(--ra-line);
   background: #f8fafc;
 }
-.ra-table .ra-num { text-align: right; }
+/* .ra-table .ra-num { text-align: right; } */
 .ra-table .ra-col-chevron { width: 40px; }
-.ra-table .ra-col-actions { width: 160px; text-align: right; }
+.ra-table .ra-col-actions { width: 160px; }
+/* .ra-table .ra-col-actions { text-align: right; } */
 
 /* Sticky columns */
 .ra-table .ra-col-chevron,
@@ -452,7 +453,7 @@
   border-bottom: 1px solid var(--ra-line);
   white-space: nowrap;
 }
-.ra-item-table .ra-num { text-align: right; }
+/* .ra-item-table .ra-num { text-align: right; } */
 .ra-item-table th.ra-num { width: 96px; }
 .ra-item-table .ra-col-item { width: auto; }
 .ra-item-table .ra-col-reason { width: 30%; }
@@ -561,6 +562,40 @@
   outline: 2px solid var(--ra-accent);
   outline-offset: 2px;
 }
+
+/* ===================== Paginator ===================== */
+.ra-paginator {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 14px 24px;
+  border-top: 1px solid var(--ra-line);
+  background: var(--ra-surface);
+}
+.ra-paginator-count { font-size: 12.5px; color: var(--ra-ink-soft); }
+.ra-paginator-controls { display: flex; align-items: center; gap: 6px; }
+.ra-page-btn {
+  min-width: 30px;
+  height: 30px;
+  padding: 0 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--ra-line);
+  background: var(--ra-surface);
+  color: var(--ra-ink-soft);
+  border-radius: 7px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.ra-page-btn:hover:not(:disabled) { background: var(--ra-bg); color: var(--ra-ink); border-color: #cbd5e1; }
+.ra-page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.ra-page-number-active { background: var(--ra-accent); border-color: var(--ra-accent); color: #fff; }
+.ra-page-number-active:hover { background: var(--ra-accent-dark) !important; color: #fff !important; }
 
 /* ===================== Responsive ===================== */
 @media (max-width: 1100px) {
