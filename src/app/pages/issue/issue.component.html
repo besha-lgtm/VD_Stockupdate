@@ -12,135 +12,194 @@
         <!-- Main Content -->
         <main class="app-issue-content">
 
-            <div class="iw-wrap">
+            <div class="rw-wrap">
 
                 <!-- Page Header -->
-                <div class="iw-page-header">
+                <div class="rw-page-header">
                     <div>
-                        <h1 class="iw-page-title"><i class="pi pi-box"></i> Issue Items</h1>
-                        <p class="iw-page-sub">Search stock, issue items to a department, and update inventory in real time.</p>
+                        <h1 class="rw-page-title"><i class="pi pi-box"></i> Issue &amp; Verify</h1>
+                        <p class="rw-page-sub">Scan or search stock, issue to a department, and send for supervisor verification — all in one place.</p>
                     </div>
-                    <div class="iw-page-stats">
-                        <div class="iw-stat">
-                            <span class="iw-stat-value">{{ issuingData.length }}</span>
-                            <span class="iw-stat-label">Requests</span>
+                    <div class="rw-page-stats">
+                        <div class="rw-stat">
+                            <span class="rw-stat-value">{{ issuingData.length }}</span>
+                            <span class="rw-stat-label">Requests</span>
                         </div>
-                        <div class="iw-stat">
-                            <span class="iw-stat-value">{{ getTotalIssued() }}</span>
-                            <span class="iw-stat-label">Total Issued</span>
+                        <div class="rw-stat">
+                            <span class="rw-stat-value">{{ getTotalIssued() }}</span>
+                            <span class="rw-stat-label">Total Issued</span>
+                        </div>
+                        <div class="rw-stat">
+                            <span class="rw-stat-value">{{ pendingApprovalList.length }}</span>
+                            <span class="rw-stat-label">Pending Approval</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Step Tracker -->
-                <div class="iw-steps">
-                    <div class="iw-step" [class.iw-step-active]="!selectedItem" [class.iw-step-done]="!!selectedItem">
-                        <div class="iw-step-num"><i class="pi pi-check" *ngIf="selectedItem"></i><ng-container *ngIf="!selectedItem">1</ng-container></div>
-                        <div class="iw-step-text">
-                            <div class="iw-step-title">Select Item</div>
-                            <div class="iw-step-sub">Search item / stock</div>
+                <div class="rw-steps">
+                    <div class="rw-step" [class.rw-step-active]="step === 1" [class.rw-step-done]="step > 1">
+                        <div class="rw-step-num"><i class="pi pi-check" *ngIf="step > 1"></i><ng-container *ngIf="step === 1">1</ng-container></div>
+                        <div class="rw-step-text">
+                            <div class="rw-step-title">Scan / Select</div>
+                            <div class="rw-step-sub">Scan item QR or search</div>
                         </div>
                     </div>
-                    <i class="pi pi-angle-right iw-step-arrow"></i>
-                    <div class="iw-step" [class.iw-step-active]="!!selectedItem">
-                        <div class="iw-step-num">2</div>
-                        <div class="iw-step-text">
-                            <div class="iw-step-title">Issue Details</div>
-                            <div class="iw-step-sub">Qty &amp; department</div>
+                    <i class="pi pi-angle-right rw-step-arrow"></i>
+                    <div class="rw-step" [class.rw-step-active]="step === 2" [class.rw-step-done]="step > 2">
+                        <div class="rw-step-num"><i class="pi pi-check" *ngIf="step > 2"></i><ng-container *ngIf="step <= 2">2</ng-container></div>
+                        <div class="rw-step-text">
+                            <div class="rw-step-title">Item &amp; Stock</div>
+                            <div class="rw-step-sub">Verify stock, enter issue qty</div>
                         </div>
                     </div>
-                    <i class="pi pi-angle-right iw-step-arrow"></i>
-                    <div class="iw-step">
-                        <div class="iw-step-num">3</div>
-                        <div class="iw-step-text">
-                            <div class="iw-step-title">Confirm</div>
-                            <div class="iw-step-sub">Issue &amp; update stock</div>
+                    <i class="pi pi-angle-right rw-step-arrow"></i>
+                    <div class="rw-step" [class.rw-step-active]="step === 3">
+                        <div class="rw-step-num">3</div>
+                        <div class="rw-step-text">
+                            <div class="rw-step-title">Issue Verification</div>
+                            <div class="rw-step-sub">Supervisor approves &amp; updates stock</div>
                         </div>
                     </div>
                 </div>
 
-                <div class="iw-grid">
+                <div class="rw-grid">
 
-                    <!-- Card 1: Select Item -->
-                    <section class="iw-card">
-                        <div class="iw-card-header">
-                            <span class="iw-card-num iw-num-blue">1</span>
-                            <div>
-                                <h3>Select Item</h3>
-                                <p>Search by item code or name</p>
-                            </div>
-                        </div>
+                    <!-- ===================== MAIN FLOW CARD ===================== -->
+                    <section class="rw-card rw-card-main">
 
-                        <div class="iw-field">
-                            <input type="text" class="iw-input" placeholder="e.g. REELSEP09 or 10ply"
-                                [(ngModel)]="itemSearchTerm" name="itemSearchTerm" [disabled]="!!selectedItem" />
-                        </div>
-
-                        <div class="iw-item-picker" *ngIf="!selectedItem">
-                            <button type="button" class="iw-item-row" *ngFor="let it of filteredItems" (click)="selectItem(it)">
+                        <!-- STEP 1: Scan / Select -->
+                        <ng-container *ngIf="step === 1">
+                            <div class="rw-card-header">
+                                <span class="rw-card-num rw-num-blue">1</span>
                                 <div>
-                                    <span class="iw-chip iw-chip-blue">{{ it.itemCode }}</span>
-                                    <span class="iw-item-name">{{ it.itemName }}</span>
+                                    <h3>Scan Item QR Code</h3>
+                                    <p>Position the item's QR code in the camera frame, or search below</p>
                                 </div>
-                                <span class="iw-item-stock" [class.iw-stock-low]="it.availableQty <= 0">{{ it.availableQty }} {{ it.uomCode }}</span>
-                            </button>
-                            <div class="iw-empty-row" *ngIf="!loadingLookups && filteredItems.length === 0">No items match.</div>
-                            <div class="iw-empty-row" *ngIf="loadingLookups"><i class="pi pi-spin pi-spinner"></i> Loading items...</div>
-                        </div>
-
-                        <div class="iw-selected-item" *ngIf="selectedItem">
-                            <div class="rw-detail-row"><span>Item Code</span><strong>{{ selectedItem.itemCode }}</strong></div>
-                            <div class="rw-detail-row"><span>Description</span><strong>{{ selectedItem.itemName }}</strong></div>
-                            <div class="rw-detail-row"><span>UOM</span><strong>{{ selectedItem.uomCode }}</strong></div>
-                            <button type="button" class="rw-btn-outline-sm" style="width:100%; margin-top:12px; justify-content:center; padding:10px;" (click)="clearSelectedItem()">
-                                <i class="pi pi-refresh"></i> Choose a different item
-                            </button>
-                        </div>
-
-                        <div class="iw-cam-badges">
-                            <span class="iw-cam-badge"><i class="pi pi-circle-fill" style="color:#10b981; font-size:8px;"></i> Camera Ready</span>
-                            <span class="iw-cam-badge"><i class="pi pi-mobile"></i> MC9400 Compatible</span>
-                        </div>
-                    </section>
-
-                    <!-- Card 2: Stock + Issue Details -->
-                    <section class="iw-card">
-                        <div class="iw-card-header">
-                            <span class="iw-card-num iw-num-green">2</span>
-                            <div>
-                                <h3>Item &amp; Stock Details</h3>
-                                <p>Live stock, issue qty &amp; destination</p>
                             </div>
-                        </div>
 
-                        <div class="iw-empty" *ngIf="!selectedItem">
-                            <i class="pi pi-info-circle"></i>
-                            Select an item on the left to see live stock and enter issue details.
-                        </div>
+                            <!-- Gate: camera only turns on once "Start Scanning" is tapped -->
+                            <div class="rw-scan-area" *ngIf="showStartScan">
+                                <div class="rw-scan-frame-wrap rw-scan-idle">
+                                    <i class="pi pi-qrcode rw-scan-idle-icon"></i>
+                                </div>
+                                <p class="rw-scan-hint">Camera is off — tap below to scan an item's QR code</p>
 
-                        <ng-container *ngIf="selectedItem">
-                            <div class="rw-detail-row"><span>Available Stock</span><strong class="iw-stock-ok-text">{{ selectedItem.availableQty }} {{ selectedItem.uomCode }}</strong></div>
-                            <div class="rw-detail-row"><span>Reserved</span><strong>{{ selectedItem.reservedQty }} {{ selectedItem.uomCode }}</strong></div>
-                            <div class="rw-detail-row"><span>Total in Stock</span><strong>{{ selectedItem.stockQty }} {{ selectedItem.uomCode }}</strong></div>
+                                <button type="button" class="rw-btn-confirm rw-start-scan-btn" (click)="beginScanning()">
+                                    <i class="pi pi-camera"></i> Start Scanning
+                                </button>
 
-                            <div class="iw-field" style="margin-top:14px;">
-                                <label>Issue Quantity <span class="req">*</span></label>
-                                <input type="number" class="iw-input" min="1" [(ngModel)]="issueQty" name="issueQty" />
-                                <small class="iw-error" *ngIf="overStock">Exceeds available stock ({{ selectedItem.availableQty }} {{ selectedItem.uomCode }}).</small>
+                                <button type="button" class="rw-btn-outline-sm rw-manual-toggle" (click)="toggleManualEntry()">
+                                    <i class="pi pi-pencil"></i> {{ showManualEntry ? 'Hide manual entry' : 'Enter Item Code Manually' }}
+                                </button>
+
+                                <div class="rw-manual-entry" *ngIf="showManualEntry">
+                                    <input type="text" placeholder="e.g. REELSEP09" [(ngModel)]="manualCode" name="manualCode" />
+                                    <button type="button" class="rw-btn-confirm" [disabled]="!manualCode.trim() || scanLoading" (click)="submitManualCode()">
+                                        Look Up
+                                    </button>
+                                </div>
+
+                                <div class="rw-scan-error" *ngIf="scanError">
+                                    <i class="pi pi-exclamation-triangle"></i> {{ scanError }}
+                                </div>
+
+                                <div class="rw-cam-badges">
+                                    <span class="rw-cam-badge"><i class="pi pi-circle-fill" style="color:#94a3b8; font-size:8px;"></i> Camera Off</span>
+                                    <span class="rw-cam-badge"><i class="pi pi-mobile"></i> MC9400 Compatible</span>
+                                </div>
+                            </div>
+
+                            <!-- Live camera view, once started -->
+                            <div class="rw-scan-area" *ngIf="!showStartScan">
+                                <div class="rw-scan-frame-wrap">
+                                    <div [id]="SCANNER_ELEMENT_ID" class="rw-scan-video"></div>
+                                    <div class="rw-scan-overlay" *ngIf="!scanLoading">
+                                        <div class="rw-scan-frame"></div>
+                                    </div>
+                                    <div class="rw-scan-loading" *ngIf="scanLoading">
+                                        <i class="pi pi-spin pi-spinner"></i> Looking up item...
+                                    </div>
+                                </div>
+                                <p class="rw-scan-hint">Position the item's QR code in the center</p>
+
+                                <div class="rw-scan-error" *ngIf="scanError">
+                                    <i class="pi pi-exclamation-triangle"></i> {{ scanError }}
+                                </div>
+
+                                <button type="button" class="rw-btn-outline-sm rw-manual-toggle" (click)="toggleManualEntry()">
+                                    <i class="pi pi-pencil"></i> {{ showManualEntry ? 'Hide manual entry' : 'Enter Item Code Manually' }}
+                                </button>
+
+                                <div class="rw-manual-entry" *ngIf="showManualEntry">
+                                    <input type="text" placeholder="e.g. REELSEP09" [(ngModel)]="manualCode" name="manualCode" />
+                                    <button type="button" class="rw-btn-confirm" [disabled]="!manualCode.trim() || scanLoading" (click)="submitManualCode()">
+                                        Look Up
+                                    </button>
+                                </div>
+
+                                <div class="rw-cam-badges">
+                                    <span class="rw-cam-badge"><i class="pi pi-circle-fill" style="color:#10b981; font-size:8px;"></i> Camera Ready</span>
+                                    <span class="rw-cam-badge"><i class="pi pi-mobile"></i> MC9400 Compatible</span>
+                                </div>
+                            </div>
+
+                            <div class="iw-scan-divider"><span>OR SEARCH MANUALLY</span></div>
+
+                            <div class="iw-field">
+                                <input type="text" class="iw-input" placeholder="Search by item code or name..." [(ngModel)]="itemSearchTerm" name="itemSearchTerm" />
+                            </div>
+
+                            <div class="iw-item-picker">
+                                <div class="iw-queue-loading" *ngIf="loadingLookups"><i class="pi pi-spin pi-spinner"></i></div>
+                                <button type="button" class="iw-item-row" *ngFor="let item of filteredItems" (click)="selectItem(item)">
+                                    <span>
+                                        <span class="rw-chip rw-chip-blue">{{ item.itemCode }}</span>
+                                        <span class="iw-item-name">{{ item.itemName }}</span>
+                                    </span>
+                                    <span class="iw-item-stock" [class.iw-stock-low]="item.availableQty <= 0">{{ item.availableQty }} {{ item.uomCode }}</span>
+                                </button>
+                                <div class="rw-empty-row" *ngIf="!loadingLookups && filteredItems.length === 0">No items match your search.</div>
+                            </div>
+                        </ng-container>
+
+                        <!-- STEP 2: Item & Stock + Issue Details -->
+                        <ng-container *ngIf="step === 2 && selectedItem">
+                            <div class="rw-card-header">
+                                <span class="rw-card-num rw-num-blue">2</span>
+                                <div>
+                                    <h3>Item &amp; Stock Details</h3>
+                                    <p>Verify available stock, then enter issue quantity &amp; destination</p>
+                                </div>
+                            </div>
+
+                            <div class="rw-detail-card">
+                                <div class="rw-detail-row"><span>Item Code</span><strong>{{ selectedItem.itemCode }}</strong></div>
+                                <div class="rw-detail-row"><span>Description</span><strong>{{ selectedItem.itemName }}</strong></div>
+                                <div class="rw-detail-row"><span>UOM</span><strong>{{ selectedItem.uomCode }}</strong></div>
+                                <div class="rw-detail-row"><span>Stock Qty</span><strong>{{ selectedItem.stockQty }}</strong></div>
+                                <div class="rw-detail-row"><span>Reserved Qty</span><strong>{{ selectedItem.reservedQty }}</strong></div>
+                                <div class="rw-detail-row"><span>Available (Issueable)</span><strong>{{ selectedItem.availableQty }}</strong></div>
+                            </div>
+
+                            <div class="iw-field" style="margin-top:16px;">
+                                <label>Issue Qty <span class="req">*</span></label>
+                                <input type="number" class="iw-input" min="0" [(ngModel)]="issueQty" name="issueQty" />
+                                <span class="iw-hint" *ngIf="selectedItem">Max: {{ selectedItem.availableQty }} {{ selectedItem.uomCode }}</span>
+                                <span class="iw-error" *ngIf="overStock">Only {{ selectedItem.availableQty }} {{ selectedItem.uomCode }} available.</span>
                             </div>
 
                             <div class="iw-field">
                                 <label>Issue To (Department) <span class="req">*</span></label>
                                 <select class="iw-input" [(ngModel)]="departmentId" name="departmentId">
-                                    <option [ngValue]="null">Select department...</option>
+                                    <option [ngValue]="null" disabled>Select department...</option>
                                     <option *ngFor="let d of departments" [ngValue]="d.departmentId">{{ d.departmentName }}</option>
                                 </select>
                             </div>
 
                             <div class="iw-field">
-                                <label>Batch / Job Reference (Optional)</label>
-                                <input type="text" class="iw-input" placeholder="e.g. BCH-9075186-01 — for your own tracing" [(ngModel)]="referenceNo" name="referenceNo" />
-                                <small class="iw-hint">Free text only — not synced to VISIPAK, just a breadcrumb for later.</small>
+                                <label>Reference No. (Optional)</label>
+                                <input type="text" class="iw-input" placeholder="e.g. WO-2026-0895" [(ngModel)]="referenceNo" name="referenceNo" />
                             </div>
 
                             <div class="iw-field">
@@ -152,67 +211,174 @@
                                 <i class="pi pi-exclamation-triangle"></i> {{ actionError }}
                             </div>
 
-                            <button type="button" class="iw-btn iw-btn-success" [disabled]="submitting || overStock" (click)="issueAndUpdateStock()">
-                                <i class="pi pi-spin pi-spinner" *ngIf="submitting"></i>
-                                <i class="pi pi-send" *ngIf="!submitting"></i>
-                                {{ submitting ? 'Issuing...' : 'Issue & Update Stock' }}
-                            </button>
-                        </ng-container>
-                    </section>
-
-                    <!-- Card 3: Recent Issue Transactions -->
-                    <section class="iw-card iw-card-wide">
-                        <div class="iw-card-header">
-                            <span class="iw-card-num iw-num-amber">3</span>
-                            <div>
-                                <h3>Recent Issue Transactions</h3>
-                                <p>Issue requests and their status</p>
+                            <div class="rw-step-actions">
+                                <button type="button" class="rw-cancel-btn" (click)="cancelFlow()">Cancel</button>
+                                <button type="button" class="rw-save-btn" [disabled]="submitting || overStock" (click)="issueAndUpdateStock()">
+                                    <i class="pi pi-spin pi-spinner" *ngIf="submitting"></i>
+                                    <i class="pi pi-send" *ngIf="!submitting"></i>
+                                    {{ submitting ? 'Submitting...' : 'Submit for Verification' }}
+                                </button>
                             </div>
-                        </div>
+                        </ng-container>
 
-                        <div class="iw-table-wrap">
-                            <table class="iw-table">
-                                <thead>
-                                    <tr>
-                                        <th>Issue No</th>
-                                        <th>Department</th>
-                                        <th>Item(s)</th>
-                                        <th>Issued Qty</th>
-                                        <th>Status</th>
-                                        <th>Reference</th>
-                                        <th style="text-align:center;">QR</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr *ngFor="let req of issuingData">
-                                        <td><span class="iw-chip iw-chip-blue">{{ req.issueRequestNumber }}</span></td>
-                                        <td>{{ req.departmentName }}</td>
-                                        <td>
-                                            <span class="iw-chip iw-chip-gray" *ngFor="let it of req.items">{{ it.itemName }} ({{ it.requestedQty }})</span>
-                                        </td>
-                                        <td>{{ totalIssuedFor(req) }}</td>
-                                        <td><span class="iw-chip iw-chip-green">{{ req.status }}</span></td>
-                                        <td class="iw-ref-cell">{{ req.remarks || '—' }}</td>
-                                        <td style="text-align:center;">
-                                            <button type="button" class="iw-icon-btn" title="Generate QR" (click)="openQrModal(req)">
-                                                <i class="pi pi-qrcode"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr *ngIf="!loading && issuingData.length === 0">
-                                        <td colspan="7" class="iw-empty-row">
-                                            <i class="pi pi-box"></i> No issue records found.
-                                        </td>
-                                    </tr>
-                                    <tr *ngIf="loading">
-                                        <td colspan="7" class="iw-empty-row"><i class="pi pi-spin pi-spinner"></i> Loading...</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+                        <!-- STEP 3: Issue Verification -->
+                        <ng-container *ngIf="step === 3 && activeRequest">
+                            <div class="rw-card-header">
+                                <span class="rw-card-num rw-num-amber">3</span>
+                                <div>
+                                    <h3>Issue Verification (Supervisor)</h3>
+                                    <p>Ref {{ activeRequest.issueRequestNumber }} — {{ activeRequest.departmentName }}</p>
+                                </div>
+                                <span class="rw-badge-step">Pending</span>
+                            </div>
+
+                            <div class="rw-approval-items">
+                                <div class="rw-approval-item" *ngFor="let item of activeRequest.items">
+                                    <div class="rw-approval-item-head">
+                                        <span class="rw-chip rw-chip-gray">{{ item.itemCode }} — {{ item.itemName }}</span>
+                                        <span class="rw-approval-item-meta">Requested: {{ item.requestedQty }} {{ item.uomCode }} &bull; Available: {{ item.availableQty }} {{ item.uomCode }}</span>
+                                    </div>
+                                    <div class="iw-field">
+                                        <label>Issue Qty</label>
+                                        <input type="number" class="iw-input" min="0"
+                                            [(ngModel)]="approvalEdits[item.issueRequestItemId].issuedQty"
+                                            [name]="'issuedQty-' + item.issueRequestItemId" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="rw-save-error" *ngIf="actionError">
+                                <i class="pi pi-exclamation-triangle"></i> {{ actionError }}
+                            </div>
+
+                            <div class="rw-step-actions">
+                                <button type="button" class="rw-reject-btn" [disabled]="deciding" (click)="decide('REJECTED')">
+                                    <i class="pi pi-times"></i> Reject
+                                </button>
+                                <button type="button" class="rw-save-btn" [disabled]="deciding" (click)="decide('APPROVED')">
+                                    <i class="pi pi-spin pi-spinner" *ngIf="deciding"></i>
+                                    <i class="pi pi-check" *ngIf="!deciding"></i>
+                                    {{ deciding ? 'Submitting...' : 'Approve & Update Stock' }}
+                                </button>
+                            </div>
+                        </ng-container>
+
                     </section>
+
+                    <!-- ===================== SIDE PANEL: Queues ===================== -->
+                    <aside class="rw-side">
+
+                        <section class="rw-card">
+                            <div class="rw-card-header">
+                                <span class="rw-card-num rw-num-blue"><i class="pi pi-search" style="font-size:13px;"></i></span>
+                                <div><h3>Find a Record</h3><p>Search by issue no. or department</p></div>
+                            </div>
+                            <div class="rw-search-wrap" style="margin:0; width:100%;">
+                                <i class="pi pi-search"></i>
+                                <input type="text" placeholder="Search issue no. or dept..." style="width:100%; min-width:0;"
+                                    [(ngModel)]="searchTerm" name="issueSearchTerm" autocomplete="off" />
+                            </div>
+                        </section>
+
+                        <section class="rw-card">
+                            <div class="rw-card-header">
+                                <span class="rw-card-num rw-num-amber">•</span>
+                                <div><h3>Pending Verification</h3><p>Confirmed, awaiting supervisor</p></div>
+                            </div>
+                            <div class="rw-queue-loading" *ngIf="loading"><i class="pi pi-spin pi-spinner"></i></div>
+                            <div class="rw-queue-list" *ngIf="!loading">
+                                <button type="button" class="rw-queue-row" *ngFor="let r of pendingApprovalList" (click)="resumePendingApproval(r)">
+                                    <span class="rw-chip rw-chip-blue">{{ r.departmentName }}</span>
+                                    <span class="rw-queue-ref">{{ r.issueRequestNumber }}</span>
+                                    <i class="pi pi-angle-right"></i>
+                                </button>
+                                <div class="rw-empty-row" *ngIf="pendingApprovalList.length === 0">Nothing waiting for issue verification right now.</div>
+                            </div>
+                        </section>
+
+                        <section class="rw-card rw-tip-card">
+                            <i class="pi pi-lightbulb"></i>
+                            <div>
+                                <strong>Tip</strong>
+                                <p>Submitting an issue request does not change stock immediately — a supervisor must approve it first.</p>
+                            </div>
+                        </section>
+
+                    </aside>
 
                 </div>
+
+                <!-- ===================== Recent Issue Transactions (full width) ===================== -->
+                <section class="rw-card rw-history-card" style="margin-top:18px;">
+                    <div class="rw-card-header">
+                        <span class="rw-card-num rw-num-green"><i class="pi pi-history" style="font-size:13px;"></i></span>
+                        <div><h3>Recent Issue Transactions</h3><p>Issue requests and their status</p></div>
+                        <button type="button" class="rw-btn-outline-sm rw-viewall-btn" *ngIf="issuingData.length > 8" (click)="showAllHistory = !showAllHistory">
+                            {{ showAllHistory ? 'Show Less' : 'View All (' + issuingData.length + ')' }}
+                            <i class="pi" [ngClass]="showAllHistory ? 'pi-angle-up' : 'pi-angle-down'"></i>
+                        </button>
+                    </div>
+
+                    <div class="rw-table-wrap">
+                        <table class="rw-table rw-table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Issue No</th>
+                                    <th>Department</th>
+                                    <th>Item(s)</th>
+                                    <th style="text-align:center;">Issued Qty</th>
+                                    <th>Status</th>
+                                    <th>Verification</th>
+                                    <th>Reference</th>
+                                    <th style="text-align:center;">QR</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let req of (showAllHistory ? recentList : recentList.slice(0, 8))">
+                                    <td><span class="rw-chip rw-chip-blue">{{ req.issueRequestNumber }}</span></td>
+                                    <td class="rw-cell-strong">{{ req.departmentName }}</td>
+                                    <td>
+                                        <div class="rw-item-tags">
+                                            <span class="rw-chip rw-chip-gray" *ngFor="let it of req.items">{{ it.itemName }} &times;{{ it.requestedQty }}</span>
+                                        </div>
+                                    </td>
+                                    <td style="text-align:center;" class="rw-cell-strong">{{ totalIssuedFor(req) }}</td>
+                                    <td>
+                                        <span class="rw-status-dot" [ngClass]="{
+                                            'rw-dot-green': req.status === 'ISSUED',
+                                            'rw-dot-amber': req.status === 'PARTIALLY_ISSUED' || req.status === 'SUBMITTED',
+                                            'rw-dot-red': req.status === 'REJECTED' || req.status === 'CANCELLED',
+                                            'rw-dot-gray': req.status === 'DRAFT' || req.status === 'CLOSED'
+                                        }"></span>{{ req.status | titlecase }}
+                                    </td>
+                                    <td>
+                                        <span class="rw-chip"
+                                            [class.iw-chip-amber]="req.approvalStatus === 'PENDING_APPROVAL'"
+                                            [class.rw-chip-green]="req.approvalStatus === 'APPROVED'"
+                                            [class.iw-chip-red]="req.approvalStatus === 'REJECTED'"
+                                            [class.rw-chip-gray]="req.approvalStatus === 'NOT_SUBMITTED'">
+                                            {{ req.approvalStatus | titlecase }}
+                                        </span>
+                                    </td>
+                                    <td class="iw-ref-cell">{{ req.remarks || '—' }}</td>
+                                    <td style="text-align:center;">
+                                        <button type="button" class="rw-row-icon-btn" title="Generate QR" (click)="openQrModal(req)">
+                                            <i class="pi pi-qrcode"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr *ngIf="!loading && recentList.length === 0">
+                                    <td colspan="8" class="rw-empty-row">
+                                        <i class="pi pi-inbox"></i> No issue records found.
+                                    </td>
+                                </tr>
+                                <tr *ngIf="loading">
+                                    <td colspan="8" class="rw-empty-row"><i class="pi pi-spin pi-spinner"></i> Loading...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
 
             </div>
 

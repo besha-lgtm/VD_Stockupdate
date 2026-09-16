@@ -38,6 +38,9 @@ export interface IssueRequestDto {
   departmentName: string;
   requestDate: string;
   status: string; // DRAFT | SUBMITTED | APPROVED | PARTIALLY_ISSUED | ISSUED | REJECTED | CANCELLED | CLOSED
+  approvalStatus: string; // NOT_SUBMITTED | PENDING_APPROVAL | APPROVED | REJECTED
+  approvedBy: string | null;
+  approvedAt: string | null;
   remarks: string | null;
   items: IssueRequestItemDto[];
 }
@@ -67,11 +70,20 @@ export class IssueService {
     return this.http.post<any>(AppSettings.API.issueRequests, payload);
   }
 
-  // "Issue & Update Stock" (Steps 3-4) — decrements real stock on the backend.
-  issueAndUpdateStock(
+  // "Confirm" — locks in the request and sends it for supervisor approval
+  // (Issue Verification) instead of touching stock immediately.
+  confirm(issueRequestNumber: string): Observable<{ success: boolean; data: IssueRequestDto }> {
+    return this.http.put<any>(`${AppSettings.API.issueRequests}/${issueRequestNumber}/confirm`, {});
+  }
+
+  // "Issue Verification" decision — Approve (decrements real stock on the
+  // backend) or Reject. Mirrors ReceivingService.decideApproval().
+  decideApproval(
     issueRequestNumber: string,
-    itemDecisions: { issueRequestItemId: number; issuedQty: number }[]
+    decision: 'APPROVED' | 'REJECTED',
+    itemDecisions: { issueRequestItemId: number; issuedQty: number }[],
+    rejectionReason?: string
   ): Observable<{ success: boolean; data: IssueRequestDto }> {
-    return this.http.put<any>(`${AppSettings.API.issueRequests}/${issueRequestNumber}/issue`, { itemDecisions });
+    return this.http.put<any>(`${AppSettings.API.issueRequests}/${issueRequestNumber}/approval`, { decision, itemDecisions, rejectionReason });
   }
 }
