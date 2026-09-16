@@ -23,10 +23,9 @@ export class DashboardComponent implements OnInit {
   }
 
   // Data for the 4 large Action Cards (navigation only — no live data to bind here)
-  // Routes point at the pages that are actually wired into the sidebar/app-routing:
-  // there's no standalone /rscan or /approval destination in this build — scanning
-  // and the approval decision both live inside the /recieve wizard (step 1 = scan,
-  // step 4 = approve), so both cards point there.
+  // Routes point at the pages that are actually wired into the sidebar/app-routing.
+  // Scanning lives inside the /recieve wizard (step 1 = scan); the approval
+  // decision has its own dedicated screen at /porecieve.
   mainCards = [
     {
       id: 'po',
@@ -54,7 +53,7 @@ export class DashboardComponent implements OnInit {
       title: 'Approval',
       desc: 'Review, approve and send to ERP',
       colorClass: 'card-approval',
-      route: '/recieve'
+      route: '/porecieve'
     }
   ];
 
@@ -82,7 +81,7 @@ export class DashboardComponent implements OnInit {
     { label: 'Sync with ERP', icon: 'pi pi-sync', route: '/poqr' },
     { label: 'Print QR Labels', icon: 'pi pi-print', route: '/poqr' },
     { label: 'Scan & Receive', icon: 'pi pi-qrcode', route: '/recieve' },
-    { label: 'View Exceptions', icon: 'pi pi-exclamation-triangle', isDanger: true, route: '/recieve' }
+    { label: 'View Exceptions', icon: 'pi pi-exclamation-triangle', isDanger: true, route: '/porecieve' }
   ];
 
   // ---- Live data, pulled from GET /api/dashboard/summary ----

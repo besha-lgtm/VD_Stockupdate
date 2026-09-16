@@ -93,19 +93,21 @@ export class MainMenuComponent implements OnInit, OnDestroy {
     });
   }
 
-  // Routes point at the pages actually used in this build — /rscan, /iscan
-  // and /approval are dead ends with nothing linking to them (see
-  // dashboard.component.ts for the same fix); scanning + approval both
-  // live inside /recieve, and issue scanning lives inside /issue.
+  // Routes point at the pages actually used in this build — /rscan and /iscan
+  // are dead ends with nothing linking to them (see dashboard.component.ts
+  // for the same fix); scanning lives inside /recieve, issue scanning lives
+  // inside /issue, and approval has its own dedicated screen at /porecieve.
   onSelect(option: string): void {
-    if (option === 'PO') {
+    if (option === 'DASHBOARD') {
+      this.router.navigate(['/dashboard']);
+    } else if (option === 'PO') {
       this.router.navigate(['/poqr']);
     } else if (option === 'RECEIVE') {
       this.router.navigate(['/recieve']);
     } else if (option === 'ISSUE') {
       this.router.navigate(['/issue']);
     } else if (option === 'APPROVAL') {
-      this.router.navigate(['/recieve']);
+      this.router.navigate(['/porecieve']);
     }
   }
 }

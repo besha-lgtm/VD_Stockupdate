@@ -1,236 +1,259 @@
 <div class="app-main-layout">
- 
-  <div class="main-menu-container">
-  <!-- Left Panel -->
-  <div class="hub-info-panel">
-    <div class="tag">
-      <span class="lightning-icon">⚡</span> OPERATIONAL COMMAND CENTER
-    </div>
-    
-    <h1 class="hub-title">Warehouse Operations Hub</h1>
-    <p class="hub-desc">
-      Welcome back, <strong>{{ userFullName }}</strong>. Select an operational engine below to begin your shift activities.
-    </p>
+  <div class="mm-page">
 
-    <div class="info-pill">
-      <svg viewBox="0 0 24 24">
-        <circle cx="12" cy="12" r="10"></circle>
-        <polyline points="12 6 12 12 16 14"></polyline>
-      </svg>
-      <span>{{ currentTime }}</span>
-    </div>
+    <!-- Header Console -->
+    <header class="mm-console">
+      <div class="mm-console-main">
+        <div class="mm-console-heading">
+          <h1 class="mm-title">Warehouse Operations Hub</h1>
+          <p class="mm-subtitle">Welcome back, <strong>{{ userFullName }}</strong>. Select a module to begin your shift.</p>
+        </div>
 
-    <div class="info-pill">
-      <svg viewBox="0 0 24 24">
-        <path d="M3 21h18"></path>
-        <path d="M9 8h1"></path>
-        <path d="M9 12h1"></path>
-        <path d="M9 16h1"></path>
-        <path d="M14 8h1"></path>
-        <path d="M14 12h1"></path>
-        <path d="M14 16h1"></path>
-        <path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"></path>
-      </svg>
-      <span>{{ plantLabel }}</span>
-    </div>
+        <div class="mm-readouts">
+          <div class="mm-readout">
+            <span class="mm-readout-value">{{ currentTime }}</span>
+            <span class="mm-readout-label">Local Time</span>
+          </div>
+          <div class="mm-readout-divider"></div>
+          <div class="mm-readout">
+            <span class="mm-readout-value">{{ plantLabel }}</span>
+            <span class="mm-readout-label">Plant</span>
+          </div>
+          <div class="mm-readout-divider"></div>
+          <div class="mm-readout">
+            <span class="mm-readout-value">
+              <span class="mm-dot" [class.mm-dot-on]="erpConnected" [class.mm-dot-off]="!erpConnected"></span>
+              {{ erpConnected ? 'Connected' : 'Not Synced' }}
+            </span>
+            <span class="mm-readout-label">ERP Status</span>
+          </div>
+        </div>
+      </div>
+    </header>
 
-    <div class="info-pill" [ngClass]="{ success: erpConnected }">
-      <div class="dot" [ngClass]="{ 'dot-off': !erpConnected }"></div>
-      <span>{{ erpConnected ? 'ERP Connected' : 'ERP Not Synced' }}</span>
+    <!-- Module Grid -->
+    <div class="mm-grid">
+
+      <!-- Dashboard -->
+      <article class="mm-card mm-card-dashboard" (click)="onSelect('DASHBOARD')" tabindex="0" (keyup.enter)="onSelect('DASHBOARD')">
+        <div class="mm-card-top">
+          <span class="mm-icon-plate">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="7" height="9" rx="1"></rect>
+              <rect x="14" y="3" width="7" height="5" rx="1"></rect>
+              <rect x="14" y="12" width="7" height="9" rx="1"></rect>
+              <rect x="3" y="16" width="7" height="5" rx="1"></rect>
+            </svg>
+          </span>
+          <div class="mm-card-heading">
+            <span class="mm-card-code">DB &middot; OVERVIEW</span>
+            <h2 class="mm-card-title">Dashboard</h2>
+          </div>
+        </div>
+
+        <p class="mm-card-desc">Live counts, recent transactions, and critical floor updates.</p>
+
+        <div class="mm-card-stats" *ngIf="!hubLoading">
+          <div class="mm-stat">
+            <span class="mm-stat-dot" [class.mm-dot-on]="erpConnected" [class.mm-dot-off]="!erpConnected"></span>
+            <span>{{ erpConnected ? 'ERP Connected' : 'ERP Offline' }}</span>
+          </div>
+          <div class="mm-stat-chip">
+            <span class="mm-stat-chip-value">{{ currentTime }}</span>
+          </div>
+        </div>
+        <div class="mm-card-stats mm-skeleton" *ngIf="hubLoading">
+          <div class="mm-skeleton-bar"></div>
+          <div class="mm-skeleton-bar short"></div>
+        </div>
+
+        <button type="button" class="mm-card-btn">
+          <span>Open Dashboard</span>
+          <span class="mm-btn-arrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </span>
+        </button>
+      </article>
+
+      <!-- Purchase Order -->
+      <article class="mm-card mm-card-po" (click)="onSelect('PO')" tabindex="0" (keyup.enter)="onSelect('PO')">
+        <div class="mm-card-top">
+          <span class="mm-icon-plate">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+            </svg>
+          </span>
+          <div class="mm-card-heading">
+            <span class="mm-card-code">PO &middot; PURCHASE ORDER</span>
+            <h2 class="mm-card-title">Purchase Orders</h2>
+          </div>
+        </div>
+
+        <p class="mm-card-desc">View POs, sync from ERP, generate GS1-128 pallet tags & QR labels.</p>
+
+        <div class="mm-card-stats" *ngIf="hub && !hubLoading">
+          <div class="mm-stat">
+            <span class="mm-stat-dot mm-dot-warn"></span>
+            <span>{{ hub.po.pendingQr }} Pending QR</span>
+          </div>
+          <div class="mm-stat-chip">
+            <span class="mm-stat-chip-value">{{ hub.po.totalToday }}</span>
+            <span class="mm-stat-chip-label">Today</span>
+          </div>
+        </div>
+        <div class="mm-card-stats mm-skeleton" *ngIf="hubLoading">
+          <div class="mm-skeleton-bar"></div>
+          <div class="mm-skeleton-bar short"></div>
+        </div>
+
+        <button type="button" class="mm-card-btn">
+          <span>Open PO Manager</span>
+          <span class="mm-btn-arrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </span>
+        </button>
+      </article>
+
+      <!-- Receive -->
+      <article class="mm-card mm-card-receive" (click)="onSelect('RECEIVE')" tabindex="0" (keyup.enter)="onSelect('RECEIVE')">
+        <div class="mm-card-top">
+          <span class="mm-icon-plate">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+              <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+              <line x1="12" y1="22.08" x2="12" y2="12"></line>
+            </svg>
+          </span>
+          <div class="mm-card-heading">
+            <span class="mm-card-code">RC &middot; DOCK INTAKE</span>
+            <h2 class="mm-card-title">Receive Material</h2>
+          </div>
+        </div>
+
+        <p class="mm-card-desc">Scan QR and receive incoming vendor items, verify dock acceptance.</p>
+
+        <div class="mm-card-stats" *ngIf="hub && !hubLoading">
+          <div class="mm-stat">
+            <span class="mm-stat-dot mm-dot-on"></span>
+            <span>{{ hub.receive.awaitingIntake }} Awaiting Intake</span>
+          </div>
+          <div class="mm-stat-chip mm-chip-good">
+            <span class="mm-stat-chip-value">{{ hub.receive.cleared }}</span>
+            <span class="mm-stat-chip-label">Cleared</span>
+          </div>
+        </div>
+        <div class="mm-card-stats mm-skeleton" *ngIf="hubLoading">
+          <div class="mm-skeleton-bar"></div>
+          <div class="mm-skeleton-bar short"></div>
+        </div>
+
+        <button type="button" class="mm-card-btn">
+          <span>Launch Receiving</span>
+          <span class="mm-btn-arrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </span>
+        </button>
+      </article>
+
+      <!-- Issue -->
+      <article class="mm-card mm-card-issue" (click)="onSelect('ISSUE')" tabindex="0" (keyup.enter)="onSelect('ISSUE')">
+        <div class="mm-card-top">
+          <span class="mm-icon-plate">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="9" cy="21" r="1"></circle>
+              <circle cx="20" cy="21" r="1"></circle>
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+            </svg>
+          </span>
+          <div class="mm-card-heading">
+            <span class="mm-card-code">IS &middot; REQUISITION</span>
+            <h2 class="mm-card-title">Issue Material</h2>
+          </div>
+        </div>
+
+        <p class="mm-card-desc">Pick and issue to production or other location requirements.</p>
+
+        <div class="mm-card-stats" *ngIf="hub && !hubLoading">
+          <div class="mm-stat">
+            <span class="mm-stat-dot mm-dot-info"></span>
+            <span>{{ hub.issue.deptsActive }} Active Depts</span>
+          </div>
+          <div class="mm-stat-chip">
+            <span class="mm-stat-chip-value">{{ hub.issue.itemsStaged }}</span>
+            <span class="mm-stat-chip-label">Staged</span>
+          </div>
+        </div>
+        <div class="mm-card-stats mm-skeleton" *ngIf="hubLoading">
+          <div class="mm-skeleton-bar"></div>
+          <div class="mm-skeleton-bar short"></div>
+        </div>
+
+        <button type="button" class="mm-card-btn">
+          <span>Open Issue &amp; Verify</span>
+          <span class="mm-btn-arrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </span>
+        </button>
+      </article>
+
+      <!-- Approval -->
+      <article class="mm-card mm-card-approval" (click)="onSelect('APPROVAL')" tabindex="0" (keyup.enter)="onSelect('APPROVAL')">
+        <div class="mm-card-top">
+          <span class="mm-icon-plate">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              <polyline points="9 12 11 14 15 10"></polyline>
+            </svg>
+          </span>
+          <div class="mm-card-heading">
+            <span class="mm-card-code">AP &middot; QC &amp; SIGN-OFF</span>
+            <h2 class="mm-card-title">Approval</h2>
+          </div>
+        </div>
+
+        <p class="mm-card-desc">Review, approve, resolve count variances and send data to ERP.</p>
+
+        <div class="mm-card-stats" *ngIf="hub && !hubLoading">
+          <div class="mm-stat">
+            <span class="mm-stat-dot mm-dot-warn"></span>
+            <span>{{ hub.approval.pendingSignoff }} Pending Sign-off</span>
+          </div>
+          <div class="mm-stat-chip" [class.mm-chip-alert]="hub.approval.urgent > 0" [class.mm-chip-good]="hub.approval.urgent === 0">
+            <span class="mm-stat-chip-value">{{ hub.approval.urgent }}</span>
+            <span class="mm-stat-chip-label">Hold</span>
+          </div>
+        </div>
+        <div class="mm-card-stats mm-skeleton" *ngIf="hubLoading">
+          <div class="mm-skeleton-bar"></div>
+          <div class="mm-skeleton-bar short"></div>
+        </div>
+
+        <button type="button" class="mm-card-btn">
+          <span>Review Approvals</span>
+          <span class="mm-btn-arrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </span>
+        </button>
+      </article>
+
     </div>
   </div>
-
-  <!-- Right Grid -->
-  <div class="cards-grid">
-    <!-- PO Card -->
-    <div class="action-card card-po" (click)="onSelect('PO')">
-      <div class="card-header-row">
-        <div class="card-icon-wrapper">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-            <polyline points="14 2 14 8 20 8"></polyline>
-            <line x1="16" y1="13" x2="8" y2="13"></line>
-            <line x1="16" y1="17" x2="8" y2="17"></line>
-            <polyline points="10 9 9 9 8 9"></polyline>
-          </svg>
-        </div>
-        <div class="card-title-group">
-          <span class="card-title-main">PO</span>
-          <span class="card-title-sub">PURCHASE ORDER</span>
-        </div>
-      </div>
-      
-      <p class="card-desc">
-        Generate GS1-128 pallet tags, ingest supplier manifests, and allocate inbound inventory to receiving bays.
-      </p>
-      
-      <div class="card-divider"></div>
-      
-      <div class="card-stats-row" *ngIf="hub && !hubLoading">
-        <div class="status-left">
-          <div class="status-dot orange"></div>
-          <span>{{ hub.po.pendingQr }} Pending QR</span>
-        </div>
-        <div class="stats-right">
-          <span class="val">{{ hub.po.totalToday }} Total</span>
-          <span class="lbl">Today</span>
-        </div>
-      </div>
-      <div class="card-stats-row card-stats-skeleton" *ngIf="hubLoading">
-        <div class="skeleton-pill"></div>
-        <div class="skeleton-pill short"></div>
-      </div>
-      
-      <button class="card-btn">
-        <span>OPEN PO MANAGER</span>
-        <svg viewBox="0 0 24 24">
-          <line x1="5" y1="12" x2="19" y2="12"></line>
-          <polyline points="12 5 19 12 12 19"></polyline>
-        </svg>
-      </button>
-    </div>
-
-    <!-- RECEIVE Card -->
-    <div class="action-card card-receive" (click)="onSelect('RECEIVE')">
-      <div class="card-header-row">
-        <div class="card-icon-wrapper">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
-            <line x1="12" y1="22.08" x2="12" y2="12"></line>
-          </svg>
-        </div>
-        <div class="card-title-group">
-          <span class="card-title-main">RECEIVE</span>
-          <span class="card-title-sub">DOCK INTAKE</span>
-        </div>
-      </div>
-      
-      <p class="card-desc">
-        Inspect physical arrivals against PO line items, verify vendor packaging labels, and sign off dock acceptance.
-      </p>
-      
-      <div class="card-divider"></div>
-      
-      <div class="card-stats-row" *ngIf="hub && !hubLoading">
-        <div class="status-left">
-          <div class="status-dot green"></div>
-          <span>{{ hub.receive.awaitingIntake }} Awaiting Intake</span>
-        </div>
-        <div class="stats-right">
-          <span class="val green" style="color: #10b981;">{{ hub.receive.cleared }}</span>
-          <span class="lbl green" style="color: #10b981;">Cleared</span>
-        </div>
-      </div>
-      <div class="card-stats-row card-stats-skeleton" *ngIf="hubLoading">
-        <div class="skeleton-pill"></div>
-        <div class="skeleton-pill short"></div>
-      </div>
-      
-      <button class="card-btn">
-        <span>LAUNCH RECEIVING</span>
-        <svg viewBox="0 0 24 24">
-          <line x1="5" y1="12" x2="19" y2="12"></line>
-          <polyline points="12 5 19 12 12 19"></polyline>
-        </svg>
-      </button>
-    </div>
-
-    <!-- ISSUE Card -->
-    <div class="action-card card-issue" (click)="onSelect('ISSUE')">
-      <div class="card-header-row">
-        <div class="card-icon-wrapper">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
-            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
-            <circle cx="12" cy="14" r="3"></circle>
-            <path d="M12 11v-1"></path>
-          </svg>
-        </div>
-        <div class="card-title-group">
-          <span class="card-title-main">ISSUE</span>
-          <span class="card-title-sub">REQUISITION</span>
-        </div>
-      </div>
-      
-      <p class="card-desc">
-        Verify department store requisitions, execute pick-and-pack dispatches, and produce electronic gate passes.
-      </p>
-      
-      <div class="card-divider"></div>
-      
-      <div class="card-stats-row" *ngIf="hub && !hubLoading">
-        <div class="status-left">
-          <div class="status-dot blue"></div>
-          <span>{{ hub.issue.deptsActive }} Depts Active</span>
-        </div>
-        <div class="stats-right">
-          <span class="val">{{ hub.issue.itemsStaged }} Items</span>
-          <span class="lbl">Staged</span>
-        </div>
-      </div>
-      <div class="card-stats-row card-stats-skeleton" *ngIf="hubLoading">
-        <div class="skeleton-pill"></div>
-        <div class="skeleton-pill short"></div>
-      </div>
-      
-      <button class="card-btn">
-        <span>OPEN ISSUE VERIFICATION</span>
-        <svg viewBox="0 0 24 24">
-          <line x1="5" y1="12" x2="19" y2="12"></line>
-          <polyline points="12 5 19 12 12 19"></polyline>
-        </svg>
-      </button>
-    </div>
-
-    <!-- APPROVAL Card -->
-    <div class="action-card card-approval" (click)="onSelect('APPROVAL')">
-      <div class="card-header-row">
-        <div class="card-icon-wrapper">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-            <polyline points="9 12 11 14 15 10"></polyline>
-          </svg>
-        </div>
-        <div class="card-title-group">
-          <span class="card-title-main">APPROVAL</span>
-          <span class="card-title-sub">QC &amp; SIGN-OFF</span>
-        </div>
-      </div>
-      
-      <p class="card-desc">
-        Resolve count variances, inspect damaged package reports, and grant digital ledger clearance into SAP ERP.
-      </p>
-      
-      <div class="card-divider"></div>
-      
-      <div class="card-stats-row" *ngIf="hub && !hubLoading">
-        <div class="status-left">
-          <div class="status-dot orange"></div>
-          <span>{{ hub.approval.pendingSignoff }} Pending Sign-Off</span>
-        </div>
-        <div class="stats-right" *ngIf="hub.approval.urgent > 0">
-          <span class="val red">{{ hub.approval.urgent }} Urgent</span>
-          <span class="lbl red">Hold</span>
-        </div>
-        <div class="stats-right" *ngIf="hub.approval.urgent === 0">
-          <span class="val" style="color: #10b981;">0</span>
-          <span class="lbl" style="color: #10b981;">Hold</span>
-        </div>
-      </div>
-      <div class="card-stats-row card-stats-skeleton" *ngIf="hubLoading">
-        <div class="skeleton-pill"></div>
-        <div class="skeleton-pill short"></div>
-      </div>
-      
-      <button class="card-btn">
-        <span>REVIEW APPROVALS</span>
-        <svg viewBox="0 0 24 24">
-          <line x1="5" y1="12" x2="19" y2="12"></line>
-          <polyline points="12 5 19 12 12 19"></polyline>
-        </svg>
-      </button>
-    </div>
-  </div>
-</div>
 </div>
