@@ -172,91 +172,173 @@
                                         </td>
                                     </tr>
 
-                                    <!-- Expanded detail row -->
+                                    <!-- ============================================================
+                                         Expanded detail row
+                                         ============================================================ -->
                                     <tr class="ra-expand-row" *ngIf="isExpanded(r)">
-                                        <td [attr.colspan]="9">
+                                        <td [attr.colspan]="9" class="ra-expand-cell">
                                             <div class="ra-expand-panel" [ngClass]="'ra-expand-panel-' + statusMeta(rowStatus(r)).cls">
 
-                                                <div class="ra-expand-grid" *ngIf="r.visipackGrnNo || r.approvedBy || r.remarks">
-                                                    <div class="ra-expand-meta">
-                                                        <div class="ra-meta-item" *ngIf="r.visipackGrnNo">
-                                                            <span>VISIPACK GRN</span>
-                                                            <strong>{{ r.visipackGrnNo }}</strong>
-                                                        </div>
-                                                        <div class="ra-meta-item" *ngIf="r.approvedBy">
-                                                            <span>Approved by</span>
-                                                            <strong>{{ r.approvedBy }}</strong>
-                                                        </div>
-                                                        <div class="ra-meta-item" *ngIf="r.remarks">
-                                                            <span>Remarks</span>
-                                                            <strong>{{ r.remarks }}</strong>
-                                                        </div>
+                                                <!-- Panel header: what this receiving is, and where it sits -->
+                                                <div class="ra-panel-head">
+                                                    <div class="ra-panel-head-main">
+                                                        <h4 class="ra-panel-title">{{ r.receivingNumber }}</h4>
+                                                        <p class="ra-panel-sub">
+                                                            {{ r.poNumber }} · {{ r.supplierName }} · {{ r.items.length }} line {{ r.items.length === 1 ? 'item' : 'items' }}
+                                                        </p>
+                                                    </div>
+                                                    <span class="ra-badge" [ngClass]="'ra-badge-' + statusMeta(rowStatus(r)).cls">
+                                                        <i class="pi" [ngClass]="statusMeta(rowStatus(r)).icon"></i>
+                                                        {{ statusMeta(rowStatus(r)).label }}
+                                                    </span>
+                                                </div>
+
+                                                <!-- Trace strip: only renders the facts that actually exist -->
+                                                <dl class="ra-meta-strip" *ngIf="hasMeta(r)">
+                                                    <div class="ra-meta-item" *ngIf="r.approvedByName || r.approvedBy">
+                                                        <dt>Approved by</dt>
+                                                        <dd>
+                                                            <span class="ra-avatar">{{ approverInitial(r) }}</span>
+                                                            {{ approverName(r) }}
+                                                        </dd>
+                                                    </div>
+                                                    <div class="ra-meta-item" *ngIf="r.approvedAt">
+                                                        <dt>Approved at</dt>
+                                                        <dd>{{ getFormattedDate(r.approvedAt) }}</dd>
+                                                    </div>
+                                                    <div class="ra-meta-item" *ngIf="r.visipackReceiptNo">
+                                                        <dt>ERP receipt</dt>
+                                                        <dd class="ra-mono">{{ r.visipackReceiptNo }}</dd>
+                                                    </div>
+                                                    <div class="ra-meta-item" *ngIf="r.visipackGrnNo">
+                                                        <dt>VISIPACK GRN</dt>
+                                                        <dd class="ra-mono ra-meta-strong">{{ r.visipackGrnNo }}</dd>
+                                                    </div>
+                                                    <div class="ra-meta-item ra-meta-wide" *ngIf="r.remarks">
+                                                        <dt>Remarks</dt>
+                                                        <dd>{{ r.remarks }}</dd>
+                                                    </div>
+                                                </dl>
+
+                                                <!-- No GRN yet: explain, don't leave a blank -->
+                                                <p class="ra-panel-note" *ngIf="rowStatus(r) === 'QC_PENDING'">
+                                                    <i class="pi pi-info-circle"></i>
+                                                    Pushed to VISIPACK as an incoming receipt. A GRN is issued once VISIPACK QC accepts the material.
+                                                </p>
+                                                <p class="ra-panel-note ra-panel-note-warn" *ngIf="rowStatus(r) === 'PUSH_FAILED'">
+                                                    <i class="pi pi-exclamation-triangle"></i>
+                                                    Approved in WMS, but the push to VISIPACK didn't go through. Retry below.
+                                                </p>
+
+                                                <!-- Line items -->
+                                                <div class="ra-item-block">
+                                                    <div class="ra-item-block-head">
+                                                        <h5>Line items</h5>
+                                                        <button type="button" class="ra-link-btn"
+                                                                *ngIf="rowStatus(r) === 'PENDING_APPROVAL'"
+                                                                (click)="acceptAll(r)">
+                                                            Accept all received
+                                                        </button>
+                                                    </div>
+
+                                                    <div class="ra-item-table-card">
+                                                        <table class="ra-item-table">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>Item</th>
+                                                                    <th class="ra-num">Ordered</th>
+                                                                    <th class="ra-num">Received</th>
+                                                                    <th class="ra-num" [class.ra-editable-col]="rowStatus(r) === 'PENDING_APPROVAL'">Accept</th>
+                                                                    <th class="ra-num" [class.ra-editable-col]="rowStatus(r) === 'PENDING_APPROVAL'">Reject</th>
+                                                                    <th class="ra-col-reason">Rejection reason</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr *ngFor="let item of r.items"
+                                                                    [class.ra-item-row-unbalanced]="rowStatus(r) === 'PENDING_APPROVAL' && !itemBalanced(item)">
+                                                                    <td class="ra-col-item">
+                                                                        <div class="ra-item-name">{{ item.itemName }}</div>
+                                                                        <div class="ra-item-code">{{ item.itemCode }}</div>
+                                                                    </td>
+                                                                    <td class="ra-num ra-mono">{{ item.orderedQty }}</td>
+                                                                    <td class="ra-num ra-mono ra-qty-received">{{ item.receivedQty }}</td>
+
+                                                                    <td class="ra-num">
+                                                                        <input *ngIf="rowStatus(r) === 'PENDING_APPROVAL'" type="number" min="0"
+                                                                               [max]="item.receivedQty"
+                                                                               class="ra-qty-input ra-qty-accept"
+                                                                               [(ngModel)]="edits[item.receivingItemId].acceptedQty"
+                                                                               (ngModelChange)="onAcceptedChange(item)"
+                                                                               [name]="'acc'+item.receivingItemId" />
+                                                                        <span *ngIf="rowStatus(r) !== 'PENDING_APPROVAL'" class="ra-mono ra-qty-good">{{ item.acceptedQty || '—' }}</span>
+                                                                    </td>
+
+                                                                    <td class="ra-num">
+                                                                        <input *ngIf="rowStatus(r) === 'PENDING_APPROVAL'" type="number" min="0"
+                                                                               [max]="item.receivedQty"
+                                                                               class="ra-qty-input ra-qty-reject"
+                                                                               [(ngModel)]="edits[item.receivingItemId].rejectedQty"
+                                                                               [name]="'rej'+item.receivingItemId" />
+                                                                        <span *ngIf="rowStatus(r) !== 'PENDING_APPROVAL'"
+                                                                              class="ra-mono"
+                                                                              [class.ra-qty-bad]="item.rejectedQty > 0">{{ item.rejectedQty || '—' }}</span>
+                                                                    </td>
+
+                                                                    <td class="ra-col-reason">
+                                                                        <input *ngIf="rowStatus(r) === 'PENDING_APPROVAL'" type="text" class="ra-reason-input"
+                                                                               placeholder="Why was it rejected?"
+                                                                               [disabled]="!edits[item.receivingItemId].rejectedQty"
+                                                                               [(ngModel)]="edits[item.receivingItemId].rejectionReason"
+                                                                               [name]="'reason'+item.receivingItemId" />
+                                                                        <span *ngIf="rowStatus(r) !== 'PENDING_APPROVAL'" class="ra-reason-text">{{ item.rejectionReason || '—' }}</span>
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
+                                                            <tfoot *ngIf="r.items.length > 1">
+                                                                <tr>
+                                                                    <td>Total</td>
+                                                                    <td class="ra-num ra-mono">{{ totalOrderedQty(r) }}</td>
+                                                                    <td class="ra-num ra-mono">{{ totalReceivedQty(r) }}</td>
+                                                                    <td class="ra-num ra-mono">{{ rowStatus(r) === 'PENDING_APPROVAL' ? editedAcceptedTotal(r) : (totalAcceptedQty(r) || '—') }}</td>
+                                                                    <td class="ra-num ra-mono">{{ rowStatus(r) === 'PENDING_APPROVAL' ? editedRejectedTotal(r) : (totalRejectedQty(r) || '—') }}</td>
+                                                                    <td></td>
+                                                                </tr>
+                                                            </tfoot>
+                                                        </table>
                                                     </div>
                                                 </div>
 
-                                                <div class="ra-item-table-card">
-                                                <table class="ra-item-table">
-                                                    <thead>
-                                                        <tr>
-                                                            <th>Item</th>
-                                                            <th class="ra-num">Ordered</th>
-                                                            <th class="ra-num">Received</th>
-                                                            <th class="ra-num" [class.ra-editable-col]="rowStatus(r) === 'PENDING_APPROVAL'">Accept qty</th>
-                                                            <th class="ra-num" [class.ra-editable-col]="rowStatus(r) === 'PENDING_APPROVAL'">Reject qty</th>
-                                                            <th>Rejection reason</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <tr *ngFor="let item of r.items">
-                                                            <td>
-                                                                <div class="ra-item-code">{{ item.itemCode }}</div>
-                                                                <div class="ra-item-name">{{ item.itemName }}</div>
-                                                            </td>
-                                                            <td class="ra-num">{{ item.orderedQty }}</td>
-                                                            <td class="ra-num">{{ item.receivedQty }}</td>
-                                                            <td class="ra-num">
-                                                                <input *ngIf="rowStatus(r) === 'PENDING_APPROVAL'" type="number" min="0" class="ra-qty-input ra-qty-accept"
-                                                                       [(ngModel)]="edits[item.receivingItemId].acceptedQty" [name]="'acc'+item.receivingItemId" />
-                                                                <span *ngIf="rowStatus(r) !== 'PENDING_APPROVAL'">{{ item.acceptedQty || '—' }}</span>
-                                                            </td>
-                                                            <td class="ra-num">
-                                                                <input *ngIf="rowStatus(r) === 'PENDING_APPROVAL'" type="number" min="0" class="ra-qty-input ra-qty-reject"
-                                                                       [(ngModel)]="edits[item.receivingItemId].rejectedQty" [name]="'rej'+item.receivingItemId" />
-                                                                <span *ngIf="rowStatus(r) !== 'PENDING_APPROVAL'">{{ item.rejectedQty || '—' }}</span>
-                                                            </td>
-                                                            <td>
-                                                                <input *ngIf="rowStatus(r) === 'PENDING_APPROVAL'" type="text" class="ra-reason-input"
-                                                                       placeholder="Optional"
-                                                                       [(ngModel)]="edits[item.receivingItemId].rejectionReason" [name]="'reason'+item.receivingItemId" />
-                                                                <span *ngIf="rowStatus(r) !== 'PENDING_APPROVAL'">{{ item.rejectionReason || '—' }}</span>
-                                                            </td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                                </div>
-
-                                                <div class="ra-expand-actions" *ngIf="rowStatus(r) === 'PENDING_APPROVAL'">
-                                                    <!-- Reject is intentionally disabled on this screen — rejections
-                                                         are handled in a separate flow, not from Receiving Approval.
-                                                    <button type="button" class="ra-btn ra-btn-ghost-red" [disabled]="actingOn === r.receivingNumber" (click)="decide(r, 'REJECTED')">
-                                                        <i class="pi pi-times"></i> Reject
-                                                    </button>
-                                                    -->
-                                                    <button type="button" class="ra-btn ra-btn-primary" [disabled]="actingOn === r.receivingNumber" (click)="decide(r, 'APPROVED')">
+                                                <!-- Footer: validation hint on the left, action on the right -->
+                                                <div class="ra-expand-footer" *ngIf="rowStatus(r) === 'PENDING_APPROVAL'">
+                                                    <p class="ra-validation" [class.ra-validation-bad]="!rowBalanced(r)">
+                                                        <i class="pi" [ngClass]="rowBalanced(r) ? 'pi-check-circle' : 'pi-exclamation-circle'"></i>
+                                                        {{ rowBalanced(r)
+                                                            ? 'Accepted and rejected quantities match what was received.'
+                                                            : 'Accept + reject must equal the received quantity on every line.' }}
+                                                    </p>
+                                                    <button type="button" class="ra-btn ra-btn-primary"
+                                                            [disabled]="actingOn === r.receivingNumber || !rowBalanced(r)"
+                                                            (click)="decide(r, 'APPROVED')">
                                                         <i class="pi" [ngClass]="actingOn === r.receivingNumber ? 'pi-spin pi-spinner' : 'pi-check'"></i>
-                                                        {{ actingOn === r.receivingNumber ? 'Submitting…' : 'Approve & push to ERP' }}
+                                                        {{ actingOn === r.receivingNumber ? 'Submitting…' : 'Approve and push to ERP' }}
                                                     </button>
                                                 </div>
 
-                                                <div class="ra-expand-actions" *ngIf="rowStatus(r) === 'PUSH_FAILED'">
-                                                    <button type="button" class="ra-btn ra-btn-primary" [disabled]="retryingOn === r.receivingNumber" (click)="retryPush(r)">
+                                                <div class="ra-expand-footer" *ngIf="rowStatus(r) === 'PUSH_FAILED'">
+                                                    <span></span>
+                                                    <button type="button" class="ra-btn ra-btn-primary"
+                                                            [disabled]="retryingOn === r.receivingNumber"
+                                                            (click)="retryPush(r)">
                                                         <i class="pi" [ngClass]="retryingOn === r.receivingNumber ? 'pi-spin pi-spinner' : 'pi-refresh'"></i>
                                                         {{ retryingOn === r.receivingNumber ? 'Retrying…' : 'Retry push to ERP' }}
                                                     </button>
                                                 </div>
 
-                                                <div class="ra-expand-actions" *ngIf="rowStatus(r) === 'REJECTED'">
-                                                    <button type="button" class="ra-btn ra-btn-primary" [disabled]="reopeningOn === r.receivingNumber" (click)="reopenForCorrection(r)">
+                                                <div class="ra-expand-footer" *ngIf="rowStatus(r) === 'REJECTED'">
+                                                    <span></span>
+                                                    <button type="button" class="ra-btn ra-btn-primary"
+                                                            [disabled]="reopeningOn === r.receivingNumber"
+                                                            (click)="reopenForCorrection(r)">
                                                         <i class="pi" [ngClass]="reopeningOn === r.receivingNumber ? 'pi-spin pi-spinner' : 'pi-undo'"></i>
                                                         {{ reopeningOn === r.receivingNumber ? 'Reopening…' : 'Reopen for correction' }}
                                                     </button>

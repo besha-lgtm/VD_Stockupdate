@@ -23,14 +23,15 @@ export interface ReceivingDto {
   status: string; // PENDING | IN_PROGRESS | VERIFIED | REJECTED | CANCELLED
   approvalStatus: string; // NOT_SUBMITTED | PENDING_APPROVAL | APPROVED | REJECTED
   approvedBy: string | null;
+  approvedByName: string | null;
   approvedAt: string | null;
+  visipackReceiptNo: string | null;
   visipackGrnNo: string | null;
   qcStatus: string | null; // PENDING | PASSED | FAILED | PUSH_FAILED
   remarks: string | null;
   items: ReceivingItemDto[];
   documents: { documentId: number; documentType: string; documentName: string; documentUrl: string }[];
 }
-
 @Injectable({ providedIn: 'root' })
 export class ReceivingService {
   constructor(private http: HttpClient) {}

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { ReceivingService, ReceivingDto } from '../../services/receiving.service';
+import { ReceivingService, ReceivingDto, ReceivingItemDto } from '../../services/receiving.service';
 
 interface ApprovalEdit {
   acceptedQty: number;
@@ -156,6 +156,67 @@ export class PORecieveComponent implements OnInit {
     return this.expandedReceivingNumber === r.receivingNumber;
   }
 
+  // ===================== Detail panel helpers =====================
+
+  // The panel only renders the trace strip when there is something to trace.
+  hasMeta(r: ReceivingDto): boolean {
+    return !!(r.approvedBy || r.approvedByName || r.approvedAt || r.visipackReceiptNo || r.visipackGrnNo || r.remarks);
+  }
+
+  // approvedBy holds a raw user id (attribute_2). Prefer the resolved name
+  // the backend now returns; fall back to a labelled id so the panel never
+  // shows a bare number.
+  approverName(r: ReceivingDto): string {
+    if (r.approvedByName) return r.approvedByName;
+    if (r.approvedBy) return `User #${r.approvedBy}`;
+    return '—';
+  }
+
+  approverInitial(r: ReceivingDto): string {
+    const name = this.approverName(r);
+    return /^[A-Za-z]/.test(name) ? name.charAt(0).toUpperCase() : '#';
+  }
+
+  // ===================== Quantity editing =====================
+
+  // Typing an accepted qty implies the rest of the line was rejected.
+  onAcceptedChange(item: ReceivingItemDto): void {
+    const edit = this.edits[item.receivingItemId];
+    if (!edit) return;
+    const accepted = Math.min(Math.max(Number(edit.acceptedQty) || 0, 0), item.receivedQty);
+    edit.acceptedQty = accepted;
+    edit.rejectedQty = item.receivedQty - accepted;
+    if (!edit.rejectedQty) edit.rejectionReason = '';
+  }
+
+  acceptAll(r: ReceivingDto): void {
+    for (const item of r.items) {
+      const edit = this.edits[item.receivingItemId];
+      if (!edit) continue;
+      edit.acceptedQty = item.receivedQty;
+      edit.rejectedQty = 0;
+      edit.rejectionReason = '';
+    }
+  }
+
+  itemBalanced(item: ReceivingItemDto): boolean {
+    const edit = this.edits[item.receivingItemId];
+    if (!edit) return true;
+    return (Number(edit.acceptedQty) || 0) + (Number(edit.rejectedQty) || 0) === Number(item.receivedQty);
+  }
+
+  rowBalanced(r: ReceivingDto): boolean {
+    return r.items.every(i => this.itemBalanced(i));
+  }
+
+  editedAcceptedTotal(r: ReceivingDto): number {
+    return r.items.reduce((sum, i) => sum + (Number(this.edits[i.receivingItemId]?.acceptedQty) || 0), 0);
+  }
+
+  editedRejectedTotal(r: ReceivingDto): number {
+    return r.items.reduce((sum, i) => sum + (Number(this.edits[i.receivingItemId]?.rejectedQty) || 0), 0);
+  }
+
   // ===================== Approve / Reject decision =====================
   // On APPROVE, the WMS backend automatically pushes to VISIPACK (Step 5) as
   // a pre-QC "Incoming Receipt". No GRN exists yet — VISIPACK only mints a
@@ -224,12 +285,20 @@ export class PORecieveComponent implements OnInit {
 
   // ===================== Display helpers =====================
 
+  totalOrderedQty(r: ReceivingDto): number {
+    return r.items.reduce((sum, i) => sum + (Number(i.orderedQty) || 0), 0);
+  }
+
   totalReceivedQty(r: ReceivingDto): number {
     return r.items.reduce((sum, i) => sum + (Number(i.receivedQty) || 0), 0);
   }
 
   totalAcceptedQty(r: ReceivingDto): number {
     return r.items.reduce((sum, i) => sum + (Number(i.acceptedQty) || 0), 0);
+  }
+
+  totalRejectedQty(r: ReceivingDto): number {
+    return r.items.reduce((sum, i) => sum + (Number(i.rejectedQty) || 0), 0);
   }
 
   itemSummary(r: ReceivingDto): string {
